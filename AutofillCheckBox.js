@@ -13,15 +13,15 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 			if(this.checked == true) {
 				if(this.sourceId && this.targetId && this.sourceId.length == this.targetId.length) {
 					for(var index = 0; index < this.sourceId.length; index++) {
-						var prefillValue = registry.byId(this.sourceId[index]).get("value");
-						registry.byId(this.targetId[index]).set("value", prefillValue);
+						var prefillValue = registry.byId(this.sourceId[index]).getValue();
+						registry.byId(this.targetId[index]).setValue(prefillValue);
 					}
 				};
 			} else {
 				if(this.targetId && this.sourceId.length == this.targetId.length) {
 					for(var index = 0; index < this.targetId.length; index++) {
 						//Reset all fields.
-						registry.byId(this.targetId[index]).set("value", '');
+						registry.byId(this.targetId[index]).setValue(' ');
 					}
 				};
 			}
