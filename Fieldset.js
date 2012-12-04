@@ -17,7 +17,6 @@ define(["dojo/_base/declare", "dojo/dom-construct", "dojo/query", "dijit/_Widget
 			}
 		},
 		addChild: function(widget, insertIndex) {
-			console.log(this)
 			var refNode = this.fieldsetNode.children[0];
 			if(insertIndex && typeof insertIndex == "number") {
 				var children = this.getChildren();
