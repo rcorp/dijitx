@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>Title</title>
+		<meta name="description" content="" />
+		<meta name="author" content="RCorp" />
+		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		<!--Include dojo theme css like Claro them is selected here-->
+		<link rel="stylesheet" href="../../dijit/themes/claro/claro.css" />
+		<!--Include dojo main file to use dojo library-->
+		<script type="text/javascript" src="../../dojo/dojo.js"></script>
+
+		<style type="text/css">
+			#source-Id,#autofillchk
+			{
+				float:left;
+			}
+		</style>
+		<!--Fieldset testing code-->
+		<script type="text/javascript">
+			require([
+				"dojo/dom",
+				"dojo/dom-construct",
+				"dijit/registry",
+				"dijit/form/TextBox",
+				"dijit/form/DateTextBox",
+				"dijit/form/HorizontalSlider",
+				"dijit/form/HorizontalRule",
+				"dijit/form/HorizontalRuleLabels",
+				"dojox/layout/TableContainer",
+				"dijitx/AutoFillCheckBox",
+				"dojo/domReady!"
+				],function(dom,domConstruct,registry,TextBox,DateTextBox,HorizontalSlider,HorizontalRule,HorizontalRuleLabels,TableContainer,AutoFillCheckBox)
+			{
+				//Create table container containing textbox, datetextbox etc. to get value
+				var source = new TableContainer({cols:'1'},'sourceDiv');
+				source.addChild(new TextBox({label:'First Name',name:'firstname',id:'firstname'}));
+				source.addChild(new TextBox({label:'Last Name',name:'lastname',id:'lastname'}));
+				source.addChild(new DateTextBox({label:'Date',id:'dateS'}));
+				var hS= new HorizontalSlider({label:'Horizontal Slider',id:'hsS',name:'hslider',value:10,maximum:100,minimum:0,pageIncrement:100,style:{width:"300px", height:"20px"}});
+				hS.addChild(new HorizontalRuleLabels({container:"topDecoration", style:{height:"1.2em",fontSize:"75%"}, count:6, numericMargin:1}));
+				hS.addChild(new HorizontalRule({container:"topDecoration", count:6, style:{height:'5px'}}));
+				hS.addChild(new HorizontalRuleLabels({labels:['low','normal','high'],container:"bottomDecoration", style:{height:"1em",fontSize:"75%"}}));
+				source.addChild(hS);
+				source.startup();
+
+				//Create table container containing texbox, datetextbox etc. to set value
+				var target = new TableContainer({cols:'1'},'targetDiv');
+				target.addChild(new TextBox({label:'First Name',name:'fname',id:'fname'}));
+				target.addChild(new TextBox({label:'Last Name',name:'lname',id:'lname'}));
+				target.addChild(new DateTextBox({label:'Date',id:'dateT'}));
+				var hT = new HorizontalSlider({label:'Horizontal Slider',id:'hsT',name:'hslider',value:10,maximum:100,minimum:0,pageIncrement:100,style:{width:"300px", height:"20px"}});				
+				hT.addChild(new HorizontalRuleLabels({container:"topDecoration", style:{height:"1.2em",fontSize:"75%"}, count:6, numericMargin:1}));
+				hT.addChild(new HorizontalRule({container:"topDecoration", count:6, style:{height:'5px'}}));
+				hT.addChild(new HorizontalRuleLabels({labels:['low','normal','high'],container:"bottomDecoration", style:{height:"1em",fontSize:"75%"}}));
+				target.addChild(hT);
+				target.startup();
+
+				//Autofill checkbox
+				var autofill = new AutoFillCheckBox({},'chk');
+				//Array of ids of all field whose value is get for autofill.
+				autofill.set('sourceId',['firstname','lastname','dateS','hsS']);
+
+				//Array of ids of all field in which value is set.
+				autofill.set('targetId',['fname','lname','dateT','hsT']);
+			});
+		</script>
+	</head>
+
+	<body class="claro">
+		<div>
+			<header>
+				<h1>AutofillCheckBox</h1>
+			</header>
+
+			<section>
+				<div id='source-Id'>
+					Source
+					<div id="sourceDiv"></div>
+				</div>
+				<div id="autofillchk">
+					Checked me to see change!!
+					<div id="chk"></div>
+				</div>
+				<div id='target-Id'>
+					Target
+					<div id="targetDiv"></div>
+				</div>
+			</section>
+			
+			<nav>
+				<p>
+					<a href="http://rcorp.co.in">Ramanan Corporation</a>
+				</p>
+			</nav>
+
+			<footer>
+				<p>
+					&copy; Copyright  by RCorp
+				</p>
+			</footer>
+		</div>
+	</body>
+</html>
