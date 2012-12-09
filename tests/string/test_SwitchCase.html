@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>Fieldset</title>
+		<meta name="description" content="" />
+		<meta name="author" content="RCorp" />
+		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		<!--Include dojo theme css like Claro them is selected here-->
+		<link rel="stylesheet" href="../../../dijit/themes/claro/claro.css" />
+		<!--Include dojo main file to use dojo library-->
+		<script type="text/javascript" src="../../../dojo/dojo.js"></script>
+
+		<!--Fieldset testing style-->
+		<style type="text/css">
+			.fieldsetClass
+			{
+				width: 500px;
+			}
+		</style>
+
+		<!--Fieldset testing code-->
+		<script type="text/javascript">
+			require(["dijitx/string/SwitchCase", "dojo/dom", "dojo/domReady!"],function(SwitchCase, dom) {
+				var str = dom.byId('inp').innerHTML;
+				var out = new SwitchCase().capitaliseFirstLetter(str);
+				dom.byId('inp').innerHTML += out;
+			});
+		</script>
+	</head>
+
+	<body class="claro">
+		<div>
+			<header>
+				<h2>Test Switch Case</h2>
+			</header>
+			<section>
+				<div id="inp"> i am A Malformed string </div>
+				
+			</section>
+			
+			<nav>
+				<p>
+					<a href="http://rcorp.co.in">Ramanan Corporation</a>
+				</p>
+			</nav>
+
+			<footer>
+				<p>
+					&copy; Copyright  by RCorp
+				</p>
+			</footer>
+		</div>
+	</body>
+</html>
