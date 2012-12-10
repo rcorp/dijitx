@@ -34,13 +34,15 @@
 			require([
 					"dojo/parser",
 					"dojo/dom",
+					"dojo/dom-construct",
 					"dijit/registry",
+					"dijit/form/Form",
 					"dijit/form/TextBox",
 					"dijit/form/Button",
 					"dojox/layout/TableContainer",
 					"dijitx/Fieldset",
 					"dojo/domReady!"
-				],function(parser,dom,registry,TextBox,Button,TableContainer,Fieldset)
+				],function(parser,dom,domConstruct,registry,Form,TextBox,Button,TableContainer,Fieldset)
 			{
 				parser.parse();
 
@@ -60,6 +62,15 @@
 				tcD.addChild(new TextBox({label:'Last Name',name:'lname'}));
 				registry.byId('fieldsetD').addChild(tcD);
 
+				//Creating fieldset inside form
+				var form = new Form({id:'form'},'parent');
+				var newDiv = domConstruct.create('div',{id:'fp'},'form')
+				var fs = new Fieldset({legend:'Fieldset inside Form',customClass:'fieldsetClass'},'fp');
+				var tc = new TableContainer({cols:'1'});
+				tc.addChild(new TextBox({label:'First Name',name:'fname'}));
+				tc.addChild(new TextBox({label:'Last Name',name:'lname'}));
+				fs.addChild(tc);
+				
 				
 			});
 		</script>
@@ -75,7 +86,10 @@
 				<div id="fieldsetD" data-dojo-type="dijitx/Fieldset" data-dojo-props="legend:'Declarative Fieldset',customClass:'fieldsetClass'"></div>
 
 				<label for="fieldsetP">Creating Fieldset Programatically</label>
-				<div id="fieldsetP"></div>	
+				<div id="fieldsetP"></div>
+
+				<label for="fieldsetP">Creating Fieldset inside Form</label>
+				<div id="parent"></div>	
 			</section>
 			
 			<nav>
