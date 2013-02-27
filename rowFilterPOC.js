@@ -25,7 +25,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 	var invalidClassChars = /[^\._a-zA-Z0-9-]/g;
 	var contentBoxSizing = has("ie") < 8 && !has("quirks");
 	var headerTableNode = '';
-
+	var allWidgetsIdArr = [];
 	return declare(null, {
 		filterableTable: '',
 		/**
@@ -84,28 +84,17 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 */
 			return true;
 		},
-		addTextBoxToGridHeader: function(fieldLabel) {
-			/**
-			 * get Div tag (parent) of Grid's Header
-			 * @type {DOM element}
-			 */
-			var headerNodeMainDiv = this.get('headerNode')
-
-			/**
-			 * get main Header Tag which is a table tag in this case
-			 * @type {DOM element}
-			 */
-			var headerNode = headerNodeMainDiv.children[0];
-
-			table = this.filterableTable.children[0];
-			parentDiv = table.children[0]
+		addTextBoxToGridHeader: function(table, fieldLabel) {
+			console.log('addTextBoxToGridHeader',table)
+			parentRow = table.children[0];
+			parentDiv = parentRow.children[0];
 			parentDiv.innerHTML = '';
-			domConstruct.place(this.filterableTable, headerNode, 'before');
+//			domConstruct.place(headerNode, headerNodeMainDiv, 'before');
 			/**
 			 * to set Delay between searches
 			 * @type {Number}
 			 */
-			var timeoutId = 0;
+			// var timeoutId = 0;
 
 			/**
 			 * set placeHolder for each textbox
@@ -113,173 +102,193 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 */
 			var placeHolder = fieldLabel;
 
-			/**
-			 * create a a parent div for each filter textbox
-			 * id of the textbox's parent div ="textDiv_" + <column name>
-			 * @type {Object}
-			 */
-			var newDivToPlaceTextBox = domConstruct.create("div", {
-				id: this.id + "_textDiv_" + fieldLabel
-			}, parentDiv)
-
-			/**
-			 * create filter textbox
-			 * @type {dijit}
-			 */
-			var myTextBox = new TextBox({
+			if(allWidgetsIdArr.indexOf(this.id + "_textDiv_" + fieldLabel) == -1)
+			{
+				allWidgetsIdArr.push(this.id + "_textDiv_" + fieldLabel);
 				/**
-				 * name of the textbox="filter_" + <column name>
+				 * create a a parent div for each filter textbox
+				 * id of the textbox's parent div ="textDiv_" + <column name>
+				 * @type {Object}
 				 */
-				name: "filter_" + fieldLabel,
-				/**
-				 * no or empty value!
-				 */
-				value: "",
-				placeHolder: placeHolder,
-				/**
-				 * event on each change
-				 */
-				intermediateChanges: true
-			}, newDivToPlaceTextBox);
-
-			/**
-			 * store this
-			 * @type {Object}
-			 */
-			var This = this;
-
-			myTextBox.watch("value", function(name, oldValue, newValue) {
-				console.log(This.selection)
-				indexOfSelectedItemsOfGridArr.splice(0);
-				for(each in This.selection) {
-					indexOfSelectedItemsOfGridArr.push(parseInt(each))
+				var newDivToPlaceTextBox = '';
+				if(dom.byId(this.id + "_textDiv_" + fieldLabel) == undefined ||  dom.byId(this.id + "_textDiv_" + fieldLabel) == null)
+				{
+					newDivToPlaceTextBox = domConstruct.create("div", {
+						id: this.id + "_textDiv_" + fieldLabel,
+					}, parentDiv)				
 				}
 				/**
-				 * get columns name from the id of the textbox selected
+				 * create filter textbox
+				 * @type {dijit}
 				 */
-				console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
-				filterableTextBoxValue = this.get("value");
-				if(timeoutId) {
-					clearTimeout(timeoutId);
-					timeoutId = null;
-				};
+				var myTextBox = new TextBox({
+					/**
+					 * name of the textbox="filter_" + <column name>
+					 */
+					name: this.id + "_filter_textDiv_" + fieldLabel,
+					value: "",
+					placeHolder: placeHolder,
+					/**
+					 * event on each change
+					 */
+					intermediateChanges: true
+				}, newDivToPlaceTextBox);
 
 				/**
-				 * add delay
-				 * @param  {function} function to set delay
-				 * @param  {integer} 300 is delay value in ms
+				 * store this
+				 * @type {Object}
 				 */
-				timeoutId = setTimeout(function() {
-					This.refresh();
-					for(each in indexOfSelectedItemsOfGridArr) {
-						This.select(indexOfSelectedItemsOfGridArr[each])
+				var This = this;
+
+				myTextBox.watch("value", function(name, oldValue, newValue) {
+					console.log(This.selection)
+					indexOfSelectedItemsOfGridArr.splice(0);
+					for(each in This.selection) {
+						indexOfSelectedItemsOfGridArr.push(parseInt(each))
 					}
-				}, 300);
+					/**
+					 * get columns name from the id of the textbox selected
+					 */
+					console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
+					filterableTextBoxValue = this.get("value");
+					if(timeoutId) {
+						clearTimeout(timeoutId);
+						timeoutId = null;
+					};
 
-			});
+					/**
+					 * add delay
+					 * @param  {function} function to set delay
+					 * @param  {integer} 300 is delay value in ms
+					 */
+					timeoutId = setTimeout(function() {
+						This.refresh();
+						for(each in indexOfSelectedItemsOfGridArr) {
+							This.select(indexOfSelectedItemsOfGridArr[each])
+						}
+					}, 300);
+
+				});
+
+			}
 
 		},
-		addSelectAllButtonToGridHeader: function() {
+		addSelectAllButtonToGridHeader: function(parentRow) {
 
-			parentDiv = dom.byId('selectAll_Button_Cell')
+			table = parentRow.children[0];
+			parentDiv = table.children[0]
 			parentDiv.innerHTML = '';
-//			domConstruct.place(this.filterableTable, headerNode, 'before');
 
-			/**
-			 * create a a parent div for each filter textbox
-			 * id of the textbox's parent div ="textDiv_" + <column name>
-			 * @type {Object}
-			 */
-			var newDivToPlaceButton = domConstruct.create("div", {
-				id: this.id + "_ButtonDiv_SelectAll"
-			}, parentDiv)
-			var grid = this;
-			/**
-			 * create filter textbox
-			 * @type {dijit}
-			 */
-			var myButton = new Button({
-			        name:  "selectAll_Button",
-			        checked: false,
-			        label:"Select All",
-			        onClick: function(){
-		        		grid.selectAll()
-			        }
-			    }, newDivToPlaceButton);
+			console.log('button parent div', parentDiv, parentRow)
+			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectAll") == -1)
+			{
+				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectAll")	
+				/**
+				 * create a a parent div for each filter textbox
+				 * id of the textbox's parent div ="textDiv_" + <column name>
+				 * @type {Object}
+				 */
+				var newDivToPlaceButton = domConstruct.create("div", {
+					id: this.id + "_ButtonDiv_SelectAll"
+				}, parentDiv)
+				var grid = this;
+				/**
+				 * create filter textbox
+				 * @type {dijit}
+				 */
+				var myButton = new Button({
+				        name:  "selectAll_Button",
+				        checked: false,
+				        label:"Select All",
+				        onClick: function(){
+			        		grid.selectAll()
+				        }
+				    }, newDivToPlaceButton);
+			}
 		},
-		addSelectInverseButtonToGridHeader: function() {
+		addSelectInverseButtonToGridHeader: function(parentRow) {
 
-			parentDiv = dom.byId('selectInverse_Button_Cell')
+			table = parentRow.children[0];
+			parentDiv = table.children[1]
 			parentDiv.innerHTML = '';
-//			domConstruct.place(this.filterableTable, headerNode, 'before');
 
-			/**
-			 * create a a parent div for each filter textbox
-			 * id of the textbox's parent div ="textDiv_" + <column name>
-			 * @type {Object}
-			 */
-			var newDivToPlaceButton = domConstruct.create("div", {
-				id: this.id + "_ButtonDiv_SelectInverse"
-			}, parentDiv)
+			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectInverse") == -1)
+			{
+				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectInverse")	
 
-			/**
-			 * create filter textbox
-			 * @type {dijit}
-			 */
-			var This = this;
-			var myButton = new Button({
-			        name: "selectInverse_Button",
-			        label:"Select Inverse",
-			        checked: false,
-			        onClick: function(){
-		        			console.log(This.store.data.length)
-		        		for(var i=0;i<This.store.data.length;i++)
-		        		{
-//		        			dojo.query("select[name=limit]")[0];
-		        			if(This.isSelected(This.store.data[i]))
-		        			{
-		        				console.log('deselect',i)
-		        				This.deselect(This.store.data[i].id,0,false)
-		        			}
-		        			else
-		        			{
-		        				console.log('select',i)
-		        				This.select(This.store.data[i].id)
-		        			}
-		        		}
-			        }
-			    }, newDivToPlaceButton);
+				/**
+				 * create a a parent div for each filter textbox
+				 * id of the textbox's parent div ="textDiv_" + <column name>
+				 * @type {Object}
+				 */
+				var newDivToPlaceButton = domConstruct.create("div", {
+					id: this.id + "_ButtonDiv_SelectInverse"
+				}, parentDiv)
+
+				/**
+				 * create filter textbox
+				 * @type {dijit}
+				 */
+				var This = this;
+				var myButton = new Button({
+				        name: "selectInverse_Button",
+				        label:"Select Inverse",
+				        checked: false,
+				        onClick: function(){
+			        			console.log(This.store.data.length)
+			        		for(var i=0;i<This.store.data.length;i++)
+			        		{
+	//		        			dojo.query("select[name=limit]")[0];
+			        			if(This.isSelected(This.store.data[i]))
+			        			{
+			        				console.log('deselect',i)
+			        				This.deselect(This.store.data[i].id,0,false)
+			        			}
+			        			else
+			        			{
+			        				console.log('select',i)
+			        				This.select(This.store.data[i].id)
+			        			}
+			        		}
+				        }
+				    }, newDivToPlaceButton);
+			}
 		},
-		addSelectNoneButtonToGridHeader: function() {
+		addSelectNoneButtonToGridHeader: function(parentRow) {
 
-			parentDiv = dom.byId('selectNone_Button_Cell')
+			table = parentRow.children[0];
+			parentDiv = table.children[2]
 			parentDiv.innerHTML = '';
-//			domConstruct.place(this.filterableTable, headerNode, 'before');
 
-			/**
-			 * create a a parent div for each filter textbox
-			 * id of the textbox's parent div ="textDiv_" + <column name>
-			 * @type {Object}
-			 */
-			var newDivToPlaceButton = domConstruct.create("div", {
-				id: this.id + "_ButtonDiv_SelectNone"
-			}, parentDiv)
+			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectNone") == -1)
+			{
+				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectNone")	
 
-			var grid = this;
-			/**
-			 * create filter textbox
-			 * @type {dijit}
-			 */
-			var myButton = new Button({
-			        name: "selectNone_Button",
-			        label:"Select None",
-			        checked: false,
-			        onClick: function(){
-			        	grid.clearSelection();
-			        }
-			    }, newDivToPlaceButton);
+				/**
+				 * create a a parent div for each filter textbox
+				 * id of the textbox's parent div ="textDiv_" + <column name>
+				 * @type {Object}
+				 */
+				var newDivToPlaceButton = domConstruct.create("div", {
+					id: this.id + "_ButtonDiv_SelectNone"
+				}, parentDiv)
 
-		},		/**
+				var grid = this;
+				/**
+				 * create filter textbox
+				 * @type {dijit}
+				 */
+				var myButton = new Button({
+				        name: "selectNone_Button",
+				        label:"Select None",
+				        checked: false,
+				        onClick: function(){
+				        	grid.clearSelection();
+				        }
+				    }, newDivToPlaceButton);
+			}
+		},
+		/**
 		 * override the Grid's renderHeader function
 		 * @return {boolean}
 		 */
@@ -330,8 +339,8 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 							/**
 			 * add filter textbox to grid
 			 */
-			this.addTextBoxToGridHeader(grid.filterFieldLabel);
-
+//			this.addTextBoxToGridHeader(grid.filterFieldLabel);
+			this.addTextBoxToGridHeader(row, grid.filterFieldLabel);
 			if(this.advanceSelection)
 			{
 				row = this.createButtonRowCells("th", function(th, column) {
@@ -360,9 +369,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				this._rowIdToObject[row.id = this.id + "-header-filterable"] = this.columns;
 				headerNode.appendChild(row);
 
-				this.addSelectAllButtonToGridHeader();
-				this.addSelectInverseButtonToGridHeader();
-				this.addSelectNoneButtonToGridHeader();
+				this.addSelectAllButtonToGridHeader(row);
+				this.addSelectInverseButtonToGridHeader(row);
+				this.addSelectNoneButtonToGridHeader(row);
 				domConstruct.place(row, this.filterableTable, 'after');
 			}
 
@@ -399,6 +408,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 					// iterate through the columns
 					column = subRow[i];
 					if(column.filterable) {
+						console.log('filterable....')
 						id = column.id + '-filterable';
 						extraClassName = column.className || (column.field && "field-" + column.field);
 						cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "") + (extraClassName ? "." + extraClassName : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
@@ -419,11 +429,13 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 							cell.rowSpan = rowSpan;
 						}
 						each(innerCell, column);
+						console.log('tr cell',cell)
 						// add the td to the tr at the end for better performance
 						tr.appendChild(cell);
 					}
 				}
 			}
+			console.log('createFilterRowCells', row, tr)
 			return row;
 		},
 		createButtonRowCells: function(tag, each, subRows) {
