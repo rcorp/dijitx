@@ -96,7 +96,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 * to set Delay between searches
 			 * @type {Number}
 			 */
-			// var timeoutId = 0;
+			var timeoutId = 0;
 
 			/**
 			 * set placeHolder for each textbox
@@ -142,7 +142,6 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				 */
 				var This = this;
 
-				var timeoutId='';
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					console.log(This.selection,'This.selection')
 					indexOfSelectedItemsOfGridArr.splice(0);
