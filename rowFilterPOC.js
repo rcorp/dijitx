@@ -26,6 +26,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 	var contentBoxSizing = has("ie") < 8 && !has("quirks");
 	var headerTableNode = '';
 	var allWidgetsIdArr = [];
+	var grid = '';
 	return declare(null, {
 		filterableTable: '',
 		/**
@@ -42,6 +43,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 * @default {undefined}
 			 */
 			var Show = undefined;
+			console.log('inside grird filter')
 			var colValue = (item[grid.filterColName] + "").toLowerCase();
 			/**
 			 * if atleast two characters inserted by user in each textbox then query the store
@@ -86,8 +88,8 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		},
 		addTextBoxToGridHeader: function(table, fieldLabel) {
 			console.log('addTextBoxToGridHeader',table)
-			parentRow = table.children[0];
-			parentDiv = parentRow.children[0];
+//			parentRow = table.children[0];
+			parentDiv = table.children[0];
 			parentDiv.innerHTML = '';
 //			domConstruct.place(headerNode, headerNodeMainDiv, 'before');
 			/**
@@ -140,8 +142,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				 */
 				var This = this;
 
+				var timeoutId='';
 				myTextBox.watch("value", function(name, oldValue, newValue) {
-					console.log(This.selection)
+					console.log(This.selection,'This.selection')
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
 						indexOfSelectedItemsOfGridArr.push(parseInt(each))
@@ -162,7 +165,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 					 * @param  {integer} 300 is delay value in ms
 					 */
 					timeoutId = setTimeout(function() {
+						console.log('b4 refresh')
 						This.refresh();
+						console.log('after refresh')
 						for(each in indexOfSelectedItemsOfGridArr) {
 							This.select(indexOfSelectedItemsOfGridArr[each])
 						}
@@ -292,12 +297,12 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		 * override the Grid's renderHeader function
 		 * @return {boolean}
 		 */
-		renderHeader: function() {
+		renderHeaderX: function() {
 			/**
 			 * instance of dGrid
 			 * @type {grid}
 			 */
-			var grid = this
+			grid = this
 
 			/**
 			 * set custom query function
@@ -481,10 +486,3 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 	});
 });
 
-
-
-// var searchImageIcon = domConstruct.create("image", {
-// 	id: "imageDiv_SearchIcon",
-// 	src:"data:image/jpeg;base64,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",
-// 	class:'dijitEditorIcon'
-// }, newDivToPlaceImage);
