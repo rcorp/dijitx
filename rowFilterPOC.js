@@ -27,6 +27,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 	var headerTableNode = '';
 	var allWidgetsIdArr = [];
 	var grid = '';
+	var currentColName = '';
 	return declare(null, {
 		filterableTable: '',
 		/**
@@ -43,8 +44,8 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 * @default {undefined}
 			 */
 			var Show = undefined;
-			console.log('inside grird filter')
-			var colValue = (item[grid.filterColName] + "").toLowerCase();
+			console.log('inside grird filter', grid)
+			var colValue = (item[currentColName]).toLowerCase();
 			/**
 			 * if atleast two characters inserted by user in each textbox then query the store
 			 */
@@ -144,6 +145,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					console.log(This.selection,'This.selection')
+					currentColName = This.filterColName;
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
 						indexOfSelectedItemsOfGridArr.push(parseInt(each))
