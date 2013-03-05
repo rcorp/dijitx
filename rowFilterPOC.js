@@ -414,6 +414,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 					// iterate through the columns
 					column = subRow[i];
 					if(column.filterable) {
+						this.filterColName = column.id
 						console.log('filterable....')
 						id = column.id + '-filterable';
 						extraClassName = column.className || (column.field && "field-" + column.field);
