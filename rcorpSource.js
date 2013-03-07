@@ -30,10 +30,6 @@ var __SourceArgs = {
 				console.log('permission denied')
 			}
 		},
-// var label = dojo.create("label", {for:"fieldId", innerHTML:"SomeText"}, cell)
-// on(label,'click',function(evt){
-// 	console.log('label clicked')
-// })
 
 		onMouseMove: function(e) {
 			// summary:
