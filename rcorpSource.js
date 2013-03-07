@@ -1,4 +1,4 @@
-define(["../_base/array", "../_base/declare", "../_base/kernel", "../_base/lang", "../dom-class", "../dom-geometry", "../mouse", "../ready", "../topic", "./common", "./Selector", "./Manager", "dojo/dnd/Source"], function(array, declare, kernel, lang, domClass, domGeom, mouse, ready, topic, dnd, Selector, Manager, Source) {
+define(["./../dojo/_base/array", "./../dojo/_base/declare", "./../dojo/_base/kernel", "./../dojo/_base/lang", "./../dojo/dom-class", "./../dojo/dom-geometry", "./../dojo/mouse", "./../dojo/ready", "./../dojo/topic", "./../dojo/dnd/common", "./../dojo/dnd/Selector", "./../dojo/dnd/Manager", "dojo/dnd/Source"], function(array, declare, kernel, lang, domClass, domGeom, mouse, ready, topic, dnd, Selector, Manager, Source) {
 
 	// module:
 	//		dojo/dnd/rcorpSource
