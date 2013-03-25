@@ -1,5 +1,5 @@
 define (['dojo/_base/declare', 'dijit/TitlePane', 'dojo/dom-class', 'dojo/window'], function (declare, TitlePane, domClass, win) {
-    return declare('dijitx.widget.TitlePane', [ContentPane], {
+    return declare('dijitx.widget.TitlePane', [TitlePane], {
         buildRendering: function () {
             this.inherited(arguments);
             domClass.add(this.domNode, 'dijitVisible');
