@@ -7,11 +7,11 @@ define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class', 'do
         hide : function () {
             domClass.replace (this.domNode, 'dijitHidden', 'dijitVisible');
         },
-        show : function (scrollIntoView) { 
+        show : function (scrollToView) { 
             domClass.replace (this.domNode, 'dijitVisible', 'dijitHidden')
             this.resize();
-            if (scrollIntoView) {
-                win.scrollIntoView(this.domNode);
+            if (scrollToView) {
+                win.scrollToView(this.domNode);
             }
         }
     })
