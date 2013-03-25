@@ -3,7 +3,7 @@ define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class'], fu
         constructor: {
             this.inherited(arguments);
             domClass.add(this.domnode, 'dijitVisible');
-        }
+        },
         hide : function () {
             domClass.replace (this.domNode, 'dijitVisible', 'dijitHidden')
         },
