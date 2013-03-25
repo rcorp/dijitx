@@ -1,5 +1,5 @@
 define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class'], function (declare, ContentPane, domClass) {
-    return declare('dijitx.widget.layout.ContentPane', [ContentPane] {
+    return declare('dijitx.widget.layout.ContentPane', [ContentPane], {
         constructor: {
             this.inherited(arguments);
             domClass.add(this.domnode, 'dijitVisible');
