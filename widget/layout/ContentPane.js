@@ -5,10 +5,10 @@ define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class'], fu
             domClass.add(this.domNode, 'dijitVisible');
         },
         hide : function () {
-            domClass.replace (this.domNode, 'dijitVisible', 'dijitHidden')
+            domClass.replace (this.domNode, 'dijitHidden', 'dijitVisible');
         },
         show : function () {
-            domClass.replace (this.domNode, 'dijitHidden', 'dijitVisible');
+            domClass.replace (this.domNode, 'dijitVisible', 'dijitHidden')
             this.resize();
         }
     })
