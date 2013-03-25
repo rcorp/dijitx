@@ -2,7 +2,7 @@ define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class'], fu
     return declare('dijitx.widget.layout.ContentPane', [ContentPane], {
         constructor: function () {
             this.inherited(arguments);
-            domClass.add(this.domnode, 'dijitVisible');
+            domClass.add(this.domNode, 'dijitVisible');
         },
         hide : function () {
             domClass.replace (this.domNode, 'dijitVisible', 'dijitHidden')
