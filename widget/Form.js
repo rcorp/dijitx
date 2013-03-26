@@ -1,5 +1,5 @@
-define (['dojo/_base/declare', 'dijit/layout/ContentPane', 'dojo/dom-class', 'dojo/window'], function (declare, ContentPane, domClass, win) {
-    return declare('dijitx.widget.layout.ContentPane', [ContentPane], {
+define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window'], function (declare, Form, domClass, win) {
+    return declare('dijitx.widget.Form', [Form], {
         buildRendering: function () {
             this.inherited(arguments);
             domClass.add(this.domNode, 'dijitVisible');
