@@ -215,7 +215,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		addSelectInverseButtonToGridHeader: function(parentRow) {
 
 			table = parentRow.children[0];
-			parentDiv = table.children[1]
+			parentDiv = table.children[0]
 			parentDiv.innerHTML = '';
 
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectInverse") == -1)
@@ -263,7 +263,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		addSelectNoneButtonToGridHeader: function(parentRow) {
 
 			table = parentRow.children[0];
-			parentDiv = table.children[2]
+			parentDiv = table.children[0]
 			parentDiv.innerHTML = '';
 
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectNone") == -1)
