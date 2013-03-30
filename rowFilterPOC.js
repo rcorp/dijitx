@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
-declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
+define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
+declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
 	/*
 	 *	Row Filter plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-02-12
@@ -87,11 +87,12 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 			 */
 			return true;
 		},
-		addTextBoxToGridHeader: function(table, fieldLabel) {
-			console.log('addTextBoxToGridHeader',table)
-//			parentRow = table.children[0];
-			parentDiv = table.children[0];
-			parentDiv.innerHTML = '';
+		addTextBoxToGridHeader: function(parentRow, fieldLabel) {
+			console.log('addTextBoxToGridHeader',parentRow)
+			var table = parentRow.children[0];
+			var tBody = table.children[0]
+			var parentDiv = tBody.children[0]
+			html.set(parentDiv,'');
 //			domConstruct.place(headerNode, headerNodeMainDiv, 'before');
 			/**
 			 * to set Delay between searches
@@ -182,8 +183,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		addSelectAllButtonToGridHeader: function(parentRow) {
 
 			table = parentRow.children[0];
-			parentDiv = table.children[0]
-			parentDiv.innerHTML = '';
+			var tBody = table.children[0]
+			var parentDiv = tBody.children[0]
+			html.set(parentDiv,'');
 
 			console.log('button parent div', parentDiv, parentRow)
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectAll") == -1)
@@ -197,7 +199,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				var newDivToPlaceButton = domConstruct.create("div", {
 					id: this.id + "_ButtonDiv_SelectAll"
 				}, parentDiv)
-				var grid = this;
+				var This = this;
 				/**
 				 * create filter textbox
 				 * @type {dijit}
@@ -207,7 +209,14 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				        checked: false,
 				        label:"Select All",
 				        onClick: function(){
-			        		grid.selectAll()
+			        		for(var i=0;i<This.store.data.length;i++)
+			        		{
+	//		        			dojo.query("select[name=limit]")[0];
+			        			if(!This.isSelected(This.store.data[i]))
+			        			{
+			        				This.select(This.store.data[i].id)
+			        			}
+			        		}
 				        }
 				    }, newDivToPlaceButton);
 			}
@@ -215,8 +224,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		addSelectInverseButtonToGridHeader: function(parentRow) {
 
 			table = parentRow.children[0];
-			parentDiv = table.children[0]
-			parentDiv.innerHTML = '';
+			var tBody = table.children[0]
+			var parentDiv = tBody.children[1]
+			html.set(parentDiv,'');
 
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectInverse") == -1)
 			{
@@ -263,8 +273,9 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		addSelectNoneButtonToGridHeader: function(parentRow) {
 
 			table = parentRow.children[0];
-			parentDiv = table.children[0]
-			parentDiv.innerHTML = '';
+			var tBody = table.children[0]
+			var parentDiv = tBody.children[2]
+			html.set(parentDiv,'');
 
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectNone") == -1)
 			{
@@ -279,7 +290,7 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 					id: this.id + "_ButtonDiv_SelectNone"
 				}, parentDiv)
 
-				var grid = this;
+				var This = this;
 				/**
 				 * create filter textbox
 				 * @type {dijit}
@@ -289,7 +300,14 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 				        label:"Select None",
 				        checked: false,
 				        onClick: function(){
-				        	grid.clearSelection();
+			        		for(var i=0;i<This.store.data.length;i++)
+			        		{
+	//		        			dojo.query("select[name=limit]")[0];
+			        			if(This.isSelected(This.store.data[i]))
+			        			{
+			        				This.deselect(This.store.data[i].id)
+			        			}
+			        		}
 				        }
 				    }, newDivToPlaceButton);
 			}
@@ -487,4 +505,3 @@ declare, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put,
 		},
 	});
 });
-
