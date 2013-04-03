@@ -44,8 +44,11 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * @default {undefined}
 			 */
 			var Show = undefined;
-			console.log('inside grird filter', grid)
-			var colValue = (item[currentColName]).toLowerCase();
+			console.log('inside grird filter', grid, item[currentColName], currentColName)
+			var colValue = '';
+			if(item[currentColName]) {
+				colValue = (item[currentColName]).toLowerCase();
+			}
 			/**
 			 * if atleast two characters inserted by user in each textbox then query the store
 			 */
