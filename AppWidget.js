@@ -13,6 +13,8 @@ define(
         id: '',
         //Some string value of class.
         
+
+        
         baseClass:'myWidget',
         tag:'',
         templateString: '',
