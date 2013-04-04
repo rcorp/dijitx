@@ -3,8 +3,8 @@ define(
     'dojo/_base/lang',
     'dojo/dom-construct',
     'dojo/dom',
-    "dijit/_WidgetBase", 
-    "dijit/_TemplatedMixin",
+    'dijit/_WidgetBase', 
+    'dijit/_TemplatedMixin',
     'dojo/html',
     'dojo/text!./templates/AppWidgetTemplate.html'
 ],function(declare, lang, domConstruct,dom,WidgetBase, TemplatedMixin,html,template){
@@ -55,33 +55,33 @@ define(
         },
         set:function(value){
             html.set(dom.byId(this.domNode), value)
-            //this._set(attr,value);
+            this._set(attr,value);
         },
         getWidgetValue:function(){
             var result=this.getValue();
             return result;
         },
         addTag:function(tag,options,placeAt){
-            if((typeof tag && typeof placeAt=="String")&&(typeof options=='Object')){
+            if((typeof tag && typeof placeAt=='String')&&(typeof options=='Object')){
                domConstruct(tag,options,placeAt)
             } else {
-                console.log("error")
+                console.log('error')
             }   
         },
         addChild: function(widget, insertIndex) {
             var refNode = this.widgetNode.children[0];
-            if(insertIndex && typeof insertIndex == "number") {
+            if(insertIndex && typeof insertIndex == 'number') {
                 var children = this.getChildren();
                 if(children && children.length >= insertIndex) {
                     refNode = children[insertIndex - 1].domNode;
-                    insertIndex = "after";
+                    insertIndex = 'after';
                 }
             }
             domConstruct.place(widget.domNode, refNode, insertIndex);
             widget.startup();
         },
         removeChild: function( /*Widget|integer*/ widget) {
-            if(typeof widget == "number") {
+            if(typeof widget == 'number') {
                 widget = this.getChildren()[widget];
             }
 
