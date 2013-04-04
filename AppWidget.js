@@ -1,30 +1,21 @@
-define(
-['dojo/_base/declare',
-    'dojo/_base/lang',
-    'dojo/dom-construct',
-    'dojo/dom',
-    "dijit/_WidgetBase", 
-    "dijit/_TemplatedMixin",
-    'dojo/html',
-    'dojo/text!./templates/AppWidgetTemplate.html'
-],function(declare, lang, domConstruct,dom,WidgetBase, TemplatedMixin,html,template){
-   return declare('AppWidget',[WidgetBase, TemplatedMixin],{
+define(['dojo/_base/declare', 'dojo/_base/lang', 'dojo/dom-construct', 'dojo/dom', "dijit/_WidgetBase", "dijit/_TemplatedMixin", 'dojo/html', 'dojo/text!./templates/AppWidgetTemplate.html'], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, html, template) {
+    return declare('AppWidget', [WidgetBase, TemplatedMixin], {
         //id for AspireWidget.
         id: '',
         //Some string value of class.
-        
 
-        
-        baseClass:'myWidget',
-        tag:'',
+
+
+        baseClass: 'myWidget',
+        tag: '',
         templateString: '',
-        constructor:function(tag,id){
-            this.tag=tag;
-            this.id=id;
+        constructor: function(tag, id) {
+            this.tag = tag;
+            this.id = id;
             this.createWidget();
         },
-        createWidget:function(){
-            this.templateString=template;
+        createWidget: function() {
+            this.templateString = template;
         },
 
         postCreate: function() {
@@ -32,11 +23,11 @@ define(
         },
         buildRendering: function() {
             this.inherited(arguments);
-            if(!this.widgetNode) {
+            if (!this.widgetNode) {
                 this.widgetNode = this.domNode;
             }
         },
-        startup: function(){
+        startup: function() {
             // summary:
             //      Call startup() on all children including non _Widget ones like dojo/dnd/Source objects
 
@@ -44,35 +35,35 @@ define(
             this.inherited(arguments);
 
             // And this catches stuff like dojo/dnd/Source
-            if(this._contentSetter){
-                array.forEach(this._contentSetter.parseResults, function(obj){
-                    if(!obj._started && !obj._destroyed && lang.isFunction(obj.startup)){
+            if (this._contentSetter) {
+                array.forEach(this._contentSetter.parseResults, function(obj) {
+                    if (!obj._started && !obj._destroyed && lang.isFunction(obj.startup)) {
                         obj.startup();
                         obj._started = true;
                     }
                 }, this);
             }
         },
-        set:function(value){
+        set: function(value) {
             html.set(dom.byId(this.domNode), value)
             //this._set(attr,value);
         },
-        getWidgetValue:function(){
-            var result=this.getValue();
+        getWidgetValue: function() {
+            var result = this.getValue();
             return result;
         },
-        addTag:function(tag,options,placeAt){
-            if((typeof tag && typeof placeAt=="String")&&(typeof options=='Object')){
-               domConstruct(tag,options,placeAt)
+        addTag: function(tag, options, placeAt) {
+            if ((typeof tag && typeof placeAt == "String") && (typeof options == 'Object')) {
+                domConstruct(tag, options, placeAt)
             } else {
                 console.log("error")
-            }   
+            }
         },
         addChild: function(widget, insertIndex) {
             var refNode = this.widgetNode.children[0];
-            if(insertIndex && typeof insertIndex == "number") {
+            if (insertIndex && typeof insertIndex == "number") {
                 var children = this.getChildren();
-                if(children && children.length >= insertIndex) {
+                if (children && children.length >= insertIndex) {
                     refNode = children[insertIndex - 1].domNode;
                     insertIndex = "after";
                 }
@@ -81,13 +72,13 @@ define(
             widget.startup();
         },
         removeChild: function( /*Widget|integer*/ widget) {
-            if(typeof widget == "number") {
+            if (typeof widget == "number") {
                 widget = this.getChildren()[widget];
             }
 
-            if(widget) {
+            if (widget) {
                 var node = widget.domNode;
-                if(node && node.parentNode) {
+                if (node && node.parentNode) {
                     node.parentNode.removeChild(node); // detach but don't destroy
                 }
             }
@@ -96,5 +87,5 @@ define(
             delete this.widgetNode;
             this.inherited(arguments);
         }
-    })//End of Delcare
-})//End of Define
+    }) //End of Delcare
+}) //End of Define
