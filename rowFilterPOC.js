@@ -47,7 +47,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			console.log('inside grird filter', grid, item[currentColName], currentColName)
 			var colValue = '';
 			if(item[currentColName]) {
-				colValue = (item[currentColName]).toLowerCase();
+				if(item[currentColName]) {
+					colValue = (item[currentColName]).toLowerCase();
+				}
 			}
 			/**
 			 * if atleast two characters inserted by user in each textbox then query the store
@@ -57,21 +59,25 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					/**
 					 * match filter string with the content of the column
 					 */
-					if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
-						Show = true;
-					} else {
-						Show = false;
-					}
+					if(filterableTextBoxValue) {
+						if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
+							Show = true;
+						} else {
+							Show = false;
+						}
 
-					if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
-						console.log('checked...', item.id)
-						Show = true;
+						if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
+							console.log('checked...', item.id)
+							Show = true;
+						}
 					}
 				} else {
 					/**
 					 * Logically "And" the result of each successfull match
 					 */
-					Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
+					if(filterableTextBoxValue) {
+						Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
+					}
 				}
 			} else {
 				//	console.log('empty textbox........................')
