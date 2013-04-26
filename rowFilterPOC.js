@@ -44,12 +44,10 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * @default {undefined}
 			 */
 			var Show = undefined;
-			console.log('inside grird filter', grid, item[currentColName], currentColName)
+			// e.log('inside grird filter', grid, item[currentColName], currentColName)
 			var colValue = '';
 			if(item[currentColName]) {
-				if(item[currentColName]) {
-					colValue = (item[currentColName]).toLowerCase();
-				}
+				colValue = (item[currentColName]).toLowerCase();
 			}
 			/**
 			 * if atleast two characters inserted by user in each textbox then query the store
@@ -59,29 +57,27 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					/**
 					 * match filter string with the content of the column
 					 */
-					if(filterableTextBoxValue) {
-						if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
-							Show = true;
-						} else {
-							Show = false;
-						}
-
-						if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
-							console.log('checked...', item.id)
-							Show = true;
-						}
+					if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
+						Show = true;
+					} else {
+						Show = false;
 					}
+
 				} else {
 					/**
 					 * Logically "And" the result of each successfull match
 					 */
-					if(filterableTextBoxValue) {
-						Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
-					}
+					Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
 				}
 			} else {
-				//	console.log('empty textbox........................')
+					// console.log('empty textbox........................')
 			}
+
+			if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
+				// console.log('checked...', item.id)
+				Show = true;
+			}
+
 			/**
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
@@ -97,7 +93,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			return true;
 		},
 		addTextBoxToGridHeader: function(parentRow, fieldLabel) {
-			console.log('addTextBoxToGridHeader',parentRow)
+			// console.log('addTextBoxToGridHeader',parentRow)
 			var table = parentRow.children[0];
 			var tBody = table.children[0]
 			var parentDiv = tBody.children[0]
@@ -154,16 +150,16 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				var This = this;
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
-					console.log(This.selection,'This.selection')
+					// console.log(This.selection,'This.selection')
 					currentColName = This.filterColName;
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
-						indexOfSelectedItemsOfGridArr.push(parseInt(each))
+						indexOfSelectedItemsOfGridArr.push(each)
 					}
 					/**
 					 * get columns name from the id of the textbox selected
 					 */
-					console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
+					// console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
 					filterableTextBoxValue = this.get("value");
 					if(timeoutId) {
 						clearTimeout(timeoutId);
@@ -176,11 +172,14 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					 * @param  {integer} 300 is delay value in ms
 					 */
 					timeoutId = setTimeout(function() {
-						console.log('b4 refresh')
 						This.refresh();
-						console.log('after refresh')
 						for(each in indexOfSelectedItemsOfGridArr) {
-							This.select(indexOfSelectedItemsOfGridArr[each])
+							// console.log(each,'each')
+							var item = This.store.query({id:indexOfSelectedItemsOfGridArr[each]})[0];
+							// console.log(item,'item')
+							if(item) {
+								This.select(item)
+							}
 						}
 					}, 300);
 
@@ -196,7 +195,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			var parentDiv = tBody.children[0]
 			html.set(parentDiv,'');
 
-			console.log('button parent div', parentDiv, parentRow)
+			// console.log('button parent div', parentDiv, parentRow)
 			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectAll") == -1)
 			{
 				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectAll")	
@@ -260,18 +259,18 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        label:"Select Inverse",
 				        checked: false,
 				        onClick: function(){
-			        			console.log(This.store.data.length)
+			        			// console.log(This.store.data.length)
 			        		for(var i=0;i<This.store.data.length;i++)
 			        		{
 	//		        			dojo.query("select[name=limit]")[0];
 			        			if(This.isSelected(This.store.data[i]))
 			        			{
-			        				console.log('deselect',i)
+			        				// console.log('deselect',i)
 			        				This.deselect(This.store.data[i].id,0,false)
 			        			}
 			        			else
 			        			{
-			        				console.log('select',i)
+			        				// console.log('select',i)
 			        				This.select(This.store.data[i].id)
 			        			}
 			        		}
@@ -442,7 +441,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					column = subRow[i];
 					if(column.filterable) {
 						this.filterColName = column.id
-						console.log('filterable....')
+						// console.log('filterable....')
 						id = column.id + '-filterable';
 						extraClassName = column.className || (column.field && "field-" + column.field);
 						cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "") + (extraClassName ? "." + extraClassName : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
@@ -463,13 +462,13 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 							cell.rowSpan = rowSpan;
 						}
 						each(innerCell, column);
-						console.log('tr cell',cell)
+						// console.log('tr cell',cell)
 						// add the td to the tr at the end for better performance
 						tr.appendChild(cell);
 					}
 				}
 			}
-			console.log('createFilterRowCells', row, tr)
+			// console.log('createFilterRowCells', row, tr)
 			return row;
 		},
 		createButtonRowCells: function(tag, each, subRows) {
