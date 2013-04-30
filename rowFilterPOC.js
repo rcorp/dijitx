@@ -28,6 +28,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	var allWidgetsIdArr = [];
 	var grid = '';
 	var currentColName = '';
+	var filteredRows = [];
 	return declare(null, {
 		filterableTable: '',
 		/**
@@ -58,6 +59,10 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					 * match filter string with the content of the column
 					 */
 					if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
+						// console.log(filteredRows.indexOf(item))
+						if(filteredRows.indexOf(item) == -1) {
+							filteredRows.push(item)
+						}
 						Show = true;
 					} else {
 						Show = false;
@@ -72,9 +77,11 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			} else {
 					// console.log('empty textbox........................')
 			}
-
-			if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
-				// console.log('checked...', item.id)
+			if(indexOfSelectedItemsOfGridArr.indexOf(item.id.toString()) != -1) {
+				// console.log(filteredRows.indexOf(item))
+				if(filteredRows.indexOf(item) == -1) {
+					filteredRows.push(item)
+				}
 				Show = true;
 			}
 
@@ -82,11 +89,17 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
 			if(Show == true) {
+				// console.log(filteredRows.indexOf(item))
+				if(filteredRows.indexOf(item) == -1) {
+					filteredRows.push(item)
+				}
 				return true;
 			} else if(Show == false) {
 				return false;
 			}
-
+			// if(filteredRows.indexOf(item) == -1) {
+			// 	filteredRows.push(item)
+			// }
 			/**
 			 * initially show all the rows i.e when all filtered textboxes are empty or null
 			 */
@@ -151,6 +164,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					// console.log(This.selection,'This.selection')
+					filteredRows.splice(0);
 					currentColName = This.filterColName;
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
@@ -187,6 +201,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 
 			}
 
+		},
+		getFilteredRows : function () {
+			return filteredRows
 		},
 		addSelectAllButtonToGridHeader: function(parentRow) {
 
