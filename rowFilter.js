@@ -95,8 +95,11 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 		addTextBoxToGridHeader: function(table, column, indexCell, fieldLabel) {
 			//console.log('addTextBoxToGridHeader',table)
 //			parentRow = table.children[0];
-			row = table.children[0];
-			parentDiv = row.children[indexCell];
+			tbody = table.children[0];
+			// console.log('tbody is :', tbody)
+			row = tbody.children[0];
+			parentDiv = row.children[indexCell]
+			// console.log('row')
 			//console.log(row.children[indexCell].innerHTML)
 			html.set(row.children[indexCell],'')
 //			parentDiv.innerHTML = '';
