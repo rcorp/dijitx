@@ -24,7 +24,6 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	/**
 	 * @type {Object}
 	 */
-	var AllColumnTextBoxValue = {}
 
 	var filterableTextBoxValue = '';
 	var indexOfSelectedItemsOfGridArr = [];
@@ -33,9 +32,13 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	var headerTableNode = '';
 	var allWidgetsIdArr = [];
 	var grid = '';
+	var AllColumnTextBoxValue = '';
 	var currentColName = '';
 	return declare(null, {
 		filterableTable: '',
+		constructor: function() {
+			this.allColumnTextBoxValue = {}
+		},
 		/**
 		 * filter's rows of dGrid.
 		 * @param {object} item  single row of dGrid
@@ -94,7 +97,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 		},
 		addTextBoxToGridHeader: function(table, column, indexCell, fieldLabel) {
 			//console.log('addTextBoxToGridHeader',table)
-//			parentRow = table.children[0];
+			// parentRow = table.children[0];
 			tbody = table.children[0];
 			// console.log('tbody is :', tbody)
 			row = tbody.children[0];
@@ -102,8 +105,8 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			// console.log('row')
 			//console.log(row.children[indexCell].innerHTML)
 			html.set(row.children[indexCell],'')
-//			parentDiv.innerHTML = '';
-//			domConstruct.place(headerNode, headerNodeMainDiv, 'before');
+			// parentDiv.innerHTML = '';
+			// domConstruct.place(headerNode, headerNodeMainDiv, 'before');
 			/**
 			 * to set Delay between searches
 			 * @type {Number}
@@ -147,17 +150,17 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					 */
 					intermediateChanges: true
 				}, newDivToPlaceTextBox);
-
+				myTextBox.set('currentColName', column.id)
 				/**
 				 * store this
 				 * @type {Object}
 				 */
 				var This = this;
-				AllColumnTextBoxValue[column.id] = '';
+				This.allColumnTextBoxValue[column.id] = '';
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					//console.log(This.selection,'This.selection')
-					currentColName = This.filterColName;
+					currentColName = this.get('currentColName');
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
 						indexOfSelectedItemsOfGridArr.push(parseInt(each))
@@ -170,7 +173,8 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					/**
 					 * get columns name from the id of the textbox selected
 					 */
-					AllColumnTextBoxValue[this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0]] = this.get("value");
+					This.allColumnTextBoxValue[currentColName] = this.get("value");
+					AllColumnTextBoxValue = This.allColumnTextBoxValue;
 					if(timeoutId) {
 						clearTimeout(timeoutId);
 						timeoutId = null;
