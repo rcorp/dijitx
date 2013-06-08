@@ -600,9 +600,8 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				this.addSelectAllButtonToGridHeader(row);
 				this.addSelectInverseButtonToGridHeader(row);
 				this.addSelectNoneButtonToGridHeader(row);
-				domConstruct.place(row, this.filterableTable, 'after');
+				domConstruct.place(row, headerNode, 0);
 			}
-
 		},
 		createFilterRowCells: function(tag, each, subRows) {
 			var
