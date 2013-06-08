@@ -323,7 +323,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					currentColName = this.get('currentColName');
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
-						indexOfSelectedItemsOfGridArr.push(parseInt(each))
+						indexOfSelectedItemsOfGridArr.push(each)
 					}
 					/**
 					 * get columns name from the id of the textbox selected
@@ -391,12 +391,13 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        label:"Select All",
 				        onClick: function(){
-			        		for(var i=0;i<This.store.data.length;i++)
+				        	var rows = This.getFilteredRows();
+			        		for(var i=0;i<rows.length;i++)
 			        		{
 	//		        			dojo.query("select[name=limit]")[0];
-			        			if(!This.isSelected(This.store.data[i]))
+			        			if(!This.isSelected(rows[i]))
 			        			{
-			        				This.select(This.store.data[i].id)
+			        				This.select(rows[i].id)
 			        			}
 			        		}
 				        }
@@ -433,19 +434,19 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        label:"Select Inverse",
 				        checked: false,
 				        onClick: function(){
-			        			// console.log(This.store.data.length)
-			        		for(var i=0;i<This.store.data.length;i++)
+			        			// console.log(rows.length)
+			        		for(var i=0;i<rows.length;i++)
 			        		{
 	//		        			dojo.query("select[name=limit]")[0];
-			        			if(This.isSelected(This.store.data[i]))
+			        			if(This.isSelected(rows[i]))
 			        			{
 			        				// console.log('deselect',i)
-			        				This.deselect(This.store.data[i].id,0,false)
+			        				This.deselect(rows[i].id,0,false)
 			        			}
 			        			else
 			        			{
 			        				// console.log('select',i)
-			        				This.select(This.store.data[i].id)
+			        				This.select(rows[i].id)
 			        			}
 			        		}
 				        }
@@ -482,12 +483,12 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        label:"Select None",
 				        checked: false,
 				        onClick: function(){
-			        		for(var i=0;i<This.store.data.length;i++)
+			        		for(var i=0;i<rows.length;i++)
 			        		{
 	//		        			dojo.query("select[name=limit]")[0];
-			        			if(This.isSelected(This.store.data[i]))
+			        			if(This.isSelected(rows[i]))
 			        			{
-			        				This.deselect(This.store.data[i].id)
+			        				This.deselect(rows[i].id)
 			        			}
 			        		}
 				        }
