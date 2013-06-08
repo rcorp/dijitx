@@ -79,7 +79,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					//	//console.log('empty textbox........................')
 				}
 			}
-			if(indexOfSelectedItemsOfGridArr.indexOf(item.id.toString()) != -1) {
+			if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
 				// console.log(filteredRows.indexOf(item))
 				if(filteredRows.indexOf(item) == -1) {
 					filteredRows.push(item)
