@@ -62,6 +62,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 						 * match filter string with the content of the column
 						 */
 						if(colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1) {
+							if(filteredRows.indexOf(item) == -1) {
+								filteredRows.push(item)
+							}
 							Show = true;
 						} else {
 							Show = false;
@@ -76,11 +79,21 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					//	//console.log('empty textbox........................')
 				}
 			}
+			if(indexOfSelectedItemsOfGridArr.indexOf(item.id.toString()) != -1) {
+				// console.log(filteredRows.indexOf(item))
+				if(filteredRows.indexOf(item) == -1) {
+					filteredRows.push(item)
+				}
+				Show = true;
+			}
 			/**
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
 			//console.log('show', Show, item)
 			if(Show == true) {
+				if(filteredRows.indexOf(item) == -1) {
+					filteredRows.push(item)
+				}
 				return true;
 			} else if(Show == false) {
 				return false;
@@ -391,13 +404,14 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        label:"Select All",
 				        onClick: function(){
+				        	indexOfSelectedItemsOfGridArr.splice(0);
 				        	var rows = This.getFilteredRows();
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-	//		        			dojo.query("select[name=limit]")[0];
 			        			if(!This.isSelected(rows[i]))
 			        			{
-			        				This.select(rows[i].id)
+			        				This.select(rows[i].id);
+			        				indexOfSelectedItemsOfGridArr.push(rows[i].id)
 			        			}
 			        		}
 				        }
@@ -437,16 +451,17 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			        			// console.log(rows.length)
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-	//		        			dojo.query("select[name=limit]")[0];
+					        	indexOfSelectedItemsOfGridArr.splice(0);
 			        			if(This.isSelected(rows[i]))
 			        			{
 			        				// console.log('deselect',i)
-			        				This.deselect(rows[i].id,0,false)
+			        				This.deselect(rows[i].id,0,false);
 			        			}
 			        			else
 			        			{
 			        				// console.log('select',i)
-			        				This.select(rows[i].id)
+			        				This.select(rows[i].id);
+			        				indexOfSelectedItemsOfGridArr.push(rows[i].id);
 			        			}
 			        		}
 				        }
@@ -485,7 +500,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        onClick: function(){
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-	//		        			dojo.query("select[name=limit]")[0];
+					        	indexOfSelectedItemsOfGridArr.splice(0);
 			        			if(This.isSelected(rows[i]))
 			        			{
 			        				This.deselect(rows[i].id)
