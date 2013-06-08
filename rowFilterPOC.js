@@ -27,10 +27,14 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	var headerTableNode = '';
 	var allWidgetsIdArr = [];
 	var grid = '';
+	var AllColumnTextBoxValue = '';
 	var currentColName = '';
 	var filteredRows = [];
 	return declare(null, {
 		filterableTable: '',
+		constructor: function() {
+			this.allColumnTextBoxValue = {}
+		},
 		/**
 		 * filter's rows of dGrid.
 		 * @param {object} item  single row of dGrid
@@ -45,73 +49,224 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * @default {undefined}
 			 */
 			var Show = undefined;
-			// e.log('inside grird filter', grid, item[currentColName], currentColName)
-			var colValue = '';
-			if(item[currentColName]) {
-				colValue = (item[currentColName]).toLowerCase();
-			}
-			/**
-			 * if atleast two characters inserted by user in each textbox then query the store
-			 */
-			if(filterableTextBoxValue != "" && filterableTextBoxValue.length >= 0) {
-				if(Show == undefined) {
-					/**
-					 * match filter string with the content of the column
-					 */
-					if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
-						// console.log(filteredRows.indexOf(item))
-						if(filteredRows.indexOf(item) == -1) {
-							filteredRows.push(item)
+
+			for(each in AllColumnTextBoxValue) {
+				//console.log(each,'each', AllColumnTextBoxValue[each],item)
+				var colValue = (item[each.split('*****')[0]] + "").toLowerCase();
+				/**
+				 * if atleast two characters inserted by user in each textbox then query the store
+				 */
+				if(AllColumnTextBoxValue[each] != "" && AllColumnTextBoxValue[each].length >= 1) {
+					if(Show == undefined) {
+						/**
+						 * match filter string with the content of the column
+						 */
+						if(colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1) {
+							Show = true;
+						} else {
+							Show = false;
 						}
-						Show = true;
 					} else {
-						Show = false;
+						/**
+						 * Logically "And" the result of each successfull match
+						 */
+						Show = Show && colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1;
 					}
-
 				} else {
-					/**
-					 * Logically "And" the result of each successfull match
-					 */
-					Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
+					//	//console.log('empty textbox........................')
 				}
-			} else {
-					// console.log('empty textbox........................')
 			}
-			if(indexOfSelectedItemsOfGridArr.indexOf(item.id.toString()) != -1) {
-				// console.log(filteredRows.indexOf(item))
-				if(filteredRows.indexOf(item) == -1) {
-					filteredRows.push(item)
-				}
-				Show = true;
-			}
-
 			/**
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
+			//console.log('show', Show, item)
 			if(Show == true) {
-				// console.log(filteredRows.indexOf(item))
-				if(filteredRows.indexOf(item) == -1) {
-					filteredRows.push(item)
-				}
 				return true;
 			} else if(Show == false) {
 				return false;
 			}
-			// if(filteredRows.indexOf(item) == -1) {
-			// 	filteredRows.push(item)
-			// }
+
 			/**
 			 * initially show all the rows i.e when all filtered textboxes are empty or null
 			 */
 			return true;
 		},
-		addTextBoxToGridHeader: function(parentRow, fieldLabel) {
-			// console.log('addTextBoxToGridHeader',parentRow)
-			var table = parentRow.children[0];
-			var tBody = table.children[0]
-			var parentDiv = tBody.children[0]
-			html.set(parentDiv,'');
-//			domConstruct.place(headerNode, headerNodeMainDiv, 'before');
+		// setFilter: function(item, index, items) {
+		// 	/**
+		// 	 * check value of each textbox
+		// 	 * @type {boolean}
+		// 	 * @default {undefined}
+		// 	 */
+		// 	var Show = undefined;
+		// 	// e.log('inside grird filter', grid, item[currentColName], currentColName)
+		// 	var colValue = '';
+		// 	if(item[currentColName]) {
+		// 		colValue = (item[currentColName]).toLowerCase();
+		// 	}
+		// 	/**
+		// 	 * if atleast two characters inserted by user in each textbox then query the store
+		// 	 */
+		// 	if(filterableTextBoxValue != "" && filterableTextBoxValue.length >= 0) {
+		// 		if(Show == undefined) {
+		// 			/**
+		// 			 * match filter string with the content of the column
+		// 			 */
+		// 			if(colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1) {
+		// 				// console.log(filteredRows.indexOf(item))
+		// 				if(filteredRows.indexOf(item) == -1) {
+		// 					filteredRows.push(item)
+		// 				}
+		// 				Show = true;
+		// 			} else {
+		// 				Show = false;
+		// 			}
+
+		// 		} else {
+		// 			*
+		// 			 * Logically "And" the result of each successfull match
+					 
+		// 			Show = Show && colValue.indexOf(filterableTextBoxValue.toLowerCase()) != -1;
+		// 		}
+		// 	} else {
+		// 			// console.log('empty textbox........................')
+		// 	}
+		// 	if(indexOfSelectedItemsOfGridArr.indexOf(item.id.toString()) != -1) {
+		// 		// console.log(filteredRows.indexOf(item))
+		// 		if(filteredRows.indexOf(item) == -1) {
+		// 			filteredRows.push(item)
+		// 		}
+		// 		Show = true;
+		// 	}
+
+		// 	/**
+		// 	 * if all filtered string gets matched for each column only then show the particular row
+		// 	 */
+		// 	if(Show == true) {
+		// 		// console.log(filteredRows.indexOf(item))
+		// 		if(filteredRows.indexOf(item) == -1) {
+		// 			filteredRows.push(item)
+		// 		}
+		// 		return true;
+		// 	} else if(Show == false) {
+		// 		return false;
+		// 	}
+		// 	// if(filteredRows.indexOf(item) == -1) {
+		// 	// 	filteredRows.push(item)
+		// 	// }
+		// 	/**
+		// 	 * initially show all the rows i.e when all filtered textboxes are empty or null
+		// 	 */
+		// 	return true;
+		// },
+		// addTextBoxToGridHeader: function(parentRow, fieldLabel) {
+		// 	// console.log('addTextBoxToGridHeader',parentRow)
+		// 	var table = parentRow.children[0];
+		// 	var tBody = table.children[0]
+		// 	var parentDiv = tBody.children[0]
+		// 	// html.set(parentDiv,'');
+		// 	// domConstruct.place(headerNode, headerNodeMainDiv, 'before');
+		// 	/**
+		// 	 * to set Delay between searches
+		// 	 * @type {Number}
+		// 	 */
+		// 	var timeoutId = 0;
+
+		// 	/**
+		// 	 * set placeHolder for each textbox
+		// 	 * @type {String}
+		// 	 */
+		// 	var placeHolder = fieldLabel;
+
+		// 	if(allWidgetsIdArr.indexOf(this.id + "_textDiv_" + fieldLabel) == -1)
+		// 	{
+		// 		allWidgetsIdArr.push(this.id + "_textDiv_" + fieldLabel);
+		// 		/**
+		// 		 * create a a parent div for each filter textbox
+		// 		 * id of the textbox's parent div ="textDiv_" + <column name>
+		// 		 * @type {Object}
+		// 		 */
+		// 		var newDivToPlaceTextBox = '';
+		// 		if(dom.byId(this.id + "_textDiv_" + fieldLabel) == undefined ||  dom.byId(this.id + "_textDiv_" + fieldLabel) == null)
+		// 		{
+		// 			newDivToPlaceTextBox = domConstruct.create("div", {
+		// 				id: this.id + "_textDiv_" + fieldLabel,
+		// 			}, parentDiv)				
+		// 		}
+		// 		/**
+		// 		 * create filter textbox
+		// 		 * @type {dijit}
+		// 		 */
+		// 		var myTextBox = new TextBox({
+		// 			/**
+		// 			 * name of the textbox="filter_" + <column name>
+		// 			 */
+		// 			name: this.id + "_filter_textDiv_" + fieldLabel,
+		// 			value: "",
+		// 			placeHolder: placeHolder,
+		// 			/**
+		// 			 * event on each change
+		// 			 */
+		// 			intermediateChanges: true
+		// 		}, newDivToPlaceTextBox);
+
+		// 		/**
+		// 		 * store this
+		// 		 * @type {Object}
+		// 		 */
+		// 		var This = this;
+
+		// 		myTextBox.watch("value", function(name, oldValue, newValue) {
+		// 			// console.log(This.selection,'This.selection')
+		// 			filteredRows.splice(0);
+		// 			currentColName = This.filterColName;
+		// 			indexOfSelectedItemsOfGridArr.splice(0);
+		// 			for(each in This.selection) {
+		// 				indexOfSelectedItemsOfGridArr.push(each)
+		// 			}
+		// 			/**
+		// 			 * get columns name from the id of the textbox selected
+		// 			 */
+		// 			// console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
+		// 			filterableTextBoxValue = this.get("value");
+		// 			if(timeoutId) {
+		// 				clearTimeout(timeoutId);
+		// 				timeoutId = null;
+		// 			};
+
+		// 			/**
+		// 			 * add delay
+		// 			 * @param  {function} function to set delay
+		// 			 * @param  {integer} 300 is delay value in ms
+		// 			 */
+		// 			timeoutId = setTimeout(function() {
+		// 				This.refresh();
+		// 				for(each in indexOfSelectedItemsOfGridArr) {
+		// 					// console.log(each,'each')
+		// 					var item = This.store.query({id:indexOfSelectedItemsOfGridArr[each]})[0];
+		// 					// console.log(item,'item')
+		// 					if(item) {
+		// 						This.select(item)
+		// 					}
+		// 				}
+		// 			}, 300);
+
+		// 		});
+
+		// 	}
+
+		// },
+		addTextBoxToGridHeader: function(table, column, indexCell, fieldLabel) {
+			//console.log('addTextBoxToGridHeader',table)
+			// parentRow = table.children[0];
+			tbody = table.children[0];
+			// console.log('tbody is :', tbody)
+			row = tbody.children[0];
+			parentDiv = row.children[indexCell]
+			// console.log('row')
+			//console.log(row.children[indexCell].innerHTML)
+			html.set(row.children[indexCell],'')
+			// parentDiv.innerHTML = '';
+			// domConstruct.place(headerNode, headerNodeMainDiv, 'before');
 			/**
 			 * to set Delay between searches
 			 * @type {Number}
@@ -122,21 +277,21 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * set placeHolder for each textbox
 			 * @type {String}
 			 */
-			var placeHolder = fieldLabel;
+			var placeHolder = 'Search By ' + column.id;
 
-			if(allWidgetsIdArr.indexOf(this.id + "_textDiv_" + fieldLabel) == -1)
+			if(allWidgetsIdArr.indexOf(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == -1)
 			{
-				allWidgetsIdArr.push(this.id + "_textDiv_" + fieldLabel);
+				allWidgetsIdArr.push(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel);
 				/**
 				 * create a a parent div for each filter textbox
 				 * id of the textbox's parent div ="textDiv_" + <column name>
 				 * @type {Object}
 				 */
 				var newDivToPlaceTextBox = '';
-				if(dom.byId(this.id + "_textDiv_" + fieldLabel) == undefined ||  dom.byId(this.id + "_textDiv_" + fieldLabel) == null)
+				if(dom.byId(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == undefined ||  dom.byId(this.id + "*****_textDiv_" + fieldLabel) == null)
 				{
 					newDivToPlaceTextBox = domConstruct.create("div", {
-						id: this.id + "_textDiv_" + fieldLabel,
+						id: this.id + '_' + column.id + "*****_textDiv_" + fieldLabel,
 					}, parentDiv)				
 				}
 				/**
@@ -147,7 +302,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					/**
 					 * name of the textbox="filter_" + <column name>
 					 */
-					name: this.id + "_filter_textDiv_" + fieldLabel,
+					name: this.id + '_' + column.id + "_filter_textDiv_" + fieldLabel,
 					value: "",
 					placeHolder: placeHolder,
 					/**
@@ -155,26 +310,31 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					 */
 					intermediateChanges: true
 				}, newDivToPlaceTextBox);
-
+				myTextBox.set('currentColName', column.id)
 				/**
 				 * store this
 				 * @type {Object}
 				 */
 				var This = this;
+				This.allColumnTextBoxValue[column.id] = '';
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
-					// console.log(This.selection,'This.selection')
-					filteredRows.splice(0);
-					currentColName = This.filterColName;
+					//console.log(This.selection,'This.selection')
+					currentColName = this.get('currentColName');
 					indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
-						indexOfSelectedItemsOfGridArr.push(each)
+						indexOfSelectedItemsOfGridArr.push(parseInt(each))
 					}
 					/**
 					 * get columns name from the id of the textbox selected
 					 */
-					// console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
-					filterableTextBoxValue = this.get("value");
+					// //console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
+					// filterableTextBoxValue = this.get("value");
+					/**
+					 * get columns name from the id of the textbox selected
+					 */
+					This.allColumnTextBoxValue[currentColName] = this.get("value");
+					AllColumnTextBoxValue = This.allColumnTextBoxValue;
 					if(timeoutId) {
 						clearTimeout(timeoutId);
 						timeoutId = null;
@@ -186,14 +346,11 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					 * @param  {integer} 300 is delay value in ms
 					 */
 					timeoutId = setTimeout(function() {
+						//console.log('b4 refresh')
 						This.refresh();
+						//console.log('after refresh')
 						for(each in indexOfSelectedItemsOfGridArr) {
-							// console.log(each,'each')
-							var item = This.store.query({id:indexOfSelectedItemsOfGridArr[each]})[0];
-							// console.log(item,'item')
-							if(item) {
-								This.select(item)
-							}
+							This.select(indexOfSelectedItemsOfGridArr[each])
 						}
 					}, 300);
 
@@ -389,7 +546,13 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			 * add filter textbox to grid
 			 */
 //			this.addTextBoxToGridHeader(grid.filterFieldLabel);
-			this.addTextBoxToGridHeader(row, grid.filterFieldLabel);
+			// this.addTextBoxToGridHeader(row, grid.filterFieldLabel);
+			var indexCell = 0;
+			for(each in this.columns) {
+				//console.log(this.columns,each)
+				this.addTextBoxToGridHeader(row, this.columns[each], indexCell, each);
+				indexCell++;
+			}
 			if(this.advanceSelection)
 			{
 				row = this.createButtonRowCells("th", function(th, column) {
@@ -456,7 +619,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				for(i = 0, l = subRow.length; i < l; i++) {
 					// iterate through the columns
 					column = subRow[i];
-					if(column.filterable) {
+					if(column) {
 						this.filterColName = column.id
 						// console.log('filterable....')
 						id = column.id + '-filterable';
