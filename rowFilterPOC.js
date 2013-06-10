@@ -248,7 +248,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			        		{
 			        			if(!This.isSelected(rows[i]))
 			        			{
-			        				This.select(rows[i].id);
+			        				This.select(rows[i]);
 			        				indexOfSelectedItemsOfGridArr.push(rows[i].id)
 			        			}
 			        		}
@@ -297,12 +297,12 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			        			if(This.isSelected(rows[i]))
 			        			{
 			        				// console.log('deselect',i)
-			        				This.deselect(rows[i].id,0,false);
+			        				This.deselect(rows[i],0,false);
 			        			}
 			        			else
 			        			{
 			        				// console.log('select',i)
-			        				This.select(rows[i].id);
+			        				This.select(rows[i]);
 			        				indexOfSelectedItemsOfGridArr.push(rows[i].id);
 			        			}
 			        		}
@@ -349,7 +349,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					        	indexOfSelectedItemsOfGridArr.splice(0);
 			        			if(This.isSelected(rows[i]))
 			        			{
-			        				This.deselect(rows[i].id)
+			        				This.deselect(rows[i])
 			        			}
 			        		}
 				        }
