@@ -98,11 +98,6 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			} else if(Show == false) {
 				return false;
 			}
-
-			if(filteredRows.indexOf(item) == -1) {
-				filteredRows.push(item)
-			}
-
 			/**
 			 * initially show all the rows i.e when all filtered textboxes are empty or null
 			 */
@@ -246,6 +241,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        onClick: function(){
 				        	indexOfSelectedItemsOfGridArr.splice(0);
 				        	var rows = This.getFilteredRows();
+				        	if(rows.length == 0) {
+				        		rows = This.store.data;
+				        	}
 			        		for(var i=0;i<rows.length;i++)
 			        		{
 			        			if(!This.isSelected(rows[i]))
@@ -290,6 +288,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        onClick: function(){
 			        			// console.log(rows.length)
 				        	var rows = This.getFilteredRows();
+				        	if(rows.length == 0) {
+				        		rows = This.store.data;
+				        	}
 			        		for(var i=0;i<rows.length;i++)
 			        		{
 					        	indexOfSelectedItemsOfGridArr.splice(0);
@@ -340,6 +341,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        onClick: function(){
 				        	var rows = This.getFilteredRows();
+				        	if(rows.length == 0) {
+				        		rows = This.store.data;
+				        	}
 			        		for(var i=0;i<rows.length;i++)
 			        		{
 					        	indexOfSelectedItemsOfGridArr.splice(0);
