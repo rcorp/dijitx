@@ -99,6 +99,10 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				return false;
 			}
 
+			if(filteredRows.indexOf(item) == -1) {
+				filteredRows.push(item)
+			}
+
 			/**
 			 * initially show all the rows i.e when all filtered textboxes are empty or null
 			 */
@@ -285,6 +289,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        onClick: function(){
 			        			// console.log(rows.length)
+				        	var rows = This.getFilteredRows();
 			        		for(var i=0;i<rows.length;i++)
 			        		{
 					        	indexOfSelectedItemsOfGridArr.splice(0);
@@ -334,6 +339,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        label:"Select None",
 				        checked: false,
 				        onClick: function(){
+				        	var rows = This.getFilteredRows();
 			        		for(var i=0;i<rows.length;i++)
 			        		{
 					        	indexOfSelectedItemsOfGridArr.splice(0);
