@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html >
+<head>
+
+	<link rel="stylesheet" href="/dojo-release/dijit/themes/claro/claro.css">
+	<script>dojoConfig = {parseOnLoad: true}</script>
+	<script src='/dojo-release/dojo/dojo.js'></script>
+	
+	<script>
+	require(["dojo/dom", "dojo/window", "dijitx/widget/MultiTagBox", "dojo/dnd/Moveable", "dojo/dnd/move", "dojo/query", "dojo/on", "dojo/dom-construct", "dojo/store/Memory", "dijit/form/ComboBox", "dojo/domReady!"
+		], function(dom, win, MultiTagBox, Moveable, move, query, on, domConstruct, Memory, ComboBox){
+			var stateStore = new Memory({
+				data: [
+				{name:"Gaurav Sir", id:"GR"},
+				{name:"Anshuman", id:"AM"},
+				{name:"Nitin", id:"NM"},
+				{name:"Harpreet", id:"HS"},
+				{name:"Abhineet", id:"AV"},
+				{name:"Anuj", id:"Ak"},
+				{name:"Kuljeet", id:"KS"},
+				{name:"Hariom", id:"HG"},
+				{name:"Mehak", id:"MA"},
+				{name:"Vinay", id:"VV"},
+				{name:"Vaibhav", id:"VJ"}
+				]
+			});
+
+			var comboBox = new MultiTagBox({
+				id: "stateSelect",
+				hasDownArrow: false,
+				name: "state",
+				store: stateStore,
+				searchAttr: "name"
+			}).placeAt(dom.byId('fb-holder'));
+
+		});
+
+
+
+	</script>
+</head>
+<body class="claro">
+	<div id="fb-holder"></div>   
+</body>
+</html>
