@@ -21,6 +21,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 			},
 
 			input: '',
+			widgetId:'itemHolder',
 
 			buildRendering: function(){
 				var This=this;
@@ -29,12 +30,13 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					style: 'width:242px; border: 1px solid #b5bcc7;'
 				});
 				this.itemHolder = domConstruct.create('div', {
-					id:'itemHolder',
+					id: this.widgetId,
 					style: 'background-color: whitesmoke; height: 100px; width: 242px; position: relative;'
 				}, this.domNode);
 
 			},
 			_setValueAttr: function(value, setValueOfMultiTagBox){
+				var This = this;
 
 				var getUniqueIdArray = query('.selected-item')
 				var getUniqueIdArrayLength = getUniqueIdArray.length;
@@ -52,7 +54,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+incrementedUniqueIdNumber,
 						innerHTML: value
-					},'itemHolder');
+					},This.widgetId);
 
 					var destroyButton = domConstruct.create('div',{
 						'class': 'itm-dstry',
@@ -77,7 +79,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+unique,
 						innerHTML: value
-					},'itemHolder');
+					},This.widgetId);
 
 					var destroyButton = domConstruct.create('div',{
 						'class': 'itm-dstry',
@@ -121,7 +123,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+incrementedUniqueIdNumber,
 								innerHTML: this.value
-							},'itemHolder');
+							},This.widgetId);
 
 							var destroyButton = domConstruct.create('div',{
 								'class': 'itm-dstry',
@@ -145,7 +147,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+unique,
 								innerHTML: this.value
-							},'itemHolder');
+							},This.widgetId);
 
 							var destroyButton = domConstruct.create('div',{
 								'class': 'itm-dstry',
