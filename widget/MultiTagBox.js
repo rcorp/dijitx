@@ -3,6 +3,8 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 		return declare('dijitx.widget.MultiTagBox', [_WidgetBase, _TemplatedMixin], {
 
 			postion: 'above',
+			input: '',
+			widgetId:'itemHolder',
 			get: function(getValueOfMultiTagBox){
 				var selectedValue;
 				var arrayOfValuesSelected = [];
@@ -20,8 +22,10 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 				}
 			},
 
-			input: '',
-			widgetId:'itemHolder',
+			reset: function(resetTheWidget){
+				this.input.reset()
+				this.itemHolder.innerHTML = '';
+			},
 
 			buildRendering: function(){
 				var This=this;
