@@ -1,58 +1,173 @@
-define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query", "dojo/store/Memory", "dijit/form/FilteringSelect", "dojo/text!dijit/form/templates/DropDownBox.html"], 
-	function(declare, dom, domConstruct, on, query, Memory, FilteringSelect, template){
-		return declare('dijitx.widget.MultiTagBox', FilteringSelect, {
+define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query"], 
+	function(declare, _WidgetBase, _TemplatedMixin, dom, domConstruct, on, query){
+		return declare('dijitx.widget.MultiTagBox', [_WidgetBase, _TemplatedMixin], {
 
 			postion: 'above',
-			//templateString: template + '<div id="itemHolder"></div>'
+			get: function(getValueOfMultiTagBox){
+				var selectedValue;
+				var arrayOfValuesSelected = [];
+				if(query(".selected-item").length != 0){
+					var selectedValueArr = query(".selected-item");
+					var selectedValueLength = selectedValueArr.length;
+
+					for(var i=0; i<selectedValueLength; i++){
+						selectedValue = selectedValueArr[i].value;
+						arrayOfValuesSelected.push(selectedValue);
+					}
+					var stringOfValuesSelected = arrayOfValuesSelected.join(',');
+					return stringOfValuesSelected;
+
+				}
+			},
+
+			input: '',
+
 			buildRendering: function(){
-				this.inherited(arguments);
-				//console.log(this)
-				var itemHolder = domConstruct.create('div', {
+				var This=this;
+				this.domNode = domConstruct.create('div', {
+					id:'widgetHolder',
+					style: 'width:242px; border: 1px solid #b5bcc7;'
+				});
+				this.itemHolder = domConstruct.create('div', {
 					id:'itemHolder',
-					style: 'background-color: whitesmoke; height: 100px; width: 100%; position: relative;'
+					style: 'background-color: whitesmoke; height: 100px; width: 242px; position: relative;'
 				}, this.domNode);
 
-				if(this.postion = 'above'){
-					domConstruct.place(itemHolder, this.domNode, 'first');
-				}else{
-					domConstruct.place(itemHolder, this.domNode, 'last');
+			},
+			_setValueAttr: function(value, setValueOfMultiTagBox){
+
+				var getUniqueIdArray = query('.selected-item')
+				var getUniqueIdArrayLength = getUniqueIdArray.length;
+				if(getUniqueIdArrayLength != 0){
+					var uniqueIdNumberStore = [];
+					for(var i=0; i<getUniqueIdArrayLength; i++){
+						var getUniqueIdNumber = getUniqueIdArray[i].id.split('_')[1];
+						uniqueIdNumberStore.push(getUniqueIdNumber);
+					};
+					var getMaxUniqueIdNumber = Math.max.apply(Math, uniqueIdNumberStore);
+					var incrementedUniqueIdNumber = parseInt(getMaxUniqueIdNumber)+1;
+					var selectedName = domConstruct.create('div', {
+						'class':'selected-item',
+						value: value,
+						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
+						id:'selected-item-id_'+incrementedUniqueIdNumber,
+						innerHTML: value
+					},'itemHolder');
+
+					var destroyButton = domConstruct.create('div',{
+						'class': 'itm-dstry',
+						style: 'position: relative; float: right; margin-top: -6px; margin-right: 3px; font-size: 18px; cursor: pointer;',
+						id: 'itm-dstry-id_'+incrementedUniqueIdNumber,
+						innerHTML: '<b>x</b>'
+					},selectedName);
+
+					query(".itm-dstry").on('click',function(){
+						var id = this.id.split('_')[1];
+						console.log('id',id)
+						var slectedNameId = dom.byId('selected-item-id_'+id);
+						domConstruct.destroy(slectedNameId)
+					});
+
 				}
+				else{
+					var unique = 0;
+					var selectedName = domConstruct.create('div', {
+						'class':'selected-item',
+						value: value,
+						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
+						id:'selected-item-id_'+unique,
+						innerHTML: value
+					},'itemHolder');
 
-				var unique=0;
+					var destroyButton = domConstruct.create('div',{
+						'class': 'itm-dstry',
+						style: 'position: relative; float: right; margin-top: -6px; margin-right: 3px; font-size: 18px; cursor: pointer;',
+						id: 'itm-dstry-id_'+unique,
+						innerHTML: '<b>x</b>'
+					},selectedName);
+					
+					query(".itm-dstry").on('click',function(){
+						var id = this.id.split('_')[1];
+						console.log('id',id)
+						var slectedNameId = dom.byId('selected-item-id_'+id);
+						domConstruct.destroy(slectedNameId)
+					});
+					unique++;
 
-				on(this, 'change', function(){
-					var val = dijit.byId('stateSelect').value.trim()
-					if(val==""){
+			};
+		},
 
-					}else{
-						var selectedName = domConstruct.create('div', {
-							'class':'selected-item',
-							style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
-							id:'selected-item-id_'+unique,
-							innerHTML: this.displayedValue
-						},'itemHolder');
-
-						var destroyButton = domConstruct.create('div',{
-							'class': 'itm-dstry',
-							style: 'position: relative; float: right; margin-top: -6px; margin-right: 3px; font-size: 18px; cursor: pointer;',
-							id: 'itm-dstry-id_'+unique,
-							innerHTML: '<b>x</b>'
-						},selectedName);
-						dijit.byId('stateSelect').set('value', '');
-
-						query(".itm-dstry").on('click',function(){
-							var id = this.id.split('_')[1]
-							var slectedNameId = dom.byId('selected-item-id_'+id);
-							domConstruct.destroy(slectedNameId)
-						})
-
-						unique++;
+			postCreate: function(){
+				var This=this;
+				this.input.placeAt(this.domNode)
+				on(this.input, 'change', function(){
+					if(this.value == ""){
 
 					}
-					
+					else{
+						var getUniqueIdArray = query('.selected-item')
+						var getUniqueIdArrayLength = getUniqueIdArray.length;
+						if(getUniqueIdArrayLength != 0){
+							var uniqueIdNumberStore = [];
+							for(var i=0; i<getUniqueIdArrayLength; i++){
+								var getUniqueIdNumber = getUniqueIdArray[i].id.split('_')[1];
+								uniqueIdNumberStore.push(getUniqueIdNumber);
+							};
+							var getMaxUniqueIdNumber = Math.max.apply(Math, uniqueIdNumberStore);
+							var incrementedUniqueIdNumber = parseInt(getMaxUniqueIdNumber)+1;
+							var selectedName = domConstruct.create('div', {
+								'class':'selected-item',
+								value: this.value,
+								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
+								id:'selected-item-id_'+incrementedUniqueIdNumber,
+								innerHTML: this.value
+							},'itemHolder');
 
-				})
+							var destroyButton = domConstruct.create('div',{
+								'class': 'itm-dstry',
+								style: 'position: relative; float: right; margin-top: -6px; margin-right: 3px; font-size: 18px; cursor: pointer;',
+								id: 'itm-dstry-id_'+incrementedUniqueIdNumber,
+								innerHTML: '<b>x</b>'
+							},selectedName);
 
-}
+							query(".itm-dstry").on('click',function(){
+								var id = this.id.split('_')[1];
+								var slectedNameId = dom.byId('selected-item-id_'+id);
+								domConstruct.destroy(slectedNameId)
+							});
+
+						} 
+						else{
+							var unique = 0;
+							var selectedName = domConstruct.create('div', {
+								'class':'selected-item',
+								value: this.value,
+								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
+								id:'selected-item-id_'+unique,
+								innerHTML: this.value
+							},'itemHolder');
+
+							var destroyButton = domConstruct.create('div',{
+								'class': 'itm-dstry',
+								style: 'position: relative; float: right; margin-top: -6px; margin-right: 3px; font-size: 18px; cursor: pointer;',
+								id: 'itm-dstry-id_'+unique,
+								innerHTML: '<b>x</b>'
+							},selectedName);
+
+							query(".itm-dstry").on('click',function(){
+								var id = this.id.split('_')[1];
+								var slectedNameId = dom.byId('selected-item-id_'+id);
+								domConstruct.destroy(slectedNameId)
+							});
+							unique++;
+
+						};
+
+					}
+				
+
+			});
+
+		}
+	});
 });
-})

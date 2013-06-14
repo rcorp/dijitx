@@ -7,30 +7,34 @@
 	<script src='/dojo-release/dojo/dojo.js'></script>
 	
 	<script>
-	require(["dojo/dom", "dojo/window", "dijitx/widget/MultiTagBox", "dojo/dnd/Moveable", "dojo/dnd/move", "dojo/query", "dojo/on", "dojo/dom-construct", "dojo/store/Memory", "dijit/form/ComboBox", "dojo/domReady!"
-		], function(dom, win, MultiTagBox, Moveable, move, query, on, domConstruct, Memory, ComboBox){
+	require(["dojo/dom", "dojo/window", "dijitx/widget/MultiTagBox", "dojo/dnd/Moveable", "dojo/dnd/move", "dojo/query", "dojo/on", "dojo/dom-construct", "dojo/store/Memory", "dijit/form/FilteringSelect", "dojo/domReady!"], 
+		function(dom, win, MultiTagBox, Moveable, move, query, on, domConstruct, Memory, FilteringSelect){
 			var stateStore = new Memory({
 				data: [
-				{name:"Gaurav Sir", id:"GR"},
-				{name:"Anshuman", id:"AM"},
-				{name:"Nitin", id:"NM"},
-				{name:"Harpreet", id:"HS"},
-				{name:"Abhineet", id:"AV"},
-				{name:"Anuj", id:"Ak"},
-				{name:"Kuljeet", id:"KS"},
-				{name:"Hariom", id:"HG"},
-				{name:"Mehak", id:"MA"},
-				{name:"Vinay", id:"VV"},
-				{name:"Vaibhav", id:"VJ"}
+				{name:"Gaurav Sir", id:"Gaurav Sir"},
+				{name:"Anshuman", id:"Anshuman"},
+				{name:"Nitin", id:"Nitin"},
+				{name:"Harpreet", id:"Harpreet"},
+				{name:"Abhineet", id:"Abhineet"},
+				{name:"Anuj", id:"Anuj"},
+				{name:"Kuljeet", id:"Kuljeet"},
+				{name:"Hariom", id:"Hariom"},
+				{name:"Mehak", id:"Mehak"},
+				{name:"Vinay", id:"Vinay"},
+				{name:"Vaibhav", id:"Vaibhav"}
 				]
 			});
 
-			var comboBox = new MultiTagBox({
-				id: "stateSelect",
-				hasDownArrow: false,
-				name: "state",
+			var filteringSelect = new FilteringSelect({
 				store: stateStore,
-				searchAttr: "name"
+
+			});
+
+			var multiTagBox = new MultiTagBox({
+				id: "stateSelect",
+				 input: filteringSelect
+				// name: "state",
+				// searchAttr: "name"
 			}).placeAt(dom.byId('fb-holder'));
 
 		});
