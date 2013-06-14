@@ -24,19 +24,46 @@
 				{name:"Vaibhav", id:"Vaibhav"}
 				]
 			});
+			var stateStore1 = new Memory({
+				data: [
+				{name:"Gaurav Sir", id:"Gaurav Sir"},
+				{name:"Anshuman", id:"Anshuman"},
+				{name:"Nitin", id:"Nitin"},
+				{name:"Harpreet", id:"Harpreet"},
+				{name:"Abhineet", id:"Abhineet"},
+				{name:"Anuj", id:"Anuj"},
+				{name:"Kuljeet", id:"Kuljeet"},
+				{name:"Hariom", id:"Hariom"},
+				{name:"Mehak", id:"Mehak"},
+				{name:"Vinay", id:"Vinay"},
+				{name:"Vaibhav", id:"Vaibhav"}
+				]
+			});
 
 			var filteringSelect = new FilteringSelect({
-				store: stateStore,
+				store: stateStore
 
 			});
 
-			var multiTagBox = new MultiTagBox({
+			var filteringSelect1 = new FilteringSelect({
+				store: stateStore1
+			})
+
+			window.multiTagBox = new MultiTagBox({
 				id: "stateSelect",
 				widgetId: 'xyz',
 				 input: filteringSelect
 				// name: "state",
 				// searchAttr: "name"
 			}).placeAt(dom.byId('fb-holder'));
+
+			window.multiTagBox1 = new MultiTagBox({
+				id: "stateSelect1",
+				widgetId: 'xyz1',
+				 input: filteringSelect1
+				// name: "state",
+				// searchAttr: "name"
+			}).placeAt(dom.byId('fb-holder1'));
 
 		});
 
@@ -46,5 +73,6 @@
 </head>
 <body class="claro">
 	<div id="fb-holder"></div>   
+	<div id="fb-holder1"></div> 
 </body>
 </html>

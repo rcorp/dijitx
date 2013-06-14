@@ -1,25 +1,28 @@
-define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query"], 
-	function(declare, _WidgetBase, _TemplatedMixin, dom, domConstruct, on, query){
+define(["dojo/_base/declare", "dojo/dom-attr", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query"], 
+	function(declare, domAttr, _WidgetBase, _TemplatedMixin, dom, domConstruct, on, query){
 		return declare('dijitx.widget.MultiTagBox', [_WidgetBase, _TemplatedMixin], {
 
 			postion: 'above',
 			input: '',
 			widgetId:'itemHolder',
 			get: function(getValueOfMultiTagBox){
-				var selectedValue;
+				// console.log(this.itemHolder);
+				// console.log(this.itemHolder.childNodes.length)
+				
+				var nodeChild = this.itemHolder.children;
+				var nodeChildLength = nodeChild.length;
+				console.log(nodeChildLength);
 				var arrayOfValuesSelected = [];
-				if(query(".selected-item").length != 0){
-					var selectedValueArr = query(".selected-item");
-					var selectedValueLength = selectedValueArr.length;
-
-					for(var i=0; i<selectedValueLength; i++){
-						selectedValue = selectedValueArr[i].value;
-						arrayOfValuesSelected.push(selectedValue);
-					}
-					var stringOfValuesSelected = arrayOfValuesSelected.join(',');
-					return stringOfValuesSelected;
-
+				var selectedValue;
+				console.log(nodeChild)
+				for(var i=0; i<nodeChildLength; i++){
+					selectedValue = domAttr.get(nodeChild[i], 'custom-value');
+					arrayOfValuesSelected.push(selectedValue);
+					
 				}
+				console.log(arrayOfValuesSelected);
+				var stringOfValuesSelected = arrayOfValuesSelected.join(',');
+				return stringOfValuesSelected;
 			},
 
 			reset: function(resetTheWidget){
@@ -55,6 +58,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					var selectedName = domConstruct.create('div', {
 						'class':'selected-item',
 						value: value,
+						'custom-value': value,
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+incrementedUniqueIdNumber,
 						innerHTML: value
@@ -80,6 +84,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					var selectedName = domConstruct.create('div', {
 						'class':'selected-item',
 						value: value,
+						'custom-value': value,
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+unique,
 						innerHTML: value
@@ -124,6 +129,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 							var selectedName = domConstruct.create('div', {
 								'class':'selected-item',
 								value: this.value,
+								'custom-value': this.value,
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+incrementedUniqueIdNumber,
 								innerHTML: this.value
@@ -148,6 +154,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 							var selectedName = domConstruct.create('div', {
 								'class':'selected-item',
 								value: this.value,
+								'custom-value': this.value,
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+unique,
 								innerHTML: this.value
