@@ -1,25 +1,22 @@
-define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query"], 
-	function(declare, _WidgetBase, _TemplatedMixin, dom, domConstruct, on, query){
+define(["dojo/_base/declare", "dojo/dom-attr", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/query"], 
+	function(declare, domAttr, _WidgetBase, _TemplatedMixin, dom, domConstruct, on, query){
 		return declare('dijitx.widget.MultiTagBox', [_WidgetBase, _TemplatedMixin], {
 
 			postion: 'above',
 			input: '',
-			widgetId:'itemHolder',
+			//widgetId:'itemHolder',
 			get: function(getValueOfMultiTagBox){
-				var selectedValue;
+				var nodeChild = this.itemHolder.children;
+				var nodeChildLength = nodeChild.length;
 				var arrayOfValuesSelected = [];
-				if(query(".selected-item").length != 0){
-					var selectedValueArr = query(".selected-item");
-					var selectedValueLength = selectedValueArr.length;
-
-					for(var i=0; i<selectedValueLength; i++){
-						selectedValue = selectedValueArr[i].value;
-						arrayOfValuesSelected.push(selectedValue);
-					}
-					var stringOfValuesSelected = arrayOfValuesSelected.join(',');
-					return stringOfValuesSelected;
-
+				var selectedValue;
+				for(var i=0; i<nodeChildLength; i++){
+					selectedValue = domAttr.get(nodeChild[i], 'custom-value');
+					arrayOfValuesSelected.push(selectedValue);
+					
 				}
+				var stringOfValuesSelected = arrayOfValuesSelected.join(',');
+				return stringOfValuesSelected;
 			},
 
 			reset: function(resetTheWidget){
@@ -34,7 +31,7 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					style: 'width:242px; border: 1px solid #b5bcc7;'
 				});
 				this.itemHolder = domConstruct.create('div', {
-					id: this.widgetId,
+					//id: this.widgetId,
 					style: 'background-color: whitesmoke; height: 100px; width: 242px; position: relative;'
 				}, this.domNode);
 
@@ -55,10 +52,11 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					var selectedName = domConstruct.create('div', {
 						'class':'selected-item',
 						value: value,
+						'custom-value': value,
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+incrementedUniqueIdNumber,
 						innerHTML: value
-					},This.widgetId);
+					},This.itemHolder);
 
 					var destroyButton = domConstruct.create('div',{
 						'class': 'itm-dstry',
@@ -69,7 +67,6 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 
 					query(".itm-dstry").on('click',function(){
 						var id = this.id.split('_')[1];
-						console.log('id',id)
 						var slectedNameId = dom.byId('selected-item-id_'+id);
 						domConstruct.destroy(slectedNameId)
 					});
@@ -80,10 +77,11 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					var selectedName = domConstruct.create('div', {
 						'class':'selected-item',
 						value: value,
+						'custom-value': value,
 						style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 						id:'selected-item-id_'+unique,
 						innerHTML: value
-					},This.widgetId);
+					},This.itemHolder);
 
 					var destroyButton = domConstruct.create('div',{
 						'class': 'itm-dstry',
@@ -94,7 +92,6 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 					
 					query(".itm-dstry").on('click',function(){
 						var id = this.id.split('_')[1];
-						console.log('id',id)
 						var slectedNameId = dom.byId('selected-item-id_'+id);
 						domConstruct.destroy(slectedNameId)
 					});
@@ -124,10 +121,11 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 							var selectedName = domConstruct.create('div', {
 								'class':'selected-item',
 								value: this.value,
+								'custom-value': this.value,
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+incrementedUniqueIdNumber,
 								innerHTML: this.value
-							},This.widgetId);
+							},This.itemHolder);
 
 							var destroyButton = domConstruct.create('div',{
 								'class': 'itm-dstry',
@@ -148,10 +146,11 @@ define(["dojo/_base/declare", "dijit/_TemplatedMixin", "dijit/_WidgetBase", "doj
 							var selectedName = domConstruct.create('div', {
 								'class':'selected-item',
 								value: this.value,
+								'custom-value': this.value,
 								style: 'background-color: lightblue; height: 21px; width: 80px; float: right; margin-top: -0.5px; margin-right: 10px; position: relative;',
 								id:'selected-item-id_'+unique,
 								innerHTML: this.value
-							},This.widgetId);
+							},This.itemHolder);
 
 							var destroyButton = domConstruct.create('div',{
 								'class': 'itm-dstry',
