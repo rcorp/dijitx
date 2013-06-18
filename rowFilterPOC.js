@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
-declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
+define(["dojo/_base/declare", "dojo/_base/array", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
+declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
 	/*
 	 *	Row Filter plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-02-12
@@ -21,7 +21,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	 * @type {Object}
 	 */
 	var filterableTextBoxValue = '';
-	var indexOfSelectedItemsOfGridArr = [];
+	// var indexOfSelectedItemsOfGridArr = [];
 	var invalidClassChars = /[^\._a-zA-Z0-9-]/g;
 	var contentBoxSizing = has("ie") < 8 && !has("quirks");
 	var headerTableNode = '';
@@ -29,7 +29,6 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 	var grid = '';
 	var AllColumnTextBoxValue = '';
 	var currentColName = '';
-	var filteredRows = [];
 	return declare(null, {
 		filterableTable: '',
 		constructor: function() {
@@ -62,11 +61,10 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 						 * match filter string with the content of the column
 						 */
 						if(colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1) {
-							if(filteredRows.indexOf(item) == -1) {
-								filteredRows.push(item)
-							}
+							item['filtered'] = true;
 							Show = true;
 						} else {
+							item['filtered'] = false;
 							Show = false;
 						}
 					} else {
@@ -79,25 +77,23 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 					//	//console.log('empty textbox........................')
 				}
 			}
-			if(indexOfSelectedItemsOfGridArr.indexOf(item.id) != -1) {
-				// console.log(filteredRows.indexOf(item))
-				if(filteredRows.indexOf(item) == -1) {
-					filteredRows.push(item)
-				}
+			if(item.selected) {
+				console.log(item.selected, item,'*****************************8888')
 				Show = true;
 			}
+
 			/**
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
 			//console.log('show', Show, item)
 			if(Show == true) {
-				if(filteredRows.indexOf(item) == -1) {
-					filteredRows.push(item)
-				}
+				item['filtered'] = true;
 				return true;
 			} else if(Show == false) {
+				item['filtered'] = false;
 				return false;
 			}
+			item['filtered'] = true;
 			/**
 			 * initially show all the rows i.e when all filtered textboxes are empty or null
 			 */
@@ -169,9 +165,9 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					//console.log(This.selection,'This.selection')
 					currentColName = this.get('currentColName');
-					indexOfSelectedItemsOfGridArr.splice(0);
+					// indexOfSelectedItemsOfGridArr.splice(0);
 					for(each in This.selection) {
-						indexOfSelectedItemsOfGridArr.push(each)
+						// indexOfSelectedItemsOfGridArr.push(each)
 					}
 					/**
 					 * get columns name from the id of the textbox selected
@@ -197,8 +193,12 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 						//console.log('b4 refresh')
 						This.refresh();
 						//console.log('after refresh')
-						for(each in indexOfSelectedItemsOfGridArr) {
-							This.select(indexOfSelectedItemsOfGridArr[each])
+						var rows =  This.store.query({selected:true});
+						console.log('dsdsdsdsdsdsdadadasd', rows)
+						This.selection = {};
+						for(each in rows) {
+							console.log('selecting', rows[each])
+							This.select(rows[each])
 						}
 					}, 300);
 
@@ -208,7 +208,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 
 		},
 		getFilteredRows : function () {
-			return filteredRows
+			return this.store.query({filtered:true})
 		},
 		addSelectAllButtonToGridHeader: function(parentRow) {
 
@@ -239,18 +239,13 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        label:"Select All",
 				        onClick: function(){
-				        	indexOfSelectedItemsOfGridArr.splice(0);
+				        	// indexOfSelectedItemsOfGridArr.splice(0);
 				        	var rows = This.getFilteredRows();
-				        	if(rows.length == 0) {
-				        		rows = This.store.data;
-				        	}
+				        	This.selection = {};
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-			        			if(!This.isSelected(rows[i]))
-			        			{
-			        				This.select(rows[i]);
-			        				indexOfSelectedItemsOfGridArr.push(rows[i].id)
-			        			}
+			        			rows[i].selected = true;
+		        				This.select(rows[i]);
 			        		}
 				        }
 				    }, newDivToPlaceButton);
@@ -293,7 +288,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        	}
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-					        	indexOfSelectedItemsOfGridArr.splice(0);
+					        	// indexOfSelectedItemsOfGridArr.splice(0);
 			        			if(This.isSelected(rows[i]))
 			        			{
 			        				// console.log('deselect',i)
@@ -303,7 +298,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 			        			{
 			        				// console.log('select',i)
 			        				This.select(rows[i]);
-			        				indexOfSelectedItemsOfGridArr.push(rows[i].id);
+			        				// indexOfSelectedItemsOfGridArr.push(rows[i].id);
 			        			}
 			        		}
 				        }
@@ -341,17 +336,24 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				        checked: false,
 				        onClick: function(){
 				        	var rows = This.getFilteredRows();
-				        	if(rows.length == 0) {
-				        		rows = This.store.data;
-				        	}
 			        		for(var i=0;i<rows.length;i++)
 			        		{
-					        	indexOfSelectedItemsOfGridArr.splice(0);
-			        			if(This.isSelected(rows[i]))
-			        			{
-			        				This.deselect(rows[i])
-			        			}
+			        			rows[i].selected = false;
+		        				This.deselect(rows[i]);
 			        		}
+
+				        	// var rows = This.getFilteredRows();
+				        	// if(rows.length == 0) {
+				        	// 	rows = This.store.data;
+				        	// }
+			        		// for(var i=0;i<rows.length;i++)
+			        		// {
+					        // 	// indexOfSelectedItemsOfGridArr.splice(0);
+			        		// 	if(This.isSelected(rows[i]))
+			        		// 	{
+			        		// 		This.deselect(rows[i])
+			        		// 	}
+			        		// }
 				        }
 				    }, newDivToPlaceButton);
 			}
@@ -407,7 +409,7 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 							/**
 			 * add filter textbox to grid
 			 */
-//			this.addTextBoxToGridHeader(grid.filterFieldLabel);
+			// this.addTextBoxToGridHeader(grid.filterFieldLabel);
 			// this.addTextBoxToGridHeader(row, grid.filterFieldLabel);
 			var indexCell = 0;
 			for(each in this.columns) {
@@ -448,6 +450,28 @@ declare, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector
 				this.addSelectNoneButtonToGridHeader(row);
 				domConstruct.place(row, headerNode, 0);
 			}
+
+            grid.on('dgrid-select', function(event) {
+            	console.log(event.grid.store.data)
+                if(event.grid.store.query({id:event.rows[0].data.id})[0]) {
+	                event.grid.store.query({id:event.rows[0].data.id})[0]['selected'] = true;
+                }
+                console.log('Selection happening...');
+            });
+            
+            grid.on('dgrid-deselect', function(event) {
+                console.log('De-selection happening...', event.parentType, event);
+                if(event.parentType) {
+	                if(event.grid.store.query({id:event.rows[0].id})[0]) {
+		                event.grid.store.query({id:event.rows[0].id})[0]['selected'] = false;
+		                delete event.grid.selection[event.rows[0].id];
+	                }
+                }
+            });
+
+		},
+		setPreservedSelection : function(rowObject) {
+			this.set('preservedSelection',rowObject);
 		},
 		createFilterRowCells: function(tag, each, subRows) {
 			var
