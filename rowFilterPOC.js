@@ -165,20 +165,12 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					//console.log(This.selection,'This.selection')
 					currentColName = this.get('currentColName');
-					// indexOfSelectedItemsOfGridArr.splice(0);
-					for(each in This.selection) {
-						// indexOfSelectedItemsOfGridArr.push(each)
-					}
-					/**
-					 * get columns name from the id of the textbox selected
-					 */
-					// //console.log(filterableTextBoxValue, this.id, 'this.id', this.id.match(/_\w+/)[0].match(/[^_]\w+/)[0])
-					// filterableTextBoxValue = this.get("value");
 					/**
 					 * get columns name from the id of the textbox selected
 					 */
 					This.allColumnTextBoxValue[currentColName] = this.get("value");
 					AllColumnTextBoxValue = This.allColumnTextBoxValue;
+					console.log(AllColumnTextBoxValue, 'AllColumnTextBoxValue')
 					if(timeoutId) {
 						clearTimeout(timeoutId);
 						timeoutId = null;
@@ -197,8 +189,11 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 						console.log('dsdsdsdsdsdsdadadasd', rows)
 						This.selection = {};
 						for(each in rows) {
-							console.log('selecting', rows[each])
-							This.select(rows[each])
+							console.log(typeof rows[each])
+							if(typeof rows[each] != 'function' && typeof rows[each] != 'number') {
+								console.log('selecting', rows[each])
+								This.select(rows[each])
+							}
 						}
 					}, 300);
 
@@ -452,15 +447,12 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 			}
 
             grid.on('dgrid-select', function(event) {
-            	console.log(event.grid.store.data)
                 if(event.grid.store.query({id:event.rows[0].data.id})[0]) {
 	                event.grid.store.query({id:event.rows[0].data.id})[0]['selected'] = true;
                 }
-                console.log('Selection happening...');
             });
             
             grid.on('dgrid-deselect', function(event) {
-                console.log('De-selection happening...', event.parentType, event);
                 if(event.parentType) {
 	                if(event.grid.store.query({id:event.rows[0].id})[0]) {
 		                event.grid.store.query({id:event.rows[0].id})[0]['selected'] = false;
