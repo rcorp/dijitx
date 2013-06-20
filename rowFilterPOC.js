@@ -32,7 +32,8 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 	return declare(null, {
 		filterableTable: '',
 		constructor: function() {
-			this.allColumnTextBoxValue = {}
+			this.allColumnTextBoxValue = {};
+			this.allFilterWidgetArr = [];
 		},
 		/**
 		 * filter's rows of dGrid.
@@ -99,6 +100,11 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 			 */
 			return true;
 		},
+		clearFilterTextBoxes:function() {
+			for(var i=0;i<this.allFilterWidgetArr.length;i++) {
+				this.allFilterWidgetArr[i].set('value','');
+			}
+		},
 		addTextBoxToGridHeader: function(table, column, indexCell, fieldLabel) {
 			//console.log('addTextBoxToGridHeader',table)
 			// parentRow = table.children[0];
@@ -154,7 +160,8 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 					 */
 					intermediateChanges: true
 				}, newDivToPlaceTextBox);
-				myTextBox.set('currentColName', column.id)
+				myTextBox.set('currentColName', column.id);
+				this.allFilterWidgetArr.push(myTextBox);
 				/**
 				 * store this
 				 * @type {Object}
