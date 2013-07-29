@@ -13,14 +13,16 @@
     <script>
     
         require(["dijit/InlineEditBox",'dojo/html', "dojo/dom",'dijitx/AppTagWidget'], function(InlineEditBox,html,dom,AppTagWidget){
-            window.newWidget= new AppTagWidget('p');
-            newWidget.set('jasvin')
+            window.newWidget= new AppTagWidget({
+                'tag':'p',
+                'id':'tagggggg',
+            });            
+            newWidget.set('value','Jasvin Singh')
+            //newWidget.refresh();
             var place=dom.byId('ieb');
             newWidget.placeAt(place)
         });
     </script>
-    <h>sfgsfsbsfbfb</h>
-    <div id="ieb">
-    </div>
+    <div id="ieb"></div>
 </body>
 </html>
