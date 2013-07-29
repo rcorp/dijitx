@@ -4,33 +4,32 @@ define(['dojo/_base/declare',
     'dojo/dom', 
     "dijit/_WidgetBase", 
     "dijit/_TemplatedMixin", 
-    'dojo/html', 
+    'dojo/html',
+    "dojo/Deferred", 
     'dojo/text!./templates/AppTagWidgetTemplate.html',
-    "dojo/domReady!"], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, html, template) {
+    "dojo/domReady!"], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, html,Deferred, template) {
     return declare('AppTagWidget', [WidgetBase, TemplatedMixin], {
         //id for AspireWidget.
         id: '',
+        //tag get by user and used by templete
+        tag:'',
+        //tag value set by user
+        value:'',
         //Some string value of class.
         baseClass: 'appTagWidget',
-        tag: '',
         templateString: '',
-        constructor: function(tag, id) {
-           console.log("constructor callin")
-           attr = tag;
-            this.id = id;
+        constructor: function() {
+            attr='',
+            this.id ='';
             this.createWidget();
         },
         createWidget: function() {
-            
             this.templateString = template;
         },
         postCreate: function() {
-
-            console.log('postCreate')
             this.inherited(arguments);
         },
         buildRendering: function() {
-             console.log('buildRendering')
            this.inherited(arguments);
             if (!this.widgetNode) {
                 this.widgetNode = this.domNode;
@@ -39,6 +38,8 @@ define(['dojo/_base/declare',
         startup: function() {
 
            console.log('startup')
+           
+          
              // summary:
             //      Call startup() on all children including non _Widget ones like dojo/dnd/Source objects
 
@@ -55,22 +56,38 @@ define(['dojo/_base/declare',
                 }, this);
             }
         },
-        set: function(value) {
-            console.log("set calling",value)
-            html.set(dom.byId(this.domNode), value)
-            this._set(attr,value);
+        /**
+         * funtion to get the value of the widget ie tag value
+         */
+        getValue: function(){
+            return this.get('value');
         },
+        _getValueAttr:function(value){
+            this.value=value;
+        },
+        _setValueAttr:function(value){
+            this.value=value;
+            html.set(this.valueNode,value)
+        },
+        /**
+         * funtion to refresh the widget to effect the value same as startup
+         */
+        /*refresh: function() {
+
+            html.set(this.valueNode, this.value)
+            //this._set(this.tag,this.value)
+        },*/
         getWidgetValue: function() {
             var result = this.getValue();
             return result;
         },
-        addTag: function(tag, options, placeAt) {
+        /*addTag: function(tag, options, placeAt) {
             if ((typeof tag && typeof placeAt == "String") && (typeof options == 'Object')) {
                 domConstruct(tag, options, placeAt)
             } else {
                 console.log("error")
             }
-        },
+        },*/
         addChild: function(widget, insertIndex) {
             var refNode = this.widgetNode.children[0];
             if (insertIndex && typeof insertIndex == "number") {
