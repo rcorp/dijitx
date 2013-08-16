@@ -40,7 +40,6 @@ define(['dojo/_base/declare',
         },
 
         createPlayer: function(){
-
             var status = new Status({
                 id:this.id+'_Status',
                 controlType:"status"  
@@ -67,7 +66,7 @@ define(['dojo/_base/declare',
                 controlType:'video',
                 mediaUrl:this.mediaUrl,
                 autoPlay:true,
-                isDebug="false",
+                isDebug:"false",
                 allowFullScreen:this.allowFullScreen|| false,
                 id:this.id+'_Video'
             });
@@ -89,7 +88,6 @@ define(['dojo/_base/declare',
             playerDomNode.appendChild(volumeButton.domNode);
             playerDomNode.appendChild(progressSlider.domNode);
             playerDomNode.appendChild(status.domNode);
-            console.log('/playerDomNode/',playerDomNode)
         },
 
         startup: function() {
