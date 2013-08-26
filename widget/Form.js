@@ -13,6 +13,9 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
             if (scrollToView) {
                 win.scrollToView(this.domNode);
             }
+        },
+        save:function() {
+            this.store.add(this.get('value'));
         }
     })
 })
