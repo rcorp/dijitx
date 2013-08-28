@@ -1,4 +1,6 @@
-define(['dojo/_base/declare', 
+define([/*'dojo',
+    'dijit',*/
+    'dojo/_base/declare', 
     'dojo/_base/lang', 
     'dojo/dom-construct', 
     'dojo/dom', 
@@ -12,25 +14,28 @@ define(['dojo/_base/declare',
     'dojox/av/FLVideo',
     "dojo/Deferred", 
     'dojo/text!./templates/AuidoVideoWidgetTemplate.html',
-    "dojo/domReady!"], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, Player,PlayButton,VolumeButton,ProgressSlider,Status,FLVideo, Deferred, template) {
+    "dojo/domReady!"], function(/*dojo, dijit,*/ declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, Player,PlayButton,VolumeButton,ProgressSlider,Status,FLVideo, Deferred, template) {
     return declare('AudioVideoWidget', [WidgetBase, TemplatedMixin], {
         //id for AspireWidget.
         id: '',
         //tag value set by user
         mediaUrl:'',
         type:'',
+        media:'',
         //Some string value of class.
         baseClass: 'AudioVideoWidget',
         templateString: '',
         constructor: function() {
             this.id ='';
             this.createWidget();
+            
         },
         createWidget: function() {
             this.templateString = template;
         },
         postCreate: function() {0
             this.inherited(arguments);
+            this.createPlayer();
         },
         buildRendering: function() {
            this.inherited(arguments);
@@ -38,6 +43,7 @@ define(['dojo/_base/declare',
                 this.widgetNode = this.domNode;
             }
         },
+
 
         createPlayer: function(){
             var status = new Status({
@@ -47,7 +53,7 @@ define(['dojo/_base/declare',
 
             var progressSlider = new ProgressSlider({
               id:this.id+'_ProgressSlider',
-              controlType:"play"
+              controlType:"progress"
             }); 
             
             var volumeButton = new VolumeButton({
@@ -60,6 +66,10 @@ define(['dojo/_base/declare',
                 controlType:"play"
             });
             
+            this.player = new Player({
+                id:this.id+'_Player',        
+                playerWidth: "100%"
+            });
 
             var media = new FLVideo({
                 initialVolume:.7,
@@ -70,31 +80,28 @@ define(['dojo/_base/declare',
                 allowFullScreen:this.allowFullScreen|| false,
                 id:this.id+'_Video'
             });
+            this.media=media;
 
-            var player = new Player({
-                id:this.id+'_Player',        
-                playerWidth: "100%"
-            });
-
-            // player.addChild(media);
-            // player.addChild(progressSlider);
-            // player.addChild(status);
-            // player.addChild(playButton);
-            // player.addChild(volumeButton);
-            var playerDomNode = player.domNode;
-            this.domNode.appendChild(playerDomNode)
-            playerDomNode.appendChild(media.domNode);
-            playerDomNode.appendChild(playButton.domNode);
-            playerDomNode.appendChild(volumeButton.domNode);
-            playerDomNode.appendChild(progressSlider.domNode);
-            playerDomNode.appendChild(status.domNode);
+            this.playContainer.appendChild(playButton.domNode);
+            this.controlsBottom.appendChild(volumeButton.domNode);
+            this.statusContainer.appendChild(status.domNode);
+            //for progress or slider bar 
+            this.progressContainer.appendChild(progressSlider.domNode);
+            this.mediaNode = this.media.domNode;
+            this.playerScreen.appendChild(this.media.domNode);
+            
+            progressSlider.setMedia(this.media, this.player);
+            playButton.setMedia(this.media, this.player);
+            volumeButton.setMedia(this.media, this.player);
+            status.setMedia(this.media, this.player);
+            
+            
         },
 
+       
         startup: function() {
 
-           console.log('startup')
-           
-          
+
              // summary:
             //      Call startup() on all children including non _Widget ones like dojo/dnd/Source objects
 
@@ -111,38 +118,27 @@ define(['dojo/_base/declare',
                 }, this);
             }
         },
-        /**
-         * funtion to get the value of the widget ie tag value
-         */
+        // play: function(/* String? */newUrl){
+        //     // summary:
+        //     //      Plays the video. If an url is passed in, plays the new link.
+        //     this.media.isPlaying = true;
+        //     this.media.isStopped = false;
+        //     this.media.flashMedia.doPlay(this.media._normalizeUrl(newUrl));
+        // },
+       
+         _setMediaUrlAttr:function(value){
+            this.mediaUrl=value;
+           // this.play(this.mediaUrl);
+            //console.log('this--',this)
+            //console.log('this.media--',this.media)
+            //this.media.play(this.mediaUrl)
+           //console.log("uurrll",value)//this.media.set('mediaUrl',this.mediaUrl)
+        }, 
+
+
         getValue: function(){
             return this.get('value');
         },
-        /*_getValueAttr:function(value){
-            this.value=value;
-        },
-        _setValueAttr:function(value){
-            this.value=value;
-            html.set(this.valueNode,value)
-        },*/
-        /**
-         * funtion to refresh the widget to effect the value same as startup
-         */
-        /*refresh: function() {
-
-            html.set(this.valueNode, this.value)
-            //this._set(this.tag,this.value)
-        },*/
-        /*getWidgetValue: function() {
-            var result = this.getValue();
-            return result;
-        },*/
-        /*addTag: function(tag, options, placeAt) {
-            if ((typeof tag && typeof placeAt == "String") && (typeof options == 'Object')) {
-                domConstruct(tag, options, placeAt)
-            } else {
-                console.log("error")
-            }
-        },*/
         addChild: function(widget, insertIndex) {
             var refNode = this.widgetNode.children[0];
             if (insertIndex && typeof insertIndex == "number") {
