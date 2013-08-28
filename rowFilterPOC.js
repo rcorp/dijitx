@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/_base/array", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
-declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
+define(["dojo/_base/declare", 	"dojo/_base/Deferred", "dojo/_base/array", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
+declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
 	/*
 	 *	Row Filter plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-02-12
@@ -44,61 +44,13 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 		 */
 		setFilter: function(item, index, items) {
 			/**
-			 * check value of each textbox
-			 * @type {boolean}
-			 * @default {undefined}
-			 */
-			var Show = undefined;
-
-			for(each in AllColumnTextBoxValue) {
-				//console.log(each,'each', AllColumnTextBoxValue[each],item)
-				var colValue = (item[each.split('*****')[0]] + "").toLowerCase();
-				/**
-				 * if atleast two characters inserted by user in each textbox then query the store
-				 */
-				if(AllColumnTextBoxValue[each] != "" && AllColumnTextBoxValue[each].length >= 1) {
-					if(Show == undefined) {
-						/**
-						 * match filter string with the content of the column
-						 */
-						if(colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1) {
-							item['filtered'] = true;
-							Show = true;
-						} else {
-							item['filtered'] = false;
-							Show = false;
-						}
-					} else {
-						/**
-						 * Logically "And" the result of each successfull match
-						 */
-						Show = Show && colValue.indexOf(AllColumnTextBoxValue[each].toLowerCase()) != -1;
-					}
-				} else {
-					//	//console.log('empty textbox........................')
-				}
-			}
-			if(item.selected) {
-				console.log(item.selected, item,'*****************************8888')
-				Show = true;
-			}
-
-			/**
 			 * if all filtered string gets matched for each column only then show the particular row
 			 */
-			//console.log('show', Show, item)
-			if(Show == true) {
+			// console.log('show', item)
+			if(item['filtered'] == undefined) {
 				item['filtered'] = true;
-				return true;
-			} else if(Show == false) {
-				item['filtered'] = false;
-				return false;
 			}
-			item['filtered'] = true;
-			/**
-			 * initially show all the rows i.e when all filtered textboxes are empty or null
-			 */
-			return true;
+			return item['filtered']
 		},
 		clearFilterTextBoxes:function() {
 			for(var i=0;i<this.allFilterWidgetArr.length;i++) {
@@ -394,7 +346,7 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 				}
 				// allow for custom header content manipulation
 				if(column.renderHeaderCell) {
-					appendIfNode(contentNode, column.renderHeaderCell(contentNode));
+					// appendIfNode(contentNode, column.renderHeaderCell(contentNode));
 				} else if(column.label || column.field) {
 					contentNode.appendChild(document.createTextNode(column.label || column.field));
 				}
@@ -433,7 +385,7 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 					}
 					// allow for custom header content manipulation
 					if(column.renderHeaderCell) {
-						appendIfNode(contentNode, column.renderHeaderCell(contentNode));
+						// appendIfNode(contentNode, column.renderHeaderCell(contentNode));
 					} else if(column.label || column.field) {
 						contentNode.appendChild(document.createTextNode(column.label || column.field));
 					}
@@ -563,6 +515,18 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 			tr.appendChild(this.addButton(tag, "selectNone"));
 			return row;
 		},
+		filterRows: function(filterObj){
+			var res = this.store.query({});
+			for(var i=0;i<res.length;i++) {
+				var result = true;
+				for(each in filterObj) {
+					var patt = new RegExp(filterObj[each])
+					result = result && patt.test(res[i][each])
+					res[i]['filtered'] = result;
+				}
+			}
+			this.refresh();
+		},
 		addButton: function(tag, id) {
 			var cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
 			cell.id = id + '_Button_Cell';
@@ -574,6 +538,6 @@ declare, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Butto
 				innerCell = cell;
 			}
 			return cell;
-		},
+		}	
 	});
 });
