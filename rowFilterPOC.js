@@ -128,6 +128,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 					 * get columns name from the id of the textbox selected
 					 */
 					This.allColumnTextBoxValue[currentColName] = this.get("value");
+					This.filterRows(This.allColumnTextBoxValue);
 					AllColumnTextBoxValue = This.allColumnTextBoxValue;
 					console.log(AllColumnTextBoxValue, 'AllColumnTextBoxValue')
 					if(timeoutId) {
@@ -520,7 +521,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			for(var i=0;i<res.length;i++) {
 				var result = true;
 				for(each in filterObj) {
-					var patt = new RegExp(filterObj[each])
+					var patt = new RegExp(filterObj[each], 'i')
 					result = result && patt.test(res[i][each])
 					res[i]['filtered'] = result;
 				}
