@@ -238,11 +238,13 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 					        	// indexOfSelectedItemsOfGridArr.splice(0);
 			        			if(This.isSelected(rows[i]))
 			        			{
+			        				rows[i]['selected'] = false;
 			        				// console.log('deselect',i)
 			        				This.deselect(rows[i],0,false);
 			        			}
 			        			else
 			        			{
+			        				rows[i]['selected'] = true;
 			        				// console.log('select',i)
 			        				This.select(rows[i]);
 			        				// indexOfSelectedItemsOfGridArr.push(rows[i].id);
