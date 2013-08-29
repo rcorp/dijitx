@@ -16,21 +16,12 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 	 *
 	 */
 
-	/**
-	 * object to store values of each textbox.
-	 * @type {Object}
-	 */
-	var filterableTextBoxValue = '';
 	// var indexOfSelectedItemsOfGridArr = [];
 	var invalidClassChars = /[^\._a-zA-Z0-9-]/g;
 	var contentBoxSizing = has("ie") < 8 && !has("quirks");
-	var headerTableNode = '';
-	var allWidgetsIdArr = [];
-	var grid = '';
-	var AllColumnTextBoxValue = '';
-	var currentColName = '';
 	return declare(null, {
 		filterableTable: '',
+		allWidgetsIdArr:[],
 		constructor: function() {
 			this.allColumnTextBoxValue = {};
 			this.allFilterWidgetArr = [];
@@ -81,9 +72,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 */
 			var placeHolder = 'Search By ' + column.id;
 
-			if(allWidgetsIdArr.indexOf(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == -1)
+			if(this.allWidgetsIdArr.indexOf(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == -1)
 			{
-				allWidgetsIdArr.push(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel);
+				this.allWidgetsIdArr.push(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel);
 				/**
 				 * create a a parent div for each filter textbox
 				 * id of the textbox's parent div ="textDiv_" + <column name>
@@ -123,14 +114,12 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 
 				myTextBox.watch("value", function(name, oldValue, newValue) {
 					//console.log(This.selection,'This.selection')
-					currentColName = this.get('currentColName');
+					var currentColName = this.get('currentColName');
 					/**
 					 * get columns name from the id of the textbox selected
 					 */
 					This.allColumnTextBoxValue[currentColName] = this.get("value");
 					This.filterRows(This.allColumnTextBoxValue);
-					AllColumnTextBoxValue = This.allColumnTextBoxValue;
-					console.log(AllColumnTextBoxValue, 'AllColumnTextBoxValue')
 					if(timeoutId) {
 						clearTimeout(timeoutId);
 						timeoutId = null;
@@ -162,6 +151,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			}
 
 		},
+		getSelectedRows : function () {
+			return this.store.query({selected:true})
+		},
 		getFilteredRows : function () {
 			return this.store.query({filtered:true})
 		},
@@ -173,9 +165,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			html.set(parentDiv,'');
 
 			// console.log('button parent div', parentDiv, parentRow)
-			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectAll") == -1)
+			if(this.allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectAll") == -1)
 			{
-				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectAll")	
+				this.allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectAll")	
 				/**
 				 * create a a parent div for each filter textbox
 				 * id of the textbox's parent div ="textDiv_" + <column name>
@@ -213,9 +205,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			var parentDiv = tBody.children[1]
 			html.set(parentDiv,'');
 
-			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectInverse") == -1)
+			if(this.allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectInverse") == -1)
 			{
-				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectInverse")	
+				this.allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectInverse")	
 
 				/**
 				 * create a a parent div for each filter textbox
@@ -267,9 +259,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			var parentDiv = tBody.children[2]
 			html.set(parentDiv,'');
 
-			if(allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectNone") == -1)
+			if(this.allWidgetsIdArr.indexOf(this.id + "_ButtonDiv_SelectNone") == -1)
 			{
-				allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectNone")	
+				this.allWidgetsIdArr.push(this.id + "_ButtonDiv_SelectNone")	
 
 				/**
 				 * create a a parent div for each filter textbox
@@ -524,6 +516,9 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 					var patt = new RegExp(filterObj[each], 'i')
 					result = result && patt.test(res[i][each])
 					res[i]['filtered'] = result;
+				}
+				if(res[i]['selected']) {
+					res[i]['filtered'] = true;
 				}
 			}
 			this.refresh();
