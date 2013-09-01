@@ -1,0 +1,126 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title> ASPIRE by RCorp</title>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.1/pure-min.css">
+    <style type="text/css">
+        
+        #aspirelogo {
+            width: 109px;
+            height: 42px;
+            background-color: #6ad;
+            position: absolute;
+            background-image: url('aspirelogo.png');
+        }
+        #viewport {
+            position: relative;
+            width: 96%;
+            height: 50%;
+            margin: 2%;
+            border: 2px solid #ddd;
+
+        }
+    </style>
+
+</head>
+<body class="claro">
+    <script>
+        if (!('webkitSpeechRecognition' in window)) {
+            window.alert(upgrade);
+        } else {
+            window.recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = function(event) {
+                //console.log ('onstart', arguments);
+            }
+            recognition.onresult = function(event) {
+                for (var i = event.resultIndex; i < event.results.length; ++i) {
+                    if (!event.results[i].isFinal){
+                        var transcript = event.results[i][0].transcript
+                        var lastWord = transcript.split(' ')[transcript.split(' ').length-1];
+                        checkTranscript(lastWord);
+                        console.log ('lastWord', lastWord)
+                    }
+                }
+                
+
+            }
+            recognition.onerror = function() {
+                console.error ('onerror', arguments)
+
+            }
+            recognition.onend = function() {
+                //console.log ('onend', arguments);
+            }
+        }
+        recognition.lang = "en-IN";
+        recognition.start();
+
+        require(['dojo/dom-style','dojo/query','dojo/domReady!'], function (domStyle, query) {
+
+            var node = query('#aspirelogo');
+            var dx = 20;
+
+            window.checkTranscript = function (transcript){
+                //console.log (transcript);
+                switch (transcript){
+                    case 'left':
+                        moveLeft();
+                        break;
+
+                    case 'right':
+                        moveRight();
+                        break;
+
+                    case 'up':
+                        moveUp();
+                        break;
+
+                    case 'down':
+                        moveDown();
+                        break;
+                }
+            }
+            moveRight = function () {
+                var x = parseInt(node.style('left'));
+                node.style('left', (x + dx) + 'px')
+            }
+            moveLeft = function () {
+                var x = parseInt(node.style('left'));
+                node.style('left', (x - dx) + 'px')
+            }
+            moveUp = function () {
+                var y = parseInt(node.style('top'));
+                node.style('top', (y - dx) + 'px')
+            }
+            moveDown = function () {
+                var y = parseInt(node.style('top'));
+                node.style('top', (y + dx) + 'px')
+            }
+
+            
+        });
+    
+    </script>
+    
+    <h1>
+        Welcome to <i> Listen </i> From RCorp Labs
+    </h1>
+    <p> 
+        Listen is a revolutionary piece of Technology that uses the latest Web Technologies <br />
+        Using a combination of Speech API and Web RTC, your browser is able to "listen" to what you're saying
+    </p>
+
+    <h3> Click on the "Allow" button in the top of your browser and say <em id="left"> Left </em>, <em id="right"> Right </em>, <em id="up"> Up </em> or <em id="down"> Down </em> </h3>
+
+    <p> Listen will be integrated into <a href="http://www.aspireapps.org"> Aspire </a> soon. 
+    Keep checking <a href="http://www.aspireapps.org"> AspireApps.org </a> for more info. </p>
+
+    <div id="viewport">
+        <div id="aspirelogo"> </div>
+    </div>
+</body>
+</html>

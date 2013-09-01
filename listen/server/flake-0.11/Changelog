@@ -1,0 +1,26 @@
+Flake TODO list
+---------------
+- Apply feature updates from FFmpeg
+- Shared lib/DLL support
+- 24-bit/32-bit lossless
+- Raw audio input
+- AIFF input
+- Import FFmpeg's FLAC decoder for verification during encoding
+- Vorbis Comment tag support
+- Embedded CUESHEET support
+
+Flake Changelog
+---------------
+version 0.11 : 5 July 2007
+- Significant speed improvements
+- Added log search
+- Added variable block size encoding
+- Added level 99 high-compression level
+- Quiet encoding mode (no console output except errors)
+- Changed output file designation to "-o output.flac"
+- Changed order method option to "-m #"
+- Added support for encoding multiple files at once
+
+version 0.10 : 11 September 2006 (Initial SVN import)
+- New configure system
+- Separate library & console app
