@@ -15,7 +15,10 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
             }
         },
         save:function() {
-            this.store.add(this.get('value'));
+            directives = {
+                execute: true
+            }
+            this.store.add(this.get('value'), directives);
         }
     })
 })
