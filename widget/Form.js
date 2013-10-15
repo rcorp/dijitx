@@ -19,6 +19,7 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
                 var obj = {};
                 for(var i=0;i<data.length;i++){
                     for(each in data[i]) {
+                        console.log(each)
                         if(obj[each]){
                             obj[each].push(data[i][each])
                         } else {
@@ -28,9 +29,7 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
                         }
                 }
                 var formData = this.get('value')
-                console.log(lang.mixin(formData,obj));
-                console.log(data);
-                // this.store.add(data);
+                this.store.add(lang.mixin(formData,obj));
             } else{
                 var formData = [];
                 formData.push(this.get('value'));
