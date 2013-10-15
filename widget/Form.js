@@ -16,14 +16,21 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
         },
         save: function(data) {
             if(data){
-                var formData = this.get('value')
-                for(var each in formData){
-                    for(var i = 0; i < data.length; i++){
-                        if(each != 'undefined')
-                            lang.setObject(each, formData[each], data[i]);
-                    }
+                var obj = {};
+                for(var i=0;i<data.length;i++){
+                    for(each in data[i]) {
+                        if(obj[each]){
+                            obj[each].push(data[i][each])
+                        } else {
+                            obj[each] = []
+                            obj[each].push(data[i][each])
+                        }
+                        }
                 }
-                this.store.add(data);
+                var formData = this.get('value')
+                console.log(lang.mixin(formData,obj));
+                console.log(data);
+                // this.store.add(data);
             } else{
                 var formData = [];
                 formData.push(this.get('value'));
