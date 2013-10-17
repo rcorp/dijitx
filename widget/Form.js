@@ -1,4 +1,10 @@
-define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window', 'dojo/_base/lang'], function (declare, Form, domClass, win, lang) {
+define ([
+    'dojo/_base/declare',
+    'dijit/form/Form',
+    'dojo/dom-class',
+    'dojo/window',
+    'dojo/_base/lang'
+    ], function (declare, Form, domClass, win, lang) {
     return declare('dijitx.widget.Form', [Form], {
         buildRendering: function () {
             this.inherited(arguments);
@@ -15,15 +21,19 @@ define (['dojo/_base/declare', 'dijit/form/Form', 'dojo/dom-class', 'dojo/window
             }
         },
         save: function(data, gridId) {
+            var _this = this;
             if(data && gridId){
-                var obj = {};
-                var formData = this.get('value')
+                var formData = this.get('value');
                 delete formData[gridId]
-                this.store.add(lang.mixin(data,formData));
+                _this.store.add(lang.mixin(data,formData)).then(function(result){
+                    _this.reset();
+                });
             } else{
                 var formData = [];
                 formData.push(this.get('value'));
-                this.store.add(formData);
+                _this.store.add(formData).then(function(result){
+                    _this.reset();
+                });
             }
         }
     })
