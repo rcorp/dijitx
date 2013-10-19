@@ -29,9 +29,7 @@ define ([
                     _this.reset();
                 });
             } else{
-                var formData = [];
-                formData.push(this.get('value'));
-                _this.store.add(formData).then(function(result){
+                _this.store.add(this.get('value')).then(function(result){
                     _this.reset();
                 });
             }
