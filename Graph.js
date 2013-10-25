@@ -81,6 +81,7 @@ define(['dojo/_base/declare',
 
 /*Store*/
 "aspire/core/SocketStore",
+
 "dojo/request/xhr",
 	"dojo/domReady!"], function(declare, array, domConstruct, Memory, Observable, StoreSeries, MoveSlice, SelectableLegend, ToolTip,
 Magnify, Legend, HighLighter, Chart, WidgetChart, Axis2D, plotDefault, Areas, Markers, MarkersOnly, StackedLines,
@@ -92,7 +93,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 	/**
 	 * @class  GraphCore
 	 */
-	return declare('GraphAdapter', [WidgetChart /*,Chart*/ ], {
+	return declare('Graph', [WidgetChart /*,Chart*/ ], {
 		constructor: function() {
 
 			// all graph types:
@@ -128,6 +129,11 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			this._moveSliceSet = false;
 			this._legendSet = false;
 			this._parentDiv;
+			this.store;
+			this.datas;
+			this.labelX;
+			this.labelY;
+			this.addSeriesType;
 
 			//Markers type constant
 			this.SERIES_MARKERS = {
@@ -139,15 +145,15 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				TRIANGLE: "m-3,3 l3,-6 3,6 z",
 				TRIANGLE_INVERTED: "m-3,-3 l3,6 3,-6 z"
 			}
-			console.log("legggend", Legend)
-			//			this.mouseZoom = new MouseZoomAndPan(this);
+			//this.mouseZoom = new MouseZoomAndPan(this);
 		},
 
 		setChartParent: function(parentDiv) {
 			this._parentDiv = parentDiv;
 		},
 		getStore: function() {
-			return this._store;
+			console.log("store  *** ",this.store)
+			return this.store;
 		},
 		_setGraphTheme: function( /*String*/ theme) {
 			this.chart.setTheme(theme);
@@ -620,17 +626,19 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				// })
 				// console.log("store data iss",storeData)
 				if (validData) {
-					this.chart.addSeries(name, new StoreSeries(this.getStore(), {
-						query: {}
-					}, type));;
+					this.chart.addSeries(name, data/*, this._seriesOptions*/);
+					 // this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+					 // 	query: {}
+					 // }, type));;
 					//this.set('store',storeData)
 					this.chart.render();
 				}
+
 			} else {
-				// this.addSeries(name, data, this._seriesOptions);
-				this.chart.addSeries(name, new StoreSeries(this.getStore(), {
-					query: {}
-				}, type));;
+				this.chart.addSeries(name, data/*, this._seriesOptions*/);
+				 // this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+				 // 	query: {}
+				 // }, type));;
 				//this.set('store',storeData)
 				this.chart.render();
 			}
@@ -750,6 +758,14 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			this._grid.set('columns', _this._bottomRow);
 		},
 		*/
+		
+		/*
+		set: function(prop, value) {
+			this._graph.set(prop, value)
+		},
+		getGraphThis: function() {
+			return this;
+		}*/
 		setStore: function(schema) {
 			console.log("inside setStore")	
 			var _this = this;
@@ -759,10 +775,12 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				idProperty: _this.getIdProperyForGraph(schema),
 				returnResult: _this.getIdToReturnQueryResult(schema)
 			}))
+			console.log("storeeeeeee",_this.store)
 			//_this.chart.set('store',_this._store);
 		},
 		getIdToReturnQueryResult: function(schema) {
  			console.log(" inside getIdToReturnQueryResult")
+ 			var _this = this;
  			var result
  			schema.divisions.forEach(function(division) {
  				division.groups.forEach(function(group) {
@@ -779,6 +797,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
  		},
  		getIdProperyForGraph: function(schema) {
 			console.log("inside getIdProperyForGraph")
+			var _this = this;
 			var allTableName  = [];
 			schema.divisions.forEach(function(division) {
 			    division.groups.forEach(function(group) {
@@ -793,16 +812,141 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			        });
 			    });
 			});
-			var primaryKeyForGraph = allTableName.join('_');
+			var primaryKeyForGraph = allTableName.sort().join('_');
 			return primaryKeyForGraph+'_pk';
-		}
-		/*
-		set: function(prop, value) {
-			this._graph.set(prop, value)
 		},
-		getGraphThis: function() {
-			return this;
-		}*/
+		getFieldObject:function(schema){
+			var _this = this;
+			var graphField={};	
+			array.forEach(schema.fields,function(field){
+				graphField[field.$id]='';
+			})
+			console.log("field array in graph.js",graphField)
+			return graphField;
+		},
+		/*setGraphData:function(data){
+			var _this = this;
+			_this.graphData = data;
+		},*/
+		setGraphData:function(data,schema){
+			console.log("in setGraphData",data)
+			var _this = this;
+			_this.datas=data;
+			var getLabels;
+			var group = schema;
+			console.log('graph data is  ',_this.datas)
+			var dataForStore=_this.getDataForStore(data, schema);
+			
+			console.log('dataForStore in graph.js is =',dataForStore)
+			
+			if (group.widget){
+				array.forEach(group.fields,function(field){
+					//fieldTableColumn=field.table+'.'+field.column;
+					//_this._fieldArray.push(fieldTableColumn);
+					if(field.widget=='x'){
+						//set axis
+						_this.addAxisToGraph(field.widget);
+						//set axis title
+						_this.setAxisTitle(field.widget, field.label);
+						_this.setAxisTitleOrientation(field.widget, "away")
+						//get lable for axis
+						// getlabels=_this.getGraphAxisLabel(dataForStore);
+						// console.log('getLabels for x',getlabels)
+						//_this.setAxisLabel(field.widget,getlabels);
+						//_this.labelX=field.label;
+					}
+					else {
+						_this.addAxisToGraph(field.widget, true);
+						_this.setAxisTitle(field.widget, field.label);
+						// getlabels=_this.getGraphAxisLabel(dataForStore,true);
+						// console.log('getLabels for y',getlabels)
+						//_this.setAxisLabel(field.widget,getlabels);
+						//_this.labelY=field.label;	
+					}
+				})
+			}
+			 _this.addSeriesData(group.label,dataForStore,_this.addSeriesType)
+		},
+		getGraphAxisLabel:function(data,flag){
+			console.log("in getGraphAxisLabel")
+			var _this=this;
+			var labels=[];
+				var i=1;
+				var  z=1;
+				console.log('data is==',data)
+				for(each in data){
+					console.log('data[each]=',data[each])
+					console.log('each=',each)
+					var x=_this.labelX;
+					var y=_this.labelY;
+					//console.log("xxxxx----yyyyyy",data[each][x]+'------'+data[each][y])
+					var label = {}
+					if(flag){
+						console.log('flag')
+						label.value=data[each][y];
+						label.text='--'+data[each][y].toString();
+					}
+					else{
+						label.value=i++;
+						label.text=data[each][x];
+					}		
+					labels.push(label)
+				}
+				console.log('axixlabel are',labels)
+				return labels;
+
+		},
+		getDataForStore:function(datas, group){
+			console.log("in getDataForStore")
+			console.log("graph data comming from server",datas)
+			var _this=this;
+			var xField;
+			var yField;
+			var labelX;
+			var labelY;
+			array.forEach(group.fields,function(field){
+				if(field.widget=='x'){
+					xField=field.$id;	
+					labelX=field.label;
+					_this.labelX=field.label;
+				}
+				else {
+					yField=field.$id;		
+					labelY=field.label;
+					_this.labelY=field.label;				
+				}
+			})
+			_this.addSeriesType=labelY;
+			var storeDatas=[];
+			var graphTestData=[];
+			var a=1;
+			array.forEach(datas,function(data){
+				var storeData={};
+				storeData[labelX]='';
+				storeData[labelY]='';
+				storeData[labelX]=data[xField];
+				//storeData[labelY] = /*parseInt(data[yField])*/ (((a++)*15.5)/(a++));
+				/*if (typeof data[yField]=='string'){
+					storeData[labelY] = parseInt(data[yField]);
+					
+					//storeData[labelY] = parseInt(parseInt(data[yField])/((a++)*10));
+					//storeData[labelY] = (a++)*10;
+					//storeData[labelY]=(((a++)*100)/25);
+				}
+				else {
+					storeData[labelY]=data[yField];
+				}
+				if(!((storeData[labelX]==null) && (storeData[labelY]==null))){
+					storeDatas.push(storeData);
+				}
+				else{
+					console.log('null value in graph data')
+				}*/
+				graphTestData.push(parseInt(data[yField]));
+			})
+			return graphTestData;
+			//return storeDatas;
+		}
 
 	});
 });
