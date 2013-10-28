@@ -221,10 +221,11 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				console.log('already Set');
 			}
 		},
-		setMouseIndicator: function( /*String*/ seriesName) {
+		setMouseIndicator: function( /*String*/ seriesName,/*Boolean*/ value ) {
 			if (!this._mouse_indicator_set) {
 				new MouseIndicator(this.chart, "default", {
-					series: seriesName
+					series: seriesName,
+					mouseOver: value || false
 				})
 				this._mouse_indicator_set = true;
 			} else {
@@ -850,49 +851,59 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 						_this.setAxisTitle(field.widget, field.label);
 						_this.setAxisTitleOrientation(field.widget, "away")
 						//get lable for axis
-						// getlabels=_this.getGraphAxisLabel(dataForStore);
-						// console.log('getLabels for x',getlabels)
-						//_this.setAxisLabel(field.widget,getlabels);
+						 getlabels=_this.getGraphAxisLabel(_this.datas,field);
+						 console.log('getLabels for x',getlabels)
+						_this.setAxisLabel(field.widget,getlabels);
 						//_this.labelX=field.label;
 					}
 					else {
 						_this.addAxisToGraph(field.widget, true);
 						_this.setAxisTitle(field.widget, field.label);
-						// getlabels=_this.getGraphAxisLabel(dataForStore,true);
-						// console.log('getLabels for y',getlabels)
-						//_this.setAxisLabel(field.widget,getlabels);
+						 getlabels=_this.getGraphAxisLabel(_this.datas,field);
+						 console.log('getLabels for y',getlabels)
+						_this.setAxisLabel(field.widget,getlabels);
 						//_this.labelY=field.label;	
 					}
 				})
 			}
 			 _this.addSeriesData(group.label,dataForStore,_this.addSeriesType)
 		},
-		getGraphAxisLabel:function(data,flag){
-			console.log("in getGraphAxisLabel")
+		getGraphAxisLabel:function(storeData,field){
+			console.log("in getGraphAxisLabel",storeData,field)
 			var _this=this;
 			var labels=[];
 				var i=1;
 				var  z=1;
+			var data=storeData;	
 				console.log('data is==',data)
 				for(each in data){
-					console.log('data[each]=',data[each])
-					console.log('each=',each)
-					var x=_this.labelX;
-					var y=_this.labelY;
+					//console.log('data[each]=',data[each])
+					//console.log('each=',each)
+					//var x=_this.labelX;
+					//var y=_this.labelY;
 					//console.log("xxxxx----yyyyyy",data[each][x]+'------'+data[each][y])
 					var label = {}
-					if(flag){
+					if(field.widget=='x'){
+						//console.log("in xxxxx",each,data[each],data[each][field.$id],field.$id)	
+						label.value=parseInt(each)+1;
+						label.text=data[each][field.$id].toString();
+					} else {
+						//console.log("in yyyyyyyy",each,data[each],data[each][field.$id])	
+						label.value=parseInt(data[each][field.$id]);
+						label.text='--'+parseInt(data[each][field.$id]).toString();	
+					}
+					/*if(flag){
 						console.log('flag')
-						label.value=data[each][y];
-						label.text='--'+data[each][y].toString();
+						
 					}
 					else{
 						label.value=i++;
-						label.text=data[each][x];
-					}		
+						//label.text=data[each][x];
+					}*/	
+					//console.log("label ====",label)	
 					labels.push(label)
 				}
-				console.log('axixlabel are',labels)
+				//console.log('axixlabel are',labels)
 				return labels;
 
 		},
