@@ -25,11 +25,11 @@ define ([
             if(data && gridId){
                 var formData = this.get('value');
                 delete formData[gridId]
-                _this.store.add(lang.mixin(data,formData)).then(function(result){
+                _this.store.add(data).then(function(result){
                     _this.reset();
                 });
             } else{
-                _this.store.add(this.get('value')).then(function(result){
+                _this.store.add(data).then(function(result){
                     _this.reset();
                 });
             }
