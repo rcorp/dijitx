@@ -194,7 +194,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				}
 			} else {
 				if (!this._magnify_set) {
-					new Magnify(this.chart, 'default');
+					new Magnify(this.chart, this._name);
 					this._magnify_set = true;
 					this.chart.render();
 				} else {
@@ -205,7 +205,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		setToolTip: function() {
 			console.log("toototototo", ToolTip)
 			if (!this._tooltip_set) {
-				new ToolTip(this.chart, "default");
+				new ToolTip(this.chart, this._name);
 				this._tooltip_set = true;
 				this.chart.render();
 			} else {
@@ -214,7 +214,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		},
 		setMoveSlice: function() {
 			if (!this._moveSliceSet) {
-				new MoveSlice(this.chart, "default");
+				new MoveSlice(this.chart, this._name);
 				this._moveSliceSet = true;
 				this.chart.render();
 			} else {
@@ -223,7 +223,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		},
 		setMouseIndicator: function( /*String*/ seriesName,/*Boolean*/ value ) {
 			if (!this._mouse_indicator_set) {
-				new MouseIndicator(this.chart, "default", {
+				new MouseIndicator(this.chart, this._name, {
 					series: seriesName,
 					mouseOver: value || false
 				})
@@ -234,7 +234,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		},
 		setMouseZoomAndPan: function(axis) {
 			if (!this._mouse_zoom_set) {
-				new MouseZoomAndPan(this.chart, "default", {
+				new MouseZoomAndPan(this.chart, this._name, {
 					axis: axis
 				})
 				this._mouse_zoom_set = true;
@@ -244,7 +244,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		},
 		setHighLighter: function() {
 			if (!this._highlighter_set) {
-				new HighLighter(this.chart, "default")
+				new HighLighter(this.chart, this._name)
 				this._highlighter_set = true;
 			} else {
 				console.log('already Set');
@@ -252,16 +252,17 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			this.chart.render()
 		},
 		setLegend: function() {
-			console.log("123", this._parentDiv)
+			var _this = this;
+			console.log("123", _this._parentDiv,_this)
 			if (!this._legendSet) {
 				var legendDiv = domConstruct.create('div', {
 					id: dijit.registry.getUniqueId('jas')
-				}, this.domNode)
+				}, _this.domNode.parentNode)
 				//domConstruct.place(legendDiv /*widgetChartDiv*/,this._parentDiv.domNode)
 				//this._parentDiv.addChild(legendDiv)
 				console.log("147", legendDiv)
 				new Legend({
-					chart: this.chart
+					chartRef: _this.id
 				}, legendDiv);
 				this._legendSet = true;
 			} else {
@@ -384,8 +385,9 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			var _this = this;
 			this._name = name || this.chart.name;
 			this._graphOptions.type = type || this._graphOptions.type;
-
-			this.chart.addPlot("default", this._graphOptions);
+			console.log("nameeeeeeeeeee",name)
+			var as= name;
+			this.chart.addPlot(as, this._graphOptions);
 			//new ToolTip(_this.chart,'default')
 			//_this.setSelectableLegend();
 			_this.setLegend();
@@ -574,7 +576,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			this.dirty = true;
 			this.chart.render();
 		},*/
-		addSeriesData: function(/*String*/ name, /*Array*/ data, /*String*/ type) {
+		addSeriesData: function(/*String*/ name, /*Array*/ data, /*String*/ type,/*Object*/ plot) {
 			var _this = this;
 			/*if (!data) {
 				data = [{
@@ -627,19 +629,20 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				// })
 				// console.log("store data iss",storeData)
 				if (validData) {
-					this.chart.addSeries(name, data/*, this._seriesOptions*/);
-					 // this.chart.addSeries(name, new StoreSeries(this.getStore(), {
-					 // 	query: {}
-					 // }, type));;
+					//this.chart.addSeries(name, data/*, this._seriesOptions*/);
+					
+					  this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+					 	query:_this.fieldObject
+					  }, type),plot);
 					//this.set('store',storeData)
 					this.chart.render();
 				}
 
 			} else {
-				this.chart.addSeries(name, data/*, this._seriesOptions*/);
-				 // this.chart.addSeries(name, new StoreSeries(this.getStore(), {
-				 // 	query: {}
-				 // }, type));;
+				//this.chart.addSeries(name, data/*, this._seriesOptions*/);
+				  this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+				  	query: _this.fieldObject
+				  },type),plot);
 				//this.set('store',storeData)
 				this.chart.render();
 			}
@@ -927,7 +930,8 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 					_this.labelY=field.label;				
 				}
 			})
-			_this.addSeriesType=labelY;
+			//_this.addSeriesType=labelY;
+			_this.addSeriesType=yField;
 			var storeDatas=[];
 			var graphTestData=[];
 			var a=1;
