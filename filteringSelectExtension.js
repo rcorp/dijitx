@@ -25,6 +25,7 @@ function(declare, Button){
 		reset: function() {
 			var obj = dojo.clone(this.query);
 			obj[this.searchAttr] = '';
+			obj[this.store.idProperty] = null;
 			this.set('item', obj);
 		},
 		_openResultList: function(/*Object*/ results, /*Object*/ query, /*Object*/ options){
