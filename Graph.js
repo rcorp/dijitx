@@ -81,6 +81,7 @@ define(['dojo/_base/declare',
 
 /*Store*/
 "aspire/core/SocketStore",
+"dijitx/StoreSeriesExtended",
 
 "dojo/request/xhr",
 	"dojo/domReady!"], function(declare, array, domConstruct, Memory, Observable, StoreSeries, MoveSlice, SelectableLegend, ToolTip,
@@ -88,7 +89,7 @@ Magnify, Legend, HighLighter, Chart, WidgetChart, Axis2D, plotDefault, Areas, Ma
 StackedAreas, Bars, ClusteredBars, StackedBars, ClusteredColumns, StackedColumns, Grid, Candlesticks, OHLC, Scatter, Adobebricks,
 Algae, Bahamation, BlueDusk, Charged, Chris, Claro, common, cubanShirts, Desert, Distinctive, Dollar, Electric, gradientGenerator,
 Grasshopper, Grasslands, GreySkies, Harmony, IndigoNation, Ireland, Julie, MiamiNice, Midwest, Minty, PrimaryColors, PurpleRain,
-Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetland, MouseZoomAndPan, MouseIndicator, Shake, SocketStore, xhr) {
+Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetland, MouseZoomAndPan, MouseIndicator, Shake, SocketStore, StoreSeriesExtended,xhr) {
 
 	/**
 	 * @class  GraphCore
@@ -381,21 +382,27 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				console.log("Markers not supported by:", this._graphOptions.type);
 			}
 		},
-		addGraph: function(name, type) {
+		addGraph: function(name, type,hAxis,vAxis) {
 			var _this = this;
 			this._name = name || this.chart.name;
 			this._graphOptions.type = type || this._graphOptions.type;
+			if (hAxis){
+				_this._graphOptions.hAxis =  hAxis;
+			}
+			if (vAxis){
+				_this._graphOptions.vAxis =  vAxis;
+			}
 			console.log("nameeeeeeeeeee",name)
-			var as= name;
-			this.chart.addPlot(as, this._graphOptions);
+			this.chart.addPlot(name, this._graphOptions);
 			//new ToolTip(_this.chart,'default')
 			//_this.setSelectableLegend();
-			_this.setLegend();
+			/*_this.setLegend();
 			_this.setToolTip();
 			if (type == 'Pie') {
 				_this.setMoveSlice();
 				_this.setMagnify(1.1);
 			}
+			*/
 			if (type == 'Columns') {
 				_this.setHighLighter();
 			} else {
@@ -631,7 +638,7 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				if (validData) {
 					//this.chart.addSeries(name, data/*, this._seriesOptions*/);
 					
-					  this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+					  this.chart.addSeries(name, new StoreSeriesExtended(this.getStore(), {
 					 	query:_this.fieldObject
 					  }, type),plot);
 					//this.set('store',storeData)
@@ -640,12 +647,13 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 
 			} else {
 				//this.chart.addSeries(name, data/*, this._seriesOptions*/);
-				  this.chart.addSeries(name, new StoreSeries(this.getStore(), {
+				  this.chart.addSeries(name, new StoreSeriesExtended(this.getStore(), {
 				  	query: _this.fieldObject
 				  },type),plot);
 				//this.set('store',storeData)
 				this.chart.render();
 			}
+			this.chart.render();
 		},
 		// addSeriesData: function( /*String*/ name, /*Array*/ data) {
 		// 	// console.log("store data iss",storeData)
@@ -869,7 +877,14 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 					}
 				})
 			}
-			 _this.addSeriesData(group.label,dataForStore,_this.addSeriesType)
+			 if(typeof schema.plots == "object"){
+			 	array.forEach(schema.plots,function(plot){
+			 		//if(plot=="Pie" && plot == "Bars"){
+						_this.addSeriesData(group.label+plot+"Series",dataForStore,_this.addSeriesType,{"plot":group.label+"_"+plot})
+					//}
+			 	})	
+			 }
+			 
 		},
 		getGraphAxisLabel:function(storeData,field){
 			console.log("in getGraphAxisLabel",storeData,field)
