@@ -386,18 +386,17 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			var _this = this;
 			this._name = name || this.chart.name;
 			this._graphOptions.type = type || this._graphOptions.type;
-			if (hAxis){
+			/*if (hAxis){
 				_this._graphOptions.hAxis =  hAxis;
 			}
 			if (vAxis){
 				_this._graphOptions.vAxis =  vAxis;
-			}
-			console.log("nameeeeeeeeeee",name)
+			}*/
 			this.chart.addPlot(name, this._graphOptions);
 			//new ToolTip(_this.chart,'default')
 			//_this.setSelectableLegend();
-			/*_this.setLegend();
 			_this.setToolTip();
+			/*_this.setLegend();
 			if (type == 'Pie') {
 				_this.setMoveSlice();
 				_this.setMagnify(1.1);
@@ -408,74 +407,8 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			} else {
 				_this.setMagnify();
 			}
-
-
-
 			//pieChart = new dc.Chart("pieChart");
 			this.chart.setTheme(Claro);
-			/*addSeries("Series A", [{
-				y: 12.1,
-				tooltip: "1,210 million"
-			}, {
-				y: 9.52,
-				tooltip: "952 million"
-			}, {
-				y: 2.66,
-				text: "USA",
-				tooltip: "266 million"
-			}, {
-				y: 2.06,
-				text: "Indonisia",
-				tooltip: "206 million"
-			}, {
-				y: 1.63,
-				text: "Brazil",
-				tooltip: "163 million"
-			}, {
-				y: 1.48,
-				text: "Russian",
-				tooltip: "148 million"
-			}, {
-				y: 1.29,
-				text: "Pakistan",
-				tooltip: "129 million"
-			}, {
-				y: 1.25,
-				text: "Japan",
-				tooltip: "125 million"
-			}, {
-				y: 1.23,
-				text: "Bangladesh",
-				tooltip: "123 million"
-			}, {
-				y: 1.04,
-				text: "Nigeria",
-				tooltip: "104 million"
-			}, {
-				y: 0.96,
-				text: "Mexico",
-				tooltip: "96 million"
-			}, {
-				y: 0.84,
-				text: "Germany",
-				tooltip: "84 million"
-			}, {
-				y: 0.74,
-				text: "Phillippines",
-				tooltip: "74 million"
-			}, {
-				y: 0.74,
-				text: "Viet Nam",
-				tooltip: "74 million"
-			}, {
-				y: 0.66,
-				text: "Iran",
-				tooltip: "66 million"
-			}, {
-				y: 0.64,
-				text: "Egypt",
-				tooltip: "64 million"
-			}]).render();*/
 			return this;
 		},
 		addAxisToGraph: function( /*String*/ name, /*Boolean*/ vertical) {
@@ -585,63 +518,16 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 		},*/
 		addSeriesData: function(/*String*/ name, /*Array*/ data, /*String*/ type,/*Object*/ plot) {
 			var _this = this;
-			/*if (!data) {
-				data = [{
-					x: 1,
-					y: 90
-				}, {
-					x: 1,
-					y: 320
-				}, {
-					x: 2,
-					y: 220
-				}, {
-					x: 3,
-					y: 420
-				}, {
-					x: 4,
-					y: 320
-				}, {
-					x: 5,
-					y: 560
-				}, {
-					x: 6,
-					y: 850
-				}, {
-					x: 7,
-					y: 320
-				}, {
-					x: 8,
-					y: 0
-				}, {
-					x: 9,
-					y: 320
-				}];
-			}*/
-			// console.log("store data iss",storeData)
-			
 			if (this._graphOptions.type == "Bubble") {
 
-				//				this._graphOptions.markers = markers||this._graphOptions.markers;
 				var validData = true;
-				// for(var i = 0; i < data.length; i++) {
-				// 	if(data[i].size) {} else {
-				// 		validData = false;
-				// 		console.log("Invalid Data... for " + this._graphOptions.type + " Chart/Graph Please Enter like this Eg: { x:1, y:1, size:20 }");
-				// 		break;
-				// 	}
-				// }
-				// var storeData=new Memory({
-				// 	data:data
-				// })
-				// console.log("store data iss",storeData)
+				
 				if (validData) {
 					//this.chart.addSeries(name, data/*, this._seriesOptions*/);
 					
 					  this.chart.addSeries(name, new StoreSeriesExtended(this.getStore(), {
 					 	query:_this.fieldObject
 					  }, type),plot);
-					//this.set('store',storeData)
 					this.chart.render();
 				}
 
@@ -650,7 +536,6 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				  this.chart.addSeries(name, new StoreSeriesExtended(this.getStore(), {
 				  	query: _this.fieldObject
 				  },type),plot);
-				//this.set('store',storeData)
 				this.chart.render();
 			}
 			this.chart.render();
@@ -738,14 +623,6 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				this.setSeriesData(name, data)
 			}
 		},
-		/*
-						addAxis("x", { fixLower: "minor", fixUpper: "minor", natural: true }).
-						addAxis("y", { vertical: true, fixLower: "major", fixUpper: "major", includeZero: true }).
-						addSeries("Series A", [ 2, 1, 0.5, -1, -2 ] ).
-						addSeries("Series B", [ -2, -1, -0.5, 1, 2 ] ).
-						addSeries("Series C", [ 1, 0.5, -1, -2, -3 ] ).
-						addSeries("Series D", [ 0.7, 1.5, -1.2, -1.25, 3 ] ).render();
-*/
 		toggleAxes: function() {},
 		showZero: function( /*String*/ name, /*Boolean*/ show) {
 			//reset vertical
@@ -753,31 +630,6 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			this.chart.dirty = true;
 			this.chart.render();
 		},
-		/*setColumns: function(groups) {
-			var _this = this;
-			array.forEach(groups, function(group) {
-				_this._topRow.push({
-					label: group.label,
-					colSpan: group.fields.length
-				});
-				array.forEach(group.fields, function(field) {
-					_this._bottomRow.push({
-						label: field.label,
-						field: field.id
-					});
-				});
-			});
-			this._grid.set('columns', _this._bottomRow);
-		},
-		*/
-		
-		/*
-		set: function(prop, value) {
-			this._graph.set(prop, value)
-		},
-		getGraphThis: function() {
-			return this;
-		}*/
 		setStore: function(schema) {
 			console.log("inside setStore")	
 			var _this = this;
@@ -787,8 +639,6 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				idProperty: _this.getIdProperyForGraph(schema),
 				returnResult: _this.getIdToReturnQueryResult(schema)
 			}))
-			console.log("storeeeeeee",_this.store)
-			//_this.chart.set('store',_this._store);
 		},
 		getIdToReturnQueryResult: function(schema) {
  			console.log(" inside getIdToReturnQueryResult")
@@ -833,28 +683,16 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 			array.forEach(schema.fields,function(field){
 				graphField[field.$id]='';
 			})
-			console.log("field array in graph.js",graphField)
 			return graphField;
 		},
-		/*setGraphData:function(data){
-			var _this = this;
-			_this.graphData = data;
-		},*/
 		setGraphData:function(data,schema){
 			console.log("in setGraphData",data)
 			var _this = this;
-			_this.datas=data;
 			var getLabels;
 			var group = schema;
-			console.log('graph data is  ',_this.datas)
 			var dataForStore=_this.getDataForStore(data, schema);
-			
-			console.log('dataForStore in graph.js is =',dataForStore)
-			
 			if (group.widget){
 				array.forEach(group.fields,function(field){
-					//fieldTableColumn=field.table+'.'+field.column;
-					//_this._fieldArray.push(fieldTableColumn);
 					if(field.widget=='x'){
 						//set axis
 						_this.addAxisToGraph(field.widget);
@@ -863,17 +701,13 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 						_this.setAxisTitleOrientation(field.widget, "away")
 						//get lable for axis
 						 getlabels=_this.getGraphAxisLabel(_this.datas,field);
-						 console.log('getLabels for x',getlabels)
 						_this.setAxisLabel(field.widget,getlabels);
-						//_this.labelX=field.label;
 					}
 					else {
 						_this.addAxisToGraph(field.widget, true);
 						_this.setAxisTitle(field.widget, field.label);
 						 getlabels=_this.getGraphAxisLabel(_this.datas,field);
-						 console.log('getLabels for y',getlabels)
 						_this.setAxisLabel(field.widget,getlabels);
-						//_this.labelY=field.label;	
 					}
 				})
 			}
@@ -884,55 +718,31 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 					//}
 			 	})	
 			 }
-			 
+			 this.chart.resize(800,400);
 		},
 		getGraphAxisLabel:function(storeData,field){
-			console.log("in getGraphAxisLabel",storeData,field)
 			var _this=this;
 			var labels=[];
-				var i=1;
-				var  z=1;
 			var data=storeData;	
-				console.log('data is==',data)
-				for(each in data){
-					//console.log('data[each]=',data[each])
-					//console.log('each=',each)
-					//var x=_this.labelX;
-					//var y=_this.labelY;
-					//console.log("xxxxx----yyyyyy",data[each][x]+'------'+data[each][y])
-					var label = {}
-					if(field.widget=='x'){
-						//console.log("in xxxxx",each,data[each],data[each][field.$id],field.$id)	
-						label.value=parseInt(each)+1;
-						label.text=data[each][field.$id].toString();
-					} else {
-						//console.log("in yyyyyyyy",each,data[each],data[each][field.$id])	
-						label.value=parseInt(data[each][field.$id]);
-						label.text='--'+parseInt(data[each][field.$id]).toString();	
-					}
-					/*if(flag){
-						console.log('flag')
-						
-					}
-					else{
-						label.value=i++;
-						//label.text=data[each][x];
-					}*/	
-					//console.log("label ====",label)	
-					labels.push(label)
+			for(each in data){
+				var label = {}
+				if(field.widget=='x'){
+					label.value=parseInt(each)+1;
+					label.text=data[each][field.$id].toString();
+				} else {
+					label.value=parseInt(data[each][field.$id]);
+					label.text='--'+parseInt(data[each][field.$id]).toString();	
 				}
-				//console.log('axixlabel are',labels)
-				return labels;
-
+				labels.push(label)
+			}
+			return labels;
 		},
 		getDataForStore:function(datas, group){
-			console.log("in getDataForStore")
-			console.log("graph data comming from server",datas)
 			var _this=this;
-			var xField;
-			var yField;
-			var labelX;
-			var labelY;
+			var xField="";
+			var yField="";
+			var labelX="";
+			var labelY="";
 			array.forEach(group.fields,function(field){
 				if(field.widget=='x'){
 					xField=field.$id;	
@@ -945,7 +755,6 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 					_this.labelY=field.label;				
 				}
 			})
-			//_this.addSeriesType=labelY;
 			_this.addSeriesType=yField;
 			var storeDatas=[];
 			var graphTestData=[];
@@ -955,27 +764,9 @@ Renkoo, RoyalPurples, SageToLime, Shrooms, ThreeD, Tom, Tufte, WatersEdge, Wetla
 				storeData[labelX]='';
 				storeData[labelY]='';
 				storeData[labelX]=data[xField];
-				//storeData[labelY] = /*parseInt(data[yField])*/ (((a++)*15.5)/(a++));
-				/*if (typeof data[yField]=='string'){
-					storeData[labelY] = parseInt(data[yField]);
-					
-					//storeData[labelY] = parseInt(parseInt(data[yField])/((a++)*10));
-					//storeData[labelY] = (a++)*10;
-					//storeData[labelY]=(((a++)*100)/25);
-				}
-				else {
-					storeData[labelY]=data[yField];
-				}
-				if(!((storeData[labelX]==null) && (storeData[labelY]==null))){
-					storeDatas.push(storeData);
-				}
-				else{
-					console.log('null value in graph data')
-				}*/
 				graphTestData.push(parseInt(data[yField]));
 			})
 			return graphTestData;
-			//return storeDatas;
 		}
 
 	});
