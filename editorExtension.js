@@ -41,7 +41,7 @@ function dataFromValue(value, oldValue){
 // intermediary frontend to dataFromValue for HTML and widget editors
 function dataFromEditor(column, cmp){
 	if(typeof cmp.get == "function"){ // widget
-		if(cmp.get("displayedValue")) {
+		if(cmp.widget == 'FilteringSelect') {
 			return dataFromValue(cmp.get("displayedValue"));
 		}
 		return dataFromValue(cmp.get("value"));
@@ -379,7 +379,9 @@ function edit(cell) {
 			dirty = this.dirty && this.dirty[row.id];
 			value = (dirty && field in dirty) ? dirty[field] :
 				column.get ? column.get(row.data) : row.data[field];
-			
+			if(column.editorInstance.widget == 'FilteringSelect') {
+				value = column.editorInstance.get('value')
+			}
 			showEditor(column.editorInstance, column, cellElement, value);
 			
 			// focus / blur-handler-resume logic is surrounded in a setTimeout
@@ -529,6 +531,9 @@ return function(column, editor, editOn){
 		// always-on: create editor immediately upon rendering each cell
 		if(!column.canEdit || column.canEdit(object, value)){
 			var cmp = createEditor(column);
+			if(cmp.store) {
+				value = object[cmp.store.idProperty]
+			}
 			showEditor(cmp, column, cell, value);
 			// Maintain reference for later use.
 			cell[isWidget ? "widget" : "input"] = cmp;
