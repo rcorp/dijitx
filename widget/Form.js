@@ -20,19 +20,11 @@ define ([
                 win.scrollToView(this.domNode);
             }
         },
-        save: function(data, gridId) {
+        save: function(data) {
             var _this = this;
-            if(data && gridId){
-                var formData = this.get('value');
-                delete formData[gridId]
-                _this.store.add(data).then(function(result){
-                    _this.reset();
-                });
-            } else{
-                _this.store.add(data).then(function(result){
-                    _this.reset();
-                });
-            }
+            this.store.add(data).then(function(result){
+                _this.reset();
+            });
         }
     })
 })
