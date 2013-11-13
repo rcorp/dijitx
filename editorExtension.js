@@ -68,10 +68,12 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				rowId: row.id,
 				oldValue: oldValue,
 				value: value,
-				origValue:cellElement.widget.get('value'),
 				bubbles: true,
 				cancelable: true
 			};
+			if(cellElement.widget) {
+				lang.mixin(eventObject,{origValue:cellElement.widget.get('value')})
+			}
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
