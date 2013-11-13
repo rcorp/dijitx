@@ -71,15 +71,24 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				bubbles: true,
 				cancelable: true
 			};
+
 			if(cellElement.widget) {
 				lang.mixin(eventObject,{origValue:cellElement.widget.get('value')})
+				if(cellElement.widget && cellElement.widget.store && cellElement.widget.store.idProperty) {
+					lang.setObject('idProperty', cellElement.widget.store.idProperty, eventObject);
+				}
 			}
+
+
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
 			
 			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
 				if(grid.updateDirty){
+					if(eventObject.idProperty) {
+						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
+					}
 					// for OnDemandGrid: update dirty data, and save if autoSave is true
 					grid.updateDirty(row.id, column.field, value);
 					// perform auto-save (if applicable) in next tick to avoid
