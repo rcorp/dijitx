@@ -88,6 +88,8 @@ define ([
                             lang.setObject(widget.store.idProperty, value, obj);
                             // unique name
                             lang.setObject(name, widget.get('displayedValue'), obj);
+                        } else if (widget.widget == 'Button') {
+                            console.log('ignore Button')
                         } else {
                             // unique name
                             lang.setObject(name, value, obj);
