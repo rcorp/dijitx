@@ -8,6 +8,9 @@ define([
 		constructor: function() {
 
 		},
+		setRowIdObject : function (obj) {
+			this._rowIdToObject = obj;
+		},
 		getRowIdObject : function () {
 			return this._rowIdToObject;
 		},
