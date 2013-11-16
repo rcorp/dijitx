@@ -83,37 +83,40 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
-			
-			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
-				if(grid.updateDirty){
-					if(eventObject.idProperty) {
-						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
+			// prevent trigeering dgrid-dataChange when setting corect value to
+			// filtering select
+			if(typeof value == typeof oldValue) {
+				if(on.emit(cellElement, "dgrid-datachange", eventObject)){
+					if(grid.updateDirty){
+						if(eventObject.idProperty) {
+							grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
+						}
+						// for OnDemandGrid: update dirty data, and save if autoSave is true
+						grid.updateDirty(row.id, column.field, value);
+						// perform auto-save (if applicable) in next tick to avoid
+						// unintentional mishaps due to order of handler execution
+						column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
+					}else{
+						// update store-less grid
+						row.data[column.field] = value;
 					}
-					// for OnDemandGrid: update dirty data, and save if autoSave is true
-					grid.updateDirty(row.id, column.field, value);
-					// perform auto-save (if applicable) in next tick to avoid
-					// unintentional mishaps due to order of handler execution
-					column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
 				}else{
-					// update store-less grid
-					row.data[column.field] = value;
+					// Otherwise keep the value the same
+					// For the sake of always-on editors, need to manually reset the value
+					var cmp;
+					if(cmp = cellElement.widget){
+						// set _dgridIgnoreChange to prevent an infinite loop in the
+						// onChange handler and prevent dgrid-datachange from firing
+						// a second time
+						cmp._dgridIgnoreChange = true;
+						cmp.set("value", oldValue);
+						setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
+					}else if(cmp = cellElement.input){
+						updateInputValue(cmp, oldValue);
+					}
+					
+					return oldValue;
 				}
-			}else{
-				// Otherwise keep the value the same
-				// For the sake of always-on editors, need to manually reset the value
-				var cmp;
-				if(cmp = cellElement.widget){
-					// set _dgridIgnoreChange to prevent an infinite loop in the
-					// onChange handler and prevent dgrid-datachange from firing
-					// a second time
-					cmp._dgridIgnoreChange = true;
-					cmp.set("value", oldValue);
-					setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
-				}else if(cmp = cellElement.input){
-					updateInputValue(cmp, oldValue);
-				}
-				
-				return oldValue;
 			}
 		}
 	}
