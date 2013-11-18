@@ -83,9 +83,10 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
-			// prevent trigeering dgrid-dataChange when setting corect value to
+			// prevent triggering dgrid-dataChange when setting corect value to
 			// filtering select
-			if((typeof value == typeof oldValue) || oldValue == undefined) {
+			console.log('prevent triggering dgrid-dataChange', typeof value , typeof oldValue, value, oldValue)
+			if((typeof value == typeof oldValue) || oldValue == undefined || typeof value == 'object') {
 				if(on.emit(cellElement, "dgrid-datachange", eventObject)){
 					if(grid.updateDirty){
 						if(eventObject.idProperty) {
