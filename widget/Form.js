@@ -89,7 +89,7 @@ define ([
                             // unique name
                             lang.setObject(name, widget.get('displayedValue'), obj);
                         } else if (widget.widget == 'Button') {
-                            console.log('ignore Button')
+                            console.log('Button no value')
                         } else {
                             // unique name
                             lang.setObject(name, value, obj);
