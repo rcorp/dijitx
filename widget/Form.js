@@ -88,6 +88,10 @@ define ([
                             lang.setObject(widget.store.idProperty, value, obj);
                             // unique name
                             lang.setObject(name, widget.get('displayedValue'), obj);
+                        } else if (widget.widget == 'LabelWidget') {
+                            lang.setObject(widget.idProperty, value, obj);
+                            // unique name
+                            lang.setObject(name, widget.get('displayedValue'), obj);
                         } else if (widget.widget == 'Button') {
                             console.log('Button no value')
                         } else {
@@ -135,6 +139,10 @@ define ([
                     array.forEach(widgets, function(w, i){
                         if(w.widget == 'FilteringSelect' && w.store.idProperty) {
                             w.set('value', obj[w.store.idProperty]);
+                        } else if(w.widget == 'LabelWidget') {
+                            console.log(obj, values, values[i], 'from set')
+                            w.set('value', obj[w.idProperty]);
+                            w.set('displayedValue', values[i]);
                         } else {
                             w.set('value', values[i]);
                         }
