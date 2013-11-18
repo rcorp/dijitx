@@ -15,6 +15,7 @@ define(['dojo/_base/declare',
         tag:'',
         //tag value set by user
         value:'',
+        idProperty:'',
         displayedValue:'',
         //Some string value of class.
         baseClass: 'labelWidget',
@@ -76,6 +77,10 @@ define(['dojo/_base/declare',
             console.log(this.displayedValue)
             html.set(this.valueNode,this.displayedValue)
             console.log(this.displayedValue)
+        },
+        reset: function() {
+            this.set('displayedValue',"")
+            this.set('value',"")
         },
         /**
          * funtion to refresh the widget to effect the value same as startup
