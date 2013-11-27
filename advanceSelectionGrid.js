@@ -32,7 +32,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			console.log('extension')
 			headerNode = this.headerNode
 
-			var row = this.createFilterRowCells("th", function(th, column) {
+			var row = this.createButtonRowCells("th", function(th, column) {
 				var contentNode = column.headerNode = th;
 				if(contentBoxSizing) {
 					// we're interested in the th, but we're passed the inner div
@@ -53,12 +53,19 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 					th.className += " dgrid-sortable";
 				}
 			}, this.subRows && this.subRows.headerRows);
+
 			row.id = this.id + "-header-filterable";
 			this._rowIdToObject[row.id = this.id + "-header-filterable"] = this.columns;
 			headerNode.appendChild(row);
 
+			var tBody = row.children[0]
+			console.log(tBody)
+			this.addSelectAllButtonToGridHeader(tBody.children[0]);
+			this.addSelectInverseButtonToGridHeader(tBody.children[1]);
+			this.addSelectNoneButtonToGridHeader(tBody.children[2]);
+			domConstruct.place(row, headerNode, 0);
 		},
-		createFilterRowCells: function(tag, each, subRows) {
+		createButtonRowCells: function(tag, each, subRows) {
 			var
 			grid = this,
 				columns = this.columns,
@@ -77,49 +84,58 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			// Allow specification of custom/specific subRows, falling back to
 			// those defined on the instance.
 			subRows = subRows || this.subRows;
-			for(si = 0, sl = subRows.length; si < sl; si++) {
-				subRow = subRows[si];
-				// for single-subrow cases in modern browsers, TR can be skipped
-				// http://jsperf.com/table-without-trs
-				tr = put(tbody, "tr");
-				if(subRow.className) {
-					put(tr, "." + subRow.className);
-				}
 
-				for(i = 0, l = subRow.length; i < l; i++) {
-					// iterate through the columns
-					column = subRow[i];
-					if(column) {
-						this.filterColName = column.id
-						// console.log('filterable....')
-						id = column.id + '-filterable';
-						extraClassName = column.className || (column.field && "field-" + column.field);
-						cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "") + (extraClassName ? "." + extraClassName : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
-						cell.columnId = id;
-						if(contentBoxSizing) {
-							// The browser (IE7-) does not support box-sizing: border-box, so we emulate it with a padding div
-							innerCell = put(cell, "!dgrid-cell-padding div.dgrid-cell-padding"); // remove the dgrid-cell-padding, and create a child with that class
-							cell.contents = innerCell;
-						} else {
-							innerCell = cell;
-						}
-						colSpan = column.colSpan;
-						if(colSpan) {
-							cell.colSpan = colSpan;
-						}
-						rowSpan = column.rowSpan;
-						if(rowSpan) {
-							cell.rowSpan = rowSpan;
-						}
-						each(innerCell, column);
-						// console.log('tr cell',cell)
-						// add the td to the tr at the end for better performance
-						tr.appendChild(cell);
-					}
-				}
-			}
-			// console.log('createFilterRowCells', row, tr)
+			tr = put(tbody, "tr");
+			// // add the td to the tr at the end for better performance
+			tr.appendChild(this.addButton(tag, "selectAll"));
+			tr.appendChild(this.addButton(tag, "selectInverse"));
+			tr.appendChild(this.addButton(tag, "selectNone"));
 			return row;
+		},
+		addButton: function(tag, id) {
+			var cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
+			cell.id = id + '_Button_Cell';
+			if(contentBoxSizing) {
+				// The browser (IE7-) does not support box-sizing: border-box, so we emulate it with a padding div
+				innerCell = put(cell, "!dgrid-cell-padding div.dgrid-cell-padding"); // remove the dgrid-cell-padding, and create a child with that class
+				cell.contents = innerCell;
+			} else {
+				innerCell = cell;
+			}
+			return cell;
+		},
+		addSelectAllButtonToGridHeader: function(parentDiv) {
+			var This = this;
+			/**
+			 * create filter textbox
+			 * @type {dijit}
+			 */
+			var selectAll = new Button({
+			        label:"Select All",
+		    });
+		    parentDiv.appendChild(selectAll.domNode)
+		},
+		addSelectNoneButtonToGridHeader: function(parentDiv) {
+			var This = this;
+			/**
+			 * create filter textbox
+			 * @type {dijit}
+			 */
+			var selectNone = new Button({
+			        label:"Select None",
+		    });
+		    parentDiv.appendChild(selectNone.domNode)
+		},
+		addSelectInverseButtonToGridHeader: function(parentDiv) {
+			var This = this;
+			/**
+			 * create filter textbox
+			 * @type {dijit}
+			 */
+			var selectInverse = new Button({
+			        label:"Select Inverse",
+		    });
+		    parentDiv.appendChild(selectInverse.domNode)
 		}
 	});
 });
