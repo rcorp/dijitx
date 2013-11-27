@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", 	"dojo/_base/Deferred", "dojo/_base/array", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
-declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
+define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
+declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
 	/*
 	 *	Advance Row Selection plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
