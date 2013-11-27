@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
-declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
+define(["dojo/_base/declare", "dojo/html", "dojo/topic", "dojo/has", "dojo/dom", "dojo/dom-attr", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
+declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 	/*
 	 *	Advance Row Selection plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
@@ -51,9 +51,9 @@ declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
 			// first Cell
 			this.addSelectAllButtonToGridHeader(tBody.children[0]);
 			// second Cell
-			this.addSelectInverseButtonToGridHeader(tBody.children[1]);
+			this.addSelectNoneButtonToGridHeader(tBody.children[1]);
 			// third Cell
-			this.addSelectNoneButtonToGridHeader(tBody.children[2]);
+			this.addSelectInverseButtonToGridHeader(tBody.children[2]);
 			// place row on top of the hedader-node
 			domConstruct.place(row, headerNode, 0);
 		},
@@ -95,7 +95,7 @@ declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
 			return cell;
 		},
 		addSelectAllButtonToGridHeader: function(parentDiv) {
-			var This = this;
+			var _this = this;
 			/**
 			 * create filter textbox
 			 * @type {dijit}
@@ -103,10 +103,14 @@ declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
 			var selectAll = new Button({
 		        label:"Select All",
 		    });
+		    selectAll.on('click', function(evt) {
+		    	_this.selectAll();
+		    	topic.publish('dgrid/selectAll/button', evt)
+		    })
 		    parentDiv.appendChild(selectAll.domNode)
 		},
 		addSelectNoneButtonToGridHeader: function(parentDiv) {
-			var This = this;
+			var _this = this;
 			/**
 			 * create filter textbox
 			 * @type {dijit}
@@ -114,10 +118,19 @@ declare, html, has, dom, domAttr, domConstruct, Button, put, on) {
 			var selectNone = new Button({
 		        label:"Select None",
 		    });
+		    selectNone.on('click', function(evt) {
+		    	_this.allSelected = true;
+		    	_this.selection = {}; // we do _this to clear out pages from previous sorts
+		    	for(var i in _this._rowIdToObject){
+		    		var row = _this.row(_this._rowIdToObject[i]);
+		    		_this._select(row.id, null, false);
+		    	}
+		    	_this._fireSelectionEvents();
+		    })
 		    parentDiv.appendChild(selectNone.domNode)
 		},
 		addSelectInverseButtonToGridHeader: function(parentDiv) {
-			var This = this;
+			var _this = this;
 			/**
 			 * create filter textbox
 			 * @type {dijit}
