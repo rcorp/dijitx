@@ -119,13 +119,7 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 		        label:"Select None",
 		    });
 		    selectNone.on('click', function(evt) {
-		    	_this.allSelected = true;
-		    	_this.selection = {}; // we do _this to clear out pages from previous sorts
-		    	for(var i in _this._rowIdToObject){
-		    		var row = _this.row(_this._rowIdToObject[i]);
-		    		_this._select(row.id, null, false);
-		    	}
-		    	_this._fireSelectionEvents();
+		    	_this.clearSelection();
 		    })
 		    parentDiv.appendChild(selectNone.domNode)
 		},
