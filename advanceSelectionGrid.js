@@ -88,6 +88,7 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 		},
 		addButton: function(tag, id) {
 			var cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
+			// diffrent id string for buttons cells
 			cell.id = id + '_Button_Cell';
 			if (contentBoxSizing) {
 				// The browser (IE7-) does not support box-sizing: border-box, so we emulate it with a padding div
