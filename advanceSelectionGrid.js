@@ -1,22 +1,11 @@
 define(["dojo/_base/declare", 	"dojo/_base/Deferred", "dojo/_base/array", "dojo/html", "dojo/has", "dojo/dom", "dojo/dom-attr", "dijit/form/TextBox", "dojo/dom-construct", "dojox/image", "dijit/form/Button", "dgrid/selector", "put-selector/put","dojo/on"], function(
 declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, image, Button, Selector, put, on) {
 	/*
-	 *	Row Filter plugin for dgrid
-	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-02-12
-	 *  Dojo DGrid Extension with filtering and Button selection capability
-	 *
-	 *  A dGrid plugin that attaches dojo textboxes just header of the dGrid
-	 *  to search and filter dGrids row(s) by entering some filterable string in the textbox
-	 *  provided. Result of the values entered in each textboxes is retrieved
-	 *  by quering store and filtered rows are displayed on the grid. If some rows
-	 *  are selected by checking the Button then that particular rows will always remain
-	 *  even if the filtering string is not macthed with it.
-	 *
-	 *  This filter is based on one column set by user as a filtering column.
+	 *	Advance Row Selection plugin for dgrid
+	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
 	 *
 	 */
 
-	// var indexOfSelectedItemsOfGridArr = [];
 	var invalidClassChars = /[^\._a-zA-Z0-9-]/g;
 	var contentBoxSizing = has("ie") < 8 && !has("quirks");
 	return declare(null, {
@@ -58,17 +47,18 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			this._rowIdToObject[row.id = this.id + "-header-filterable"] = this.columns;
 			headerNode.appendChild(row);
 
-			var tBody = row.children[0]
-			console.log(tBody)
+			var tBody = row.children[0];
+			// first Cell
 			this.addSelectAllButtonToGridHeader(tBody.children[0]);
+			// second Cell
 			this.addSelectInverseButtonToGridHeader(tBody.children[1]);
+			// third Cell
 			this.addSelectNoneButtonToGridHeader(tBody.children[2]);
+			// place row on top of the hedader-node
 			domConstruct.place(row, headerNode, 0);
 		},
 		createButtonRowCells: function(tag, each, subRows) {
-			var
-			grid = this,
-				columns = this.columns,
+			var columns = this.columns,
 				headerNode = this.headerNode,
 				i = headerNode.childNodes.length;
 
@@ -111,7 +101,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 * @type {dijit}
 			 */
 			var selectAll = new Button({
-			        label:"Select All",
+		        label:"Select All",
 		    });
 		    parentDiv.appendChild(selectAll.domNode)
 		},
@@ -122,7 +112,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 * @type {dijit}
 			 */
 			var selectNone = new Button({
-			        label:"Select None",
+		        label:"Select None",
 		    });
 		    parentDiv.appendChild(selectNone.domNode)
 		},
@@ -133,7 +123,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 * @type {dijit}
 			 */
 			var selectInverse = new Button({
-			        label:"Select Inverse",
+		        label:"Select Inverse",
 		    });
 		    parentDiv.appendChild(selectInverse.domNode)
 		}
