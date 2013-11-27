@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
-declare, html, has, domConstruct, Button, put, on) {
+define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "dijit/form/Button", "put-selector/put", "dojo/on"], function(
+	declare, html, has, domConstruct, Button, put, on) {
 	/*
 	 *	Advance Row Selection plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
@@ -22,21 +22,21 @@ declare, html, has, domConstruct, Button, put, on) {
 
 			var row = this.createButtonRowCells("th", function(th, column) {
 				var contentNode = column.headerNode = th;
-				if(contentBoxSizing) {
+				if (contentBoxSizing) {
 					// we're interested in the th, but we're passed the inner div
 					th = th.parentNode;
 				}
 				var field = column.field;
-				if(field) {
+				if (field) {
 					th.field = field;
 				}
 				// allow for custom header content manipulation
-				if(column.renderHeaderCell) {
+				if (column.renderHeaderCell) {
 					// appendIfNode(contentNode, column.renderHeaderCell(contentNode));
-				} else if(column.label || column.field) {
+				} else if (column.label || column.field) {
 					contentNode.appendChild(document.createTextNode(column.label || column.field));
 				}
-				if(column.sortable !== false && field && field != "_item") {
+				if (column.sortable !== false && field && field != "_item") {
 					th.sortable = true;
 					th.className += " dgrid-sortable";
 				}
@@ -46,7 +46,7 @@ declare, html, has, domConstruct, Button, put, on) {
 			this._rowIdToObject[row.id = this.id + "-header-filterable"] = this.columns;
 			headerNode.appendChild(row);
 			var trTag = ''
-			if((has("ie") < 9 || has("quirks"))) {
+			if ((has("ie") < 9 || has("quirks"))) {
 				// because of tBody Tag get chldren of children
 				trTag = row.children[0].children[0]
 			} else {
@@ -89,7 +89,7 @@ declare, html, has, domConstruct, Button, put, on) {
 		addButton: function(tag, id) {
 			var cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
 			cell.id = id + '_Button_Cell';
-			if(contentBoxSizing) {
+			if (contentBoxSizing) {
 				// The browser (IE7-) does not support box-sizing: border-box, so we emulate it with a padding div
 				innerCell = put(cell, "!dgrid-cell-padding div.dgrid-cell-padding"); // remove the dgrid-cell-padding, and create a child with that class
 				cell.contents = innerCell;
@@ -105,12 +105,12 @@ declare, html, has, domConstruct, Button, put, on) {
 			 * @type {dijit}
 			 */
 			var selectAll = new Button({
-		        label:"Select All",
-		    });
-		    selectAll.on('click', function(evt) {
-		    	_this.selectAll();
-		    })
-		    parentDiv.appendChild(selectAll.domNode)
+				label: "Select All",
+			});
+			selectAll.on('click', function(evt) {
+				_this.selectAll();
+			})
+			parentDiv.appendChild(selectAll.domNode)
 		},
 		addSelectNoneButtonToGridHeader: function(parentDiv) {
 			var _this = this;
@@ -119,12 +119,12 @@ declare, html, has, domConstruct, Button, put, on) {
 			 * @type {dijit}
 			 */
 			var selectNone = new Button({
-		        label:"Select None",
-		    });
-		    selectNone.on('click', function(evt) {
-		    	_this.clearSelection();
-		    })
-		    parentDiv.appendChild(selectNone.domNode)
+				label: "Select None",
+			});
+			selectNone.on('click', function(evt) {
+				_this.clearSelection();
+			})
+			parentDiv.appendChild(selectNone.domNode)
 		},
 		addSelectInverseButtonToGridHeader: function(parentDiv) {
 			var _this = this;
@@ -133,23 +133,23 @@ declare, html, has, domConstruct, Button, put, on) {
 			 * @type {dijit}
 			 */
 			var selectInverse = new Button({
-		        label:"Select Inverse",
-		    });
-		    selectInverse.on('click', function() {
-				if(_this.allSelected) {
+				label: "Select Inverse",
+			});
+			selectInverse.on('click', function() {
+				if (_this.allSelected) {
 					_this.clearSelection();
 				} else {
-					for(var i in _this._rowIdToObject){
-						if(_this.isSelected(_this._rowIdToObject[i])) {
+					for (var i in _this._rowIdToObject) {
+						if (_this.isSelected(_this._rowIdToObject[i])) {
 							_this.select(_this._rowIdToObject[i], null, false)
 						} else {
-							_this.select(_this._rowIdToObject[i],null,true)
+							_this.select(_this._rowIdToObject[i], null, true)
 						}
 					}
 				}
-		    	_this._fireSelectionEvents();
-		    })
-		    parentDiv.appendChild(selectInverse.domNode)
+				_this._fireSelectionEvents();
+			})
+			parentDiv.appendChild(selectInverse.domNode)
 		}
 	});
 });
