@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/html", "dojo/topic", "dojo/has", "dojo/dom", "dojo/dom-attr", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
-declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
+define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "dijit/form/Button", "put-selector/put","dojo/on"], function(
+declare, html, has, domConstruct, Button, put, on) {
 	/*
 	 *	Advance Row Selection plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
@@ -18,7 +18,6 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 		 */
 		renderHeader: function() {
 			this.inherited(arguments);
-			console.log('extension')
 			headerNode = this.headerNode
 
 			var row = this.createButtonRowCells("th", function(th, column) {
@@ -46,14 +45,18 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 			row.id = this.id + "-header-filterable";
 			this._rowIdToObject[row.id = this.id + "-header-filterable"] = this.columns;
 			headerNode.appendChild(row);
-
-			var tBody = row.children[0];
+			var trTag = ''
+			if((has("ie") < 9 || has("quirks"))) {
+				trTag = row.children[0].children[0]
+			} else {
+				trTag = row.children[0];
+			}
 			// first Cell
-			this.addSelectAllButtonToGridHeader(tBody.children[0]);
+			this.addSelectAllButtonToGridHeader(trTag.children[0]);
 			// second Cell
-			this.addSelectNoneButtonToGridHeader(tBody.children[1]);
+			this.addSelectNoneButtonToGridHeader(trTag.children[1]);
 			// third Cell
-			this.addSelectInverseButtonToGridHeader(tBody.children[2]);
+			this.addSelectInverseButtonToGridHeader(trTag.children[2]);
 			// place row on top of the hedader-node
 			domConstruct.place(row, headerNode, 0);
 		},
@@ -105,7 +108,6 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 		    });
 		    selectAll.on('click', function(evt) {
 		    	_this.selectAll();
-		    	topic.publish('dgrid/selectAll/button', evt)
 		    })
 		    parentDiv.appendChild(selectAll.domNode)
 		},
@@ -137,10 +139,10 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 					_this.clearSelection();
 				} else {
 					for(var i in _this._rowIdToObject){
-						if(_this.isSelected(_this._rowIdToObject[i].id)) {
-							_this._select(_this._rowIdToObject[i].id, null, false)
+						if(_this.isSelected(_this._rowIdToObject[i])) {
+							_this._select(_this._rowIdToObject[i], null, false)
 						} else {
-							_this.select(_this._rowIdToObject[i].id,null,true)
+							_this._select(_this._rowIdToObject[i],null,true)
 						}
 					}
 				}
