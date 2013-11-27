@@ -141,9 +141,9 @@ declare, html, has, domConstruct, Button, put, on) {
 				} else {
 					for(var i in _this._rowIdToObject){
 						if(_this.isSelected(_this._rowIdToObject[i])) {
-							_this._select(_this._rowIdToObject[i], null, false)
+							_this.select(_this._rowIdToObject[i], null, false)
 						} else {
-							_this._select(_this._rowIdToObject[i],null,true)
+							_this.select(_this._rowIdToObject[i],null,true)
 						}
 					}
 				}
