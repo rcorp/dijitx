@@ -47,6 +47,7 @@ declare, html, has, domConstruct, Button, put, on) {
 			headerNode.appendChild(row);
 			var trTag = ''
 			if((has("ie") < 9 || has("quirks"))) {
+				// because of tBody Tag get chldren of children
 				trTag = row.children[0].children[0]
 			} else {
 				trTag = row.children[0];
