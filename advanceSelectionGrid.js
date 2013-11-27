@@ -132,6 +132,20 @@ declare, html, topic, has, dom, domAttr, domConstruct, Button, put, on) {
 			var selectInverse = new Button({
 		        label:"Select Inverse",
 		    });
+		    selectInverse.on('click', function() {
+				if(_this.allSelected) {
+					_this.clearSelection();
+				} else {
+					for(var i in _this._rowIdToObject){
+						if(_this.isSelected(_this._rowIdToObject[i].id)) {
+							_this._select(_this._rowIdToObject[i].id, null, false)
+						} else {
+							_this.select(_this._rowIdToObject[i].id,null,true)
+						}
+					}
+				}
+		    	_this._fireSelectionEvents();
+		    })
 		    parentDiv.appendChild(selectInverse.domNode)
 		}
 	});
