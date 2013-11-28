@@ -4,6 +4,7 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 	 *	Advance Row Selection plugin for dgrid
 	 *	Originally contributed by RCorp(Ramanan Corporation, India) 2013-11-27
 	 *
+	 *  Just add plugin and use
 	 */
 
 	var invalidClassChars = /[^\._a-zA-Z0-9-]/g;
@@ -14,7 +15,6 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 		},
 		/**
 		 * override the Grid's renderHeader function
-		 * @return {boolean}
 		 */
 		renderHeader: function() {
 			this.inherited(arguments);
@@ -52,16 +52,21 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 			} else {
 				trTag = row.children[0];
 			}
+			// trTag represents the row - containing 3 cells
+
 			// first Cell
-			this.addSelectAllButtonToGridHeader(trTag.children[0]);
+			this.addSelectAllButton(trTag.children[0]);
 			// second Cell
-			this.addSelectNoneButtonToGridHeader(trTag.children[1]);
+			this.addSelectNoneButton(trTag.children[1]);
 			// third Cell
-			this.addSelectInverseButtonToGridHeader(trTag.children[2]);
+			this.addSelectInverseButton(trTag.children[2]);
 			// place row on top of the hedader-node
 			domConstruct.place(row, headerNode, 0);
 		},
 		createButtonRowCells: function(tag, each, subRows) {
+			// summary:
+			//		Generates the new header row for the placement of Buttons
+			//		for selection
 			var columns = this.columns,
 				headerNode = this.headerNode,
 				i = headerNode.childNodes.length;
@@ -81,12 +86,18 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 
 			tr = put(tbody, "tr");
 			// // add the td to the tr at the end for better performance
+
+			// Create Cell for selecAll
 			tr.appendChild(this.addButton(tag, "selectAll"));
-			tr.appendChild(this.addButton(tag, "selectInverse"));
+			// Create Cell for selecNone
 			tr.appendChild(this.addButton(tag, "selectNone"));
+			// Create Cell for selecInverse
+			tr.appendChild(this.addButton(tag, "selectInverse"));
 			return row;
 		},
 		addButton: function(tag, id) {
+			// summary:
+			//		Create cell for button placement
 			var cell = put(tag + (".dgrid-cell.dgrid-cell-padding" + (id ? ".dgrid-column-" + id : "")).replace(invalidClassChars, "-") + "[role=" + (tag === "th" ? "columnheader" : "gridcell") + "]");
 			// diffrent id string for buttons cells
 			cell.id = id + '_Button_Cell';
@@ -99,11 +110,11 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 			}
 			return cell;
 		},
-		addSelectAllButtonToGridHeader: function(parentDiv) {
+		addSelectAllButton: function(parentDiv) {
 			var _this = this;
 			/**
-			 * create filter textbox
-			 * @type {dijit}
+			 * Button widget to select All rows
+			 * @type {Button}
 			 */
 			var selectAll = new Button({
 				label: "Select All",
@@ -113,11 +124,11 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 			})
 			parentDiv.appendChild(selectAll.domNode)
 		},
-		addSelectNoneButtonToGridHeader: function(parentDiv) {
+		addSelectNoneButton: function(parentDiv) {
 			var _this = this;
 			/**
-			 * create filter textbox
-			 * @type {dijit}
+			 * Button widget to deselect All rows
+			 * @type {Button}
 			 */
 			var selectNone = new Button({
 				label: "Select None",
@@ -127,11 +138,11 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 			})
 			parentDiv.appendChild(selectNone.domNode)
 		},
-		addSelectInverseButtonToGridHeader: function(parentDiv) {
+		addSelectInverseButton: function(parentDiv) {
 			var _this = this;
 			/**
-			 * create filter textbox
-			 * @type {dijit}
+			 * Button widget to toggle selection of rows
+			 * @type {Button}
 			 */
 			var selectInverse = new Button({
 				label: "Select Inverse",
@@ -148,7 +159,9 @@ define(["dojo/_base/declare", "dojo/html", "dojo/has", "dojo/dom-construct", "di
 						}
 					}
 				}
-				_this._fireSelectionEvents();
+				if (_this._fireSelectionEvents) {
+					_this._fireSelectionEvents();
+				}
 			})
 			parentDiv.appendChild(selectInverse.domNode)
 		}
