@@ -15,10 +15,11 @@ define(['dojo/_base/declare',
         tag:'',
         //tag value set by user
         value:'',
+        propertyDom:{},
         //Some string value of class.
         baseClass: 'appTagWidget',
         templateString: '',
-        constructor: function() {
+        constructor: function(param) {
             attr='',
             this.id ='';
             this.createWidget();
@@ -38,6 +39,7 @@ define(['dojo/_base/declare',
         startup: function() {
 
            console.log('startup')
+           // this.hreff = "href="+this.url;
            
           
              // summary:
@@ -67,7 +69,18 @@ define(['dojo/_base/declare',
         },
         _setValueAttr:function(value){
             this.value=value;
-            html.set(this.valueNode,value)
+
+            html.set(this.valueNode,this.value)
+        },
+         _setPropertyDomAttr:function(value){
+            var _this=this;
+            _this.propertyDom=value;
+            for(each in value){
+                _this.valueNode.setAttribute(each,value[each])
+            }
+        },
+        _getPropertyDomAttr:function(){
+            return this.propertyDom;
         },
         /**
          * funtion to refresh the widget to effect the value same as startup
