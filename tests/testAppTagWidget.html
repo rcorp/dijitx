@@ -14,10 +14,16 @@
     
         require(["dijit/InlineEditBox",'dojo/html', "dojo/dom",'dijitx/AppTagWidget'], function(InlineEditBox,html,dom,AppTagWidget){
             window.newWidget= new AppTagWidget({
-                'tag':'p',
-                'id':'tagggggg',
+                'tag':'a',
+                'id':'tagg',
+                'propertyDom':{
+                    "href":"google.com",
+                    "class":"rcorp",
+                    "name":"jasvin"
+                }
             });            
             newWidget.set('value','Jasvin Singh')
+            //newWidget.set('hreff','www.google.com')
             //newWidget.refresh();
             var place=dom.byId('ieb');
             newWidget.placeAt(place)
