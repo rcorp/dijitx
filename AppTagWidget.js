@@ -1,18 +1,20 @@
 define(['dojo/_base/declare', 
     'dojo/_base/lang', 
     'dojo/dom-construct', 
-    'dojo/dom', 
+    'dojo/dom',
+    'dojo/dom-style', 
     "dijit/_WidgetBase", 
     "dijit/_TemplatedMixin", 
     'dojo/html',
     "dojo/Deferred", 
     'dojo/text!./templates/AppTagWidgetTemplate.html',
-    "dojo/domReady!"], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, html,Deferred, template) {
+    "dojo/domReady!"], function(declare, lang, domConstruct, dom, domStyle, WidgetBase, TemplatedMixin, html,Deferred, template) {
     return declare('AppTagWidget', [WidgetBase, TemplatedMixin], {
         //id for AspireWidget.
         id: '',
         //tag get by user and used by templete
         tag:'',
+        style:'',
         //tag value set by user
         value:'',
         propertyDom:{},
@@ -81,6 +83,17 @@ define(['dojo/_base/declare',
         },
         _getPropertyDomAttr:function(){
             return this.propertyDom;
+        },
+         _setStyleAttr:function(value){
+            var _this=this;
+            _this.style=value;
+            domStyle.set(this.parentNode,_this.style)
+            /*for(each in value){
+                _this.valueNode.setAttribute(each,value[each])
+            }*/
+        },
+        _getStyleAttr:function(){
+            return this.style;
         },
         /**
          * funtion to refresh the widget to effect the value same as startup
