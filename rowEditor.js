@@ -311,7 +311,7 @@ function showEditor(cmp, column, cellElement, value){
 	// for regular inputs, we can update the value before even showing it
 	if(!isWidget){ updateInputValue(cmp, value); }
 	
-	cellElement.innerHTML = "";
+	cellElement.innerHTML = "XXX";
 	put(cellElement, ".dgrid-cell-editing");
 	put(cellElement, cmp.domNode || cmp);
 	
@@ -375,9 +375,11 @@ function edit(cell) {
 			var prevRow = grid.get('prevRow')
 			console.log('prevRow', prevRow, column)
 			if(prevRow) {
-				var prevDirty = this.dirty && this.dirty[prevRow.id];
-				var prevDirtyValue = (prevDirty && field in prevDirty) ? prevDirty[field] :
+				console.log(prevRow,'................jugaaaaaaaaaaaad')
+				prevDirty = this.dirty && this.dirty[prevRow.id];
+				prevDirtyValue = (prevDirty && field in prevDirty) ? prevDirty[field] :
 				column.get ? column.get(prevRow.data) : prevRow.data[field];
+				console.log('prevRow actual value', prevRow.data[field], '----->', prevDirtyValue);
 
 				grid.cell(prevRow, column.id).element.innerHTML = prevDirtyValue;
 			}
