@@ -7,7 +7,7 @@ define([
 	"dojo/aspect",
 	"dojo/has",
 	"dojo/query",
-	"./Grid",
+	"dgrid/Grid",
 	"put-selector/put",
 	"dojo/_base/sniff"
 ], function(kernel, lang, arrayUtil, Deferred, on, aspect, has, query, Grid, put){
@@ -71,7 +71,7 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
-			console.log('sdsdsd')
+
 			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
 				if(grid.updateDirty){
 					// for OnDemandGrid: update dirty data, and save if autoSave is true
@@ -311,7 +311,7 @@ function showEditor(cmp, column, cellElement, value){
 	// for regular inputs, we can update the value before even showing it
 	if(!isWidget){ updateInputValue(cmp, value); }
 	
-	cellElement.innerHTML = "XXX";
+	cellElement.innerHTML = "";
 	put(cellElement, ".dgrid-cell-editing");
 	put(cellElement, cmp.domNode || cmp);
 	
@@ -372,17 +372,18 @@ function edit(cell) {
 			dirty = this.dirty && this.dirty[row.id];
 			value = (dirty && field in dirty) ? dirty[field] :
 				column.get ? column.get(row.data) : row.data[field];
+
 			var prevRow = grid.get('prevRow')
-			console.log('prevRow', prevRow, column)
 			if(prevRow) {
-				console.log(prevRow,'................jugaaaaaaaaaaaad')
 				prevDirty = this.dirty && this.dirty[prevRow.id];
 				prevDirtyValue = (prevDirty && field in prevDirty) ? prevDirty[field] :
 				column.get ? column.get(prevRow.data) : prevRow.data[field];
-				console.log('prevRow actual value', prevRow.data[field], '----->', prevDirtyValue);
-
+				console.log('prev row jugaaaaaad', prevDirtyValue, 'prevDirtyValue')
 				grid.cell(prevRow, column.id).element.innerHTML = prevDirtyValue;
+			} else {
+				console.log("else prevROw")
 			}
+
 			showEditor(column.editorInstance, column, cellElement, value);
 			// focus / blur-handler-resume logic is surrounded in a setTimeout
 			// to play nice with Keyboard's dgrid-cellfocusin as an editOn event
@@ -425,9 +426,9 @@ return function(column, editor, editOn){
 			focusoutHandle;
 		if(!grid.edit){
 			// Only perform this logic once on a given grid
-			grid.edit = edit;
-			
+			grid.edit = edit;	
 		}
+		grid.activeRow = '';
 	}
 
 	if(!column){ column = {}; }
@@ -435,8 +436,7 @@ return function(column, editor, editOn){
 	// accept arguments as parameters to editor function, or from column def,
 	// but normalize to column def.
 	column.editor = editor = editor || column.editor || "text";
-	column.editOn = editOn = editOn || column.editOn;
-	
+	column.editOn = editOn = editOn || column.editOn || 'click';
 	isWidget = typeof editor != "string";
 	
 	// warn for widgetArgs -> editorArgs; TODO: remove @ 0.4
@@ -473,26 +473,37 @@ return function(column, editor, editOn){
 				activeOptions = options;
 				// column.grid.edit(this);
 				var editedRow = grid.cell(evt).row;
+					console.log('edited row', editedRow.id)
 				var prevRow = grid.get('prevRow');
 				if(prevRow) {
-					for(each in grid.columns) {
-						console.log('if')
-						if(grid.cell(prevRow,each).column.editorInstance.domNode) {
-							setPropertyFromEditor(grid, column, grid.cell(prevRow,each).column.editorInstance)
-						}
-					}
-					setTimeout(function() {
+					console.log('prev row', prevRow.id)
+					if(editedRow.id == grid.activeRow.id) {
+						// grid.set('prevRow', '');
+					} else {
 						for(each in grid.columns) {
-							grid.edit(grid.cell(editedRow,each).element)
+							if(grid.cell(prevRow,each).column.editorInstance.domNode) {
+								setPropertyFromEditor(grid, column, grid.cell(prevRow,each).column.editorInstance);
+							}
 						}
-						grid.set('prevRow', editedRow)
-					}, 50)
-				} else {
-					for(each in grid.columns) {
-						grid.edit(grid.cell(editedRow,each).element)
+						grid.activeRow = dojo.clone(editedRow);
+						setTimeout(function() {
+							for(each in grid.columns) {
+								grid.edit(grid.cell(editedRow,each).element);
+							}
+							if(prevRow.id != editedRow.id) {
+								grid.set('prevRow', editedRow);
+							}
+						}, 50)
 					}
-					grid.set('prevRow', editedRow)
-					console.log('ist row', grid.get('prevRow'))
+				} else {
+					console.log('else of prevRow, editedRow is', editedRow.id);
+					for(each in grid.columns) {
+						grid.edit(grid.cell(editedRow,each).element);
+					}
+					grid.activeRow = dojo.clone(editedRow);
+					if((prevRow == undefined) || (prevRow.id != editedRow.id)) {
+						grid.set('prevRow', editedRow);
+					}
 				}
 			});
 		}
