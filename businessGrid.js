@@ -7,9 +7,19 @@ function(declare, OnDemandGrid, Button, aspect){
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
 			this.addNewRowWidget = '';
+			this._newlyAddedRowList = [];
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
-					grid.createAddNewRowButton();
+					console.log('after refresh')
+					if(!grid.addNewRowWidget) {
+						grid.createAddNewRowButton();
+					} else {
+						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+					}
+					grid.newRowIdCounter = 0;
+					for(var i=0;i<grid._newlyAddedRowList.length;i++) {
+						grid.addNewRowToGrid(true);
+					}
 				})
 			});
 		},
@@ -24,13 +34,15 @@ function(declare, OnDemandGrid, Button, aspect){
 				label:this.labelAddNew,
 				grid:this
 			});
-			this.addNewRowWidget.on('click',this.addNewRowToGrid);
+			this.addNewRowWidget.on('click',function() {
+				this.grid.addNewRowToGrid();
+			});
 			this.contentNode.appendChild(this.addNewRowWidget.domNode)
 		},
-		addNewRowToGrid: function() {
-			console.log(this, 'click')
-			var grid = this.grid;
-			var obj = {}
+		addNewRowToGrid: function(onRefresh) {
+			var grid = this.grid||this;
+			var refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
+			var obj = {};
 			for(each in grid.columns) {
 				if(grid.columns[each].editor) {
 					obj[grid.columns[each].field] = grid.columns[each].editor.superclass.value;
@@ -39,11 +51,10 @@ function(declare, OnDemandGrid, Button, aspect){
 				}
 			}
 			obj['id'] = ++grid.newRowIdCounter;
-			for(each in obj) {
-				grid.updateDirty(obj['id'],each,obj[each]);
+			grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
+			if(onRefresh == undefined) {
+				grid._newlyAddedRowList.push(obj);
 			}
-			grid.insertRow(obj, this.domNode.previousElementSibling.previousElementSibling, null, null, {});
-			grid.store.add(obj);
 			grid.scrollTo({x:0,y:grid.contentNode.scrollHeight});
 		}
 	});
