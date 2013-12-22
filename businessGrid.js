@@ -8,11 +8,15 @@ function(declare, OnDemandGrid, Button, aspect){
 			this.labelAddNew = 'Add New'
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
+			this.defaultVisible = 1;
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
 					console.log('after refresh')
 					if(!grid.addNewRowWidget) {
 						grid.createAddNewRowButton();
+						for(var i=0;i<grid.defaultVisible;i++) {
+							grid.addNewRowToGrid();
+						}
 					} else {
 						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 					}
@@ -22,6 +26,12 @@ function(declare, OnDemandGrid, Button, aspect){
 					}
 				})
 			});
+		},
+		_getDefaultVisible: function() {
+			return this.defaultVisible;
+		},
+		_setDefaultVisible: function(num) {
+			this.defaultVisible = num;
 		},
 		_getLabelAddNew: function() {
 			return this.labelAddNew;
