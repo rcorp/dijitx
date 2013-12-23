@@ -49,8 +49,14 @@ function(declare, OnDemandGrid, Button, aspect){
 			});
 			this.contentNode.appendChild(this.addNewRowWidget.domNode)
 		},
+		/**
+		 * Trying to use same same function from grid and click evnt of add new Button
+		 * @param {[type]} onRefresh [description]
+		 */
 		addNewRowToGrid: function(onRefresh) {
+			// if evt.grid or grid itself
 			var grid = this.grid||this;
+			// if evt then use domNode directly else get widget from grid and then its domNode
 			var refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
 			var obj = {};
 			for(each in grid.columns) {
@@ -62,6 +68,8 @@ function(declare, OnDemandGrid, Button, aspect){
 			}
 			obj['id'] = ++grid.newRowIdCounter;
 			grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
+			// if this function is called when on-refresh event occurs not by clicking
+			// on addNewRowWdiget then do not push.
 			if(onRefresh == undefined) {
 				grid._newlyAddedRowList.push(obj);
 			}
