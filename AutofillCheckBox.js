@@ -28,21 +28,29 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 		},
 		postCreate: function() {
 			this.inherited(arguments);
-			if(this.id) {
-				this.count++;
-			}
 		},
 		buildRendering: function() {
 			this.inherited(arguments);
 			if(!this.prefillcheckboxNode) {
 				this.prefillcheckboxNode = this.domNode;
 			}
-			this.count = 0;
-			this.id = 'prefillcheckbox_' + this.count;
 		},
 		destroy: function() {
 			delete this.prefillcheckboxNode;
 			this.inherited(arguments);
-		}
+		},
+		_setSourceIdAttr:function(value){
+			this.sourceId = value;
+		},
+		_setTargetIdAttr:function(value){
+			this.targetId = value;
+		},
+		_getSourceIdAttr:function(){
+			return(this.sourceId);
+		},
+		_getSourceIdAttr:function(){
+			return(this.sourceId); 
+		},
+
 	});
 });
