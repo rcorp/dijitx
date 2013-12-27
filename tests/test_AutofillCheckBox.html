@@ -19,7 +19,7 @@
 		<!--Include dojo theme css like Claro them is selected here-->
 		<link rel="stylesheet" href="../../dijit/themes/claro/claro.css" />
 		<!--Include dojo main file to use dojo library-->
-		<script type="text/javascript" src="../../dojo/dojo.js"></script>
+		<script data-dojo-config="async: 1, isDebug: 0" src="../../dojo/dojo.js"></script>
 
 		<style type="text/css">
 			#source-Id,#autofillchk
@@ -39,7 +39,7 @@
 				"dijit/form/HorizontalRule",
 				"dijit/form/HorizontalRuleLabels",
 				"dojox/layout/TableContainer",
-				"dijitx/AutoFillCheckBox",
+				"dijitx/AutofillCheckBox",
 				"dojo/domReady!"
 				],function(dom,domConstruct,registry,TextBox,DateTextBox,HorizontalSlider,HorizontalRule,HorizontalRuleLabels,TableContainer,AutoFillCheckBox)
 			{
