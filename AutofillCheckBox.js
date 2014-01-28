@@ -10,6 +10,7 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 		//Array of ids of all fiels in which value is set.
 		targetId: [],
 		onChange: function(evt) {
+			
 			if(this.checked == true) {
 				if(this.sourceId && this.targetId && this.sourceId.length == this.targetId.length) {
 					for(var index = 0; index < this.sourceId.length; index++) {
@@ -40,10 +41,38 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 			this.inherited(arguments);
 		},
 		_setSourceIdAttr:function(value){
-			this.sourceId = value;
+			var check = this.isInstanceArray(value);
+			if(check){
+				this.sourceId = value;
+			}
+			else {
+				console.error("sourceId passed is not a valid type of Array")
+			}
 		},
 		_setTargetIdAttr:function(value){
-			this.targetId = value;
+			var check = this.isInstanceArray(value);
+			if(check){
+				this.targetId = value;
+			}
+			else {
+				console.error("targetId passed is not a valid type of Array")
+			}
+		},
+		isInstanceArray:function(arr){
+			return (arr instanceof Array);
+		},
+		compareArrayLength:function(sourceIdArr, targetIdArr){
+			if(this.isInstanceIdArray(sourceIdArr) && this.isInstanceIdArray(targetIdArr)){
+				if(sourceIdArr.length==targetIdArr.length){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
 		},
 		_getSourceIdAttr:function(){
 			return(this.sourceId);
