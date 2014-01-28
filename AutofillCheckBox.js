@@ -62,8 +62,9 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 			return (arr instanceof Array);
 		},
 		compareArrayLength:function(sourceIdArr, targetIdArr){
-			if(this.isInstanceIdArray(sourceIdArr) && this.isInstanceIdArray(targetIdArr)){
+			if(this.isInstanceArray(sourceIdArr) && this.isInstanceArray(targetIdArr)){
 				if(sourceIdArr.length==targetIdArr.length){
+					
 					return true;
 				}
 				else{
