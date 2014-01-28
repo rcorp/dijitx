@@ -28,6 +28,32 @@ define([
         SourceIdIsObject: function () {
             source = {'asdas':'sdgfsdgsd'}
             assert.isFalse(autoFill.isInstanceArray(source),'not passed when sourceId is type of object')
+        },
+        TargetIdIsArray: function () {
+            target = ['first','second'];
+            assert.isTrue(autoFill.isInstanceArray(target),'passed when targetId is type of array');
+        },
+        TargetIdIsString: function () {
+            target = 'second';
+            assert.isFalse(autoFill.isInstanceArray(target),'not passed when targetId is type of string')
+        },
+        TargetIdIsNumber: function () {
+            target = 96
+            assert.isFalse(autoFill.isInstanceArray(target),'not passed when targetId is type of number')
+        },
+        TargetIdIsObject: function () {
+            target = {'asdas':'sdgfsdgsd'}
+            assert.isFalse(autoFill.isInstanceArray(target),'not passed when targetId is type of object')
+        },
+        SameLength: function () {
+            target = ['asdas','sdgfsdgsd'];
+            source= ['asdagbfvnvs','sdgfsdgsd'];
+            assert.isTrue(autoFill.compareArrayLength(source,target),'Length not same')
+        },
+        UnequalLength: function () {
+            target = ['asdas','sdgfsdgsd'];
+            source= ['sdgfsdgsd'];
+            assert.isTrue(autoFill.compareArrayLength(source,target),'Length not same')
         }
     });
 });
