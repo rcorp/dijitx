@@ -12,12 +12,15 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-construct", "dojo/dom-form",
 		onChange: function(evt) {
 			
 			if(this.checked == true) {
-				if(this.sourceId && this.targetId && this.sourceId.length == this.targetId.length) {
+				if(this.sourceId && this.targetId && this.compareArrayLength(this.sourceId, this.targetId)) {
 					for(var index = 0; index < this.sourceId.length; index++) {
 						var prefillValue = registry.byId(this.sourceId[index]).getValue();
 						registry.byId(this.targetId[index]).setValue(prefillValue);
 					}
-				};
+				}
+				else {
+					console.error("sourceId and targetId are not of equal length.")
+				}
 			} else {
 				if(this.targetId && this.sourceId.length == this.targetId.length) {
 					for(var index = 0; index < this.targetId.length; index++) {
