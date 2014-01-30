@@ -33,7 +33,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	showLabels: true,
 	// showLabels: Boolean
 	//		True if labels should be displayed, false otherwise.
-	
+
 	orientation: "horiz",
 	// orientation: String
 	//		Either "horiz" or "vert" for label orientation.
@@ -157,6 +157,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			var columnRow = domConstruct.create("div",{
 				"class":"col-md-"+colIndex},
 				newRow);
+			//Within each column craete a label div and a child div
 			
 			var maxCols = this.cols * (this.showLabels ? 2 : 1);
 			var numCols = 0;
@@ -246,8 +247,9 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 		//		Destroys all the widgets inside this.containerNode,
 		//		but not this widget itself
 		arrayUtil.forEach(this._children, function(child){ child.destroyRecursive(preserveDom); });
-	},
-	
+	}
+});
+
 ResponsiveGridContainer.ChildWidgetProperties = {
 	// summary:
 	//		Properties to be set on children of TableContainer
