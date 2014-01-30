@@ -24,7 +24,17 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	cols: 1,
 	// Specifies the number of columns in the grid layout.
 
+	labelWidth: "100",
+	// labelWidth: Number|String
+	//		Defines the width of a label.  If the value is a number, it is
+	//		treated as a pixel value.  The other valid value is a percentage,
+	//		e.g. "50%"
+
 	showLabels: true,
+	// showLabels: Boolean
+	//		True if labels should be displayed, false otherwise.
+	
+	orientation: "horiz",
 	// orientation: String
 	//		Either "horiz" or "vert" for label orientation.
 
@@ -141,16 +151,12 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			if(isNewRow){
 				newRow = domConstruct.create("div", {
 					"class":"row"},
-					parentdiv);
+					parentDiv);
 			}
 			//In each row add responsive columns
 			var columnRow = domConstruct.create("div",{
 				"class":"col-md-"+colIndex},
 				newRow);
-			//Within each column craete a label div and a child div
-			var labelRow = domConstruct.create("div", {}, columnRow);
-			var childRow= (!this.showLabels || this.orientation == "horiz")
-				? labelRow : domConstruct.create("div", {}, columnRow);
 			
 			var maxCols = this.cols * (this.showLabels ? 2 : 1);
 			var numCols = 0;
@@ -184,7 +190,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 					// Add the custom label class to the label cell
 					addCustomClass(labelCell, "labelCell");
 					var labelProps = {"for": child.get("id")};
-					var label = domConstruct.create("label", labelProps,labelCell );
+					var label = domConstruct.create("label", labelProps,labelCell);
 
 					if(Number(this.labelWidth) > -1 ||
 						String(this.labelWidth).indexOf("%") > -1) {
@@ -202,7 +208,15 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			if(child.spanLabel && labelCell) {
 				childCell = labelCell;
 			} else {
-				 childCell = domConstruct.create("div", {}, columnRow);
+				if(this.orientation == "horiz")
+					childCell = domConstruct.create("div", {
+						style : {
+							display: "Inline"
+						}
+					}, columnRow);
+				else{
+					childCell = domConstruct.create("div",{},columnRow);
+				}
 			}
 			if(colspan > 1) {
 				domProp.set(childCell, "colspan", colspan);
@@ -214,8 +228,8 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			numCols += colspan + (this.showLabels ? 1 : 0);
 		}));
 
-		if(this.parentdiv)	 {
-			this.parentdiv.parentNode.removeChild(this.table);
+		if(this.parentDiv)	 {
+			this.parentDiv.parentNode.removeChild(this.table);
 		}
 		// Refresh the layout of any child widgets, allowing them to resize
 		// to their new parent.
@@ -234,16 +248,6 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 		arrayUtil.forEach(this._children, function(child){ child.destroyRecursive(preserveDom); });
 	},
 	
-	_setSpacingAttr: function(value) {
-		// summary:
-		//		Sets the spacing attribute.
-		this.spacing = value;
-		if(this.parentdiv) {
-			this.parentdiv.cellspacing = Number(value);
-		}
-	}
-});
-
 ResponsiveGridContainer.ChildWidgetProperties = {
 	// summary:
 	//		Properties to be set on children of TableContainer
