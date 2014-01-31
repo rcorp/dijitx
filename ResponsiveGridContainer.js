@@ -155,8 +155,9 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			}
 			//In each row add responsive columns
 			var columnRow = domConstruct.create("div",{
-				"class":"col-md-"+colIndex},
-				newRow);
+				"class":"col-md-"+colIndex,
+				"id":this.id+"-col-md"+index
+			},newRow);
 			//Within each column craete a label div and a child div
 			
 			var maxCols = this.cols * (this.showLabels ? 2 : 1);
@@ -180,7 +181,11 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			
 			// If labels should be visible, add them
 			if(this.showLabels) {
-				labelCell = domConstruct.create("div", {"class": "ResponsiveGridContainer-labelCell"}, columnRow);
+				labelCell = domConstruct.create("div", {
+					"class": "ResponsiveGridContainer-labelCell",
+					style:{
+						display: "Inline-block"
+					}}, columnRow);
 
 				// If the widget should take up both the label and value,
 				// then just set the class on it.
@@ -209,13 +214,17 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			if(child.spanLabel && labelCell) {
 				childCell = labelCell;
 			} else {
-				if(this.orientation == "horiz")
+				//To add orienation property of responsive grid container
+				if(this.orientation == "horiz"){
+					console.log("Horiz reached!!")
 					childCell = domConstruct.create("div", {
-						style : {
-							display: "Inline"
+						style:{
+							display: "Inline-block"
 						}
 					}, columnRow);
+				}
 				else{
+					console.log("Vert reached!!")
 					childCell = domConstruct.create("div",{},columnRow);
 				}
 			}
