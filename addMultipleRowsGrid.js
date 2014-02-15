@@ -32,6 +32,10 @@ function(declare, OnDemandGrid, Button, aspect){
 		_setValue:function(value){
 			for(eachRow in value){
 				console.log(eachRow)
+				this.cleanup();
+				this.contentNode.innerHTML = "";
+				// HACK fix this issue where button is created every time.
+				grid.createAddNewRowButton();
 				this.addNewRowToGrid(value[eachRow]);
 			}
 		},
@@ -75,9 +79,7 @@ function(declare, OnDemandGrid, Button, aspect){
 			var refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
 			var obj = {};
 			for(each in grid.columns) {
-				//console.log(grid.columns[each])
 				if(grid.columns[each].editor){
-					//console.log('if working', value)
 					obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || '';
 				}
 				else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
@@ -85,7 +87,7 @@ function(declare, OnDemandGrid, Button, aspect){
 				}
 			}
 			obj['id'] = ++grid.newRowIdCounter;
-			grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
+			grid.insertRow(obj, refDomNode, null, null, {});
 			// if this function is called when on-refresh event occurs not by clicking
 			// on addNewRowWdiget then do not push.
 			/*if(onRefresh == undefined) {
