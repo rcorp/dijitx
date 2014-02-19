@@ -17,6 +17,7 @@ function(declare, OnDemandGrid, Button, aspect,date){
 						for(var i=0;i<grid.defaultVisible;i++) {
 						 	grid.addNewRowToGrid();
 						}
+						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 					} else {
 						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 					}
@@ -35,11 +36,12 @@ function(declare, OnDemandGrid, Button, aspect,date){
 			// HACK fix this issue where button is created every time.
 			// appendChild doesnot work here as it is correct for the first tie but when further set function calls
 			// are made then rows are not cleared which is fixed using this createAddNewButton() method
-			grid.createAddNewRowButton();
+			//this.renderArray(value)
 			for(eachRow in value){
 				console.log(eachRow)
 				this.addNewRowToGrid(value[eachRow]);
 			}
+			grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 		},
 		_getValue:function(){
 			var arrayOfValues = [];
@@ -67,8 +69,8 @@ function(declare, OnDemandGrid, Button, aspect,date){
 			});
 			this.addNewRowWidget.on('click',function() {
 				this.grid.addNewRowToGrid();
+				this.grid.contentNode.appendChild(this.domNode)
 			});
-			this.contentNode.appendChild(this.addNewRowWidget.domNode)
 		},
 		/**
 		 * Trying to use same function from grid and click evnt of add new Button
@@ -79,17 +81,12 @@ function(declare, OnDemandGrid, Button, aspect,date){
 			var grid = this.grid||this;
 			var date = new Date();
 			// if evt then use domNode directly else get widget from grid and then its domNode
-			refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
+			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
+			refDomNode = grid.contentNode;
 			obj = {};
 			for(each in grid.columns) {
-				// if(grid.columns[each].field =='date'){
-				// 	console.log("Condition true!!")
-				// 	obj[grid.columns[each].field] = date.getDate() + date.getMonth() + date.getYear();
-				// }
-				 if(grid.columns[each].field == 'text'){
-				 	//console.log("Condition True")
-				 	obj[grid.columns[each].field] = "Richa Dua";
-				 }
+				// obj.date = new Date("2006-02-12")
+				// obj.bool = true;
 				//console.log(grid.columns[each].field)
 				if(grid.columns[each].editor){
 					obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || '';
