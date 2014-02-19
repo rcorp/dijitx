@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dgrid/OnDemandGrid", "dijit/form/Button", "dojo/aspect"],
-function(declare, OnDemandGrid, Button, aspect){
+define(["dojo/_base/declare", "dgrid/OnDemandGrid", "dijit/form/Button", "dojo/aspect","dojo/date"],
+function(declare, OnDemandGrid, Button, aspect,date){
 	
 	var businessGrid = declare(OnDemandGrid, {
 		constructor: function() {
@@ -30,12 +30,14 @@ function(declare, OnDemandGrid, Button, aspect){
 
 		
 		_setValue:function(value){
+			this.cleanup();
+			this.contentNode.innerHTML = "";
+			// HACK fix this issue where button is created every time.
+			// appendChild doesnot work here as it is correct for the first tie but when further set function calls
+			// are made then rows are not cleared which is fixed using this createAddNewButton() method
+			grid.createAddNewRowButton();
 			for(eachRow in value){
 				console.log(eachRow)
-				this.cleanup();
-				this.contentNode.innerHTML = "";
-				// HACK fix this issue where button is created every time.
-				grid.createAddNewRowButton();
 				this.addNewRowToGrid(value[eachRow]);
 			}
 		},
@@ -75,10 +77,20 @@ function(declare, OnDemandGrid, Button, aspect){
 		addNewRowToGrid: function(value) {
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
+			var date = new Date();
 			// if evt then use domNode directly else get widget from grid and then its domNode
-			var refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
-			var obj = {};
+			refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode)
+			obj = {};
 			for(each in grid.columns) {
+				// if(grid.columns[each].field =='date'){
+				// 	console.log("Condition true!!")
+				// 	obj[grid.columns[each].field] = date.getDate() + date.getMonth() + date.getYear();
+				// }
+				 if(grid.columns[each].field == 'text'){
+				 	//console.log("Condition True")
+				 	obj[grid.columns[each].field] = "Richa Dua";
+				 }
+				//console.log(grid.columns[each].field)
 				if(grid.columns[each].editor){
 					obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || '';
 				}
@@ -87,7 +99,12 @@ function(declare, OnDemandGrid, Button, aspect){
 				}
 			}
 			obj['id'] = ++grid.newRowIdCounter;
-			grid.insertRow(obj, refDomNode, null, null, {});
+			if(refDomNode.previousElementSibling==null){
+				grid.insertRow(obj,refDomNode, null, null, {});	
+			}
+			else{
+				grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
+			}
 			// if this function is called when on-refresh event occurs not by clicking
 			// on addNewRowWdiget then do not push.
 			/*if(onRefresh == undefined) {
