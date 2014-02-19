@@ -18,13 +18,12 @@ function(declare, OnDemandGrid, Button, aspect,date){
 						 	grid.addNewRowToGrid();
 						}
 						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
-					} else {
-						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 					}
-					// grid.newRowIdCounter = 0;
-					// for(var i=0;i<grid._newlyAddedRowList.length;i++) {
-					// 	grid.addNewRowToGrid(true);
-					// }
+					grid.newRowIdCounter = 0;
+					for(var i=0;i<grid._newlyAddedRowList.length;i++) {
+						grid.addNewRowToGrid(undefined, true);
+					}
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 				})
 			});
 		},
@@ -76,7 +75,7 @@ function(declare, OnDemandGrid, Button, aspect,date){
 		 * Trying to use same function from grid and click evnt of add new Button
 		 * @param {[type]} onRefresh [description]
 		 */
-		addNewRowToGrid: function(value) {
+		addNewRowToGrid: function(value, onRefresh) {
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
 			var date = new Date();
@@ -102,11 +101,12 @@ function(declare, OnDemandGrid, Button, aspect,date){
 			else{
 				grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
 			}
+			grid.updateDirty(grid.row(grid.newRowIdCounter),grid.columns,value)
 			// if this function is called when on-refresh event occurs not by clicking
 			// on addNewRowWdiget then do not push.
-			/*if(onRefresh == undefined) {
+			if(onRefresh == undefined) {
 				grid._newlyAddedRowList.push(obj);
-			}*/
+			}
 			grid.scrollTo({x:0,y:grid.contentNode.scrollHeight});
 		}
 	});
