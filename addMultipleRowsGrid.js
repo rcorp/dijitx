@@ -78,20 +78,24 @@ function(declare, OnDemandGrid, Button, aspect,date){
 		addNewRowToGrid: function(value, onRefresh) {
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
-			var date = new Date();
 			// if evt then use domNode directly else get widget from grid and then its domNode
 			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
-			refDomNode = grid.contentNode;
-			obj = {};
-			for(each in grid.columns) {
-				// obj.date = new Date("2006-02-12")
-				// obj.bool = true;
-				//console.log(grid.columns[each].field)
-				if(grid.columns[each].editor){
-					obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || '';
+			var refDomNode = grid.contentNode;
+			var obj = {};
+			if(value) {
+				for(each in grid.columns) {
+					if(grid.columns[each].editor){
+						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+					}
+					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
+						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
+					}
 				}
-				else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
-					obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
+			} else {
+				for(each in grid.columns) {
+					if(grid.columns[each].editor){
+						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+					}
 				}
 			}
 			obj['id'] = ++grid.newRowIdCounter;
