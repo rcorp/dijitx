@@ -82,23 +82,27 @@ function(declare, OnDemandGrid, Button, aspect,date){
 			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
 			var refDomNode = grid.contentNode;
 			var obj = {};
+			obj['id'] = ++grid.newRowIdCounter;
 			if(value) {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
+						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			} else {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			}
-			obj['id'] = ++grid.newRowIdCounter;
+			
 			if(refDomNode.previousElementSibling==null){
 				grid.insertRow(obj,refDomNode, null, null, {});	
 			}
