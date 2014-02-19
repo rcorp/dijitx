@@ -57,7 +57,10 @@ define([
 
 					// Single value widget (checkbox, radio, or plain <input> type widget)
 					var value = widget.get('value');
-
+					// To remove NaN in the obj.
+					if (isNaN(value) && !value) {
+						value = "";
+					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
 						if (/Radio/.test(widget.declaredClass)) {
@@ -107,7 +110,7 @@ define([
 							}
 						}
 					}
-				});
+				});			
 				return obj;
 			},
 			_setValueAttr: function( /*Object*/ obj) {
