@@ -15,11 +15,14 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 					if(!grid.addNewRowWidget) {
 						grid.createAddNewRowButton();
 						for(var i=0;i<grid.defaultVisible;i++) {
-							grid.addNewRowToGrid();
+						 	grid.addNewRowToGrid();
 						}
 						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 					}
 					grid.newRowIdCounter = 0;
+					for(var i=0;i<grid._newlyAddedRowList.length;i++) {
+						//grid.addNewRowToGrid(undefined, true);
+					}
 					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 				})
 			});
@@ -30,11 +33,21 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
 			grid.newRowIdCounter=0;
+			var columnNames=[];
 			if(lang.isArray(value)){
-				for(each in value){
-					this.addNewRowToGrid(value[each]);
-					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				for(eachColumn in grid.columns){
+					columnNames.push(grid.columns[eachColumn].field)
 				}
+				for(var i=0; i<value.length;i++){
+				 	for(eachRow in value[i]){
+				 		for(var j=0;j<columnNames.length;j++){
+				 			if(eachRow==columnNames[j]){
+				 				this.addNewRowToGrid(value[i]);
+				 			}
+				 		}
+				 	}
+				 }
+				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
@@ -80,14 +93,10 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
 			var refDomNode = grid.contentNode;
 			var obj = {};
-			var flag= false;
 			obj['id'] = ++grid.newRowIdCounter;
-			if(value){
-				for(each in grid.columns){
+			if(value) {
+				for(each in grid.columns) {
 					if(grid.columns[each].editor){
-						if(!flag && value[grid.columns[each].field]) {
-							flag = true
-						}
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
 						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
@@ -98,7 +107,6 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 				}
 			} else {
 				for(each in grid.columns) {
-					flag = true
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
 						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
@@ -106,10 +114,10 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 				}
 			}
 			
-			if(refDomNode.previousElementSibling==null && flag==true){
+			if(refDomNode.previousElementSibling==null){
 				grid.insertRow(obj,refDomNode, null, null, {});	
 			}
-			else if(flag==true){
+			else{
 				grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
 			}
 			// if this function is called when on-refresh event occurs not by clicking
