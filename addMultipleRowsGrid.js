@@ -83,7 +83,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
 			var refDomNode = grid.contentNode;
 			var obj = {};
-			obj['id'] = grid.newRowIdCounter++;
+			obj['id'] = ++grid.newRowIdCounter;
 			if(value) {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
