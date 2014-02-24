@@ -32,6 +32,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 		_setValue:function(value){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
+			grid.newRowIdCounter=0;
 			if(lang.isArray(value)){
 				for(eachRow in value){
 					this.addNewRowToGrid(value[eachRow]);
@@ -82,7 +83,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
 			var refDomNode = grid.contentNode;
 			var obj = {};
-			obj['id'] = ++grid.newRowIdCounter;
+			obj['id'] = grid.newRowIdCounter++;
 			if(value) {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
@@ -109,7 +110,6 @@ function(lang,declare, OnDemandGrid, Button, aspect,date){
 			else{
 				grid.insertRow(obj, refDomNode.previousElementSibling.previousElementSibling, null, null, {});
 			}
-			grid.updateDirty(grid.row(grid.newRowIdCounter),grid.columns,value)
 			// if this function is called when on-refresh event occurs not by clicking
 			// on addNewRowWdiget then do not push.
 			if(onRefresh == undefined) {
