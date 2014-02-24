@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dgrid/OnDemandGrid", "dijit/form/Button", "dojo/aspect","dojo/date"],
-function(declare, OnDemandGrid, Button, aspect,date){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dijit/form/Button", "dojo/aspect","dojo/date"],
+function(lang,declare, OnDemandGrid, Button, aspect,date){
 	
 	var businessGrid = declare(OnDemandGrid, {
 		constructor: function() {
@@ -32,15 +32,15 @@ function(declare, OnDemandGrid, Button, aspect,date){
 		_setValue:function(value){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
-			// HACK fix this issue where button is created every time.
-			// appendChild doesnot work here as it is correct for the first tie but when further set function calls
-			// are made then rows are not cleared which is fixed using this createAddNewButton() method
-			//this.renderArray(value)
-			for(eachRow in value){
-				console.log(eachRow)
-				this.addNewRowToGrid(value[eachRow]);
+			if(lang.isArray(value)){
+				for(eachRow in value){
+					this.addNewRowToGrid(value[eachRow]);
+				}
+				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
-			grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+			else{
+				alert("The values to be entered must be an array of objects")
+			}
 		},
 		_getValue:function(){
 			var arrayOfValues = [];
