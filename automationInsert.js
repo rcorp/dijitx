@@ -19,7 +19,7 @@ connection.connect(function(err) {
 });
 
 // Run the squl query to Create test data base if not exists for automation data. 
-connection.query("CREATE DATABASE IF NOT EXISTS automationInsert", function(err) {
+connection.query("CREATE DATABASE IF NOT EXISTS aspire", function(err) {
 	if (err) {
 		console.warn('connection failed!', err);
 	} else {
@@ -28,7 +28,7 @@ connection.query("CREATE DATABASE IF NOT EXISTS automationInsert", function(err)
 });
 
 // If database exists then use it.
-connection.query("USE automationInsert", function(err) {
+connection.query("USE aspire", function(err) {
 	if (err) {
 		console.warn('connection failed!', err);
 	} else {
@@ -41,6 +41,7 @@ connection.query("USE automationInsert", function(err) {
  * @param  {String} runQuery Sql query to be run.
  */
 var runSqlQuery = function(runQuery){
+	console.log(runQuery)
 	connection.query(runQuery, function(err) {
 	 	if (err) {
 	 		console.warn('connection failed!', err);
