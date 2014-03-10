@@ -78,11 +78,13 @@ define([
 							// checkbox/toggle button
 							var ary = lang.getObject(name, false, obj);
 							if (!ary) {
-								ary = [];
+								ary = 0;
 								lang.setObject(name, ary, obj);
 							}
 							if (value !== false) {
-								ary.push(value);
+								ary = 1;
+								lang.setObject(name, ary, obj);
+								//ary.push(value);
 							}
 						}
 					} else {
