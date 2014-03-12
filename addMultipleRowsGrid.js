@@ -12,9 +12,11 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			var grid = this;
 			rowId=[];
 			this.value=[];
+			// To make it a part of form and use its value in form.get('value') function.
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
 			this.isMultipleGrid = true;
+			// To check if the grid used is addMultipleRowsGrid
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
 			this.defaultVisible = 1;
@@ -64,8 +66,8 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		* This function removes a row whose row and its id is sent as parameter in it. Then that row is removed from 
 		* dirty and the array containing all the row id's as well.
 		**/
-		removeRowOnButtonClick: function(row,id){
-        	grid.removeRow(row)
+		removeDirtyRow: function(id){
+        	grid.removeRow(grid.row(id))
         	delete grid.dirty[id];
         	rowId.splice(rowId.indexOf(parseInt(id)),1)
 		},
