@@ -10,23 +10,22 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 	var businessGrid = declare(OnDemandGrid, {
 		constructor: function() {
 			var grid = this;
-			rowId=[];
-			this.value=[];
+			this.arrRowIds=[];
 			// To make it a part of form and use its value in form.get('value') function.
+			this.value=[];
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
+			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
-			// To check if the grid used is addMultipleRowsGrid
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
+			// By default one row should be visible in the grid.
 			this.defaultVisible = 1;
-			// By default 1 row should be visible in the grid.
-			var index=0;
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
 					console.log('after refresh')
-					var len= grid.defaultVisible || rowId.length;
-					rowId.splice(0);
+					var len= grid.defaultVisible || this.arrRowIds.length;
+					grid.arrRowIds.splice(0);
 					// The array containing id's of all the rows is cleared.
 					if(!grid.addNewRowWidget) {
 						grid.createAddNewRowButton();
@@ -39,11 +38,11 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 					else{
 						grid.newRowIdCounter = 0;
 						var prevData = grid.objectToArray(grid.dirty)
-						lang.setObject('dirty', {}, grid);
 						// Clears grid.dirty
+						lang.setObject('dirty', {}, grid);
 						grid.set('value',prevData);
-					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
-				}
+						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+					}
 				})
 			});
 		},
@@ -56,31 +55,29 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			var array=[];
 			for(each in object){
 				array.push(object[each]);	
-
 			}
-			console.log("array",array)
 			return array;
 		},
 
 		/**
-		* This function removes a row whose row and its id is sent as parameter in it. Then that row is removed from 
+		* This function removes a row whose row id is sent as parameter in it. Then that row is removed from 
 		* dirty and the array containing all the row id's as well.
 		**/
 		removeDirtyRow: function(id){
         	grid.removeRow(grid.row(id))
         	delete grid.dirty[id];
-        	rowId.splice(rowId.indexOf(parseInt(id)),1)
+        	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
 
 		/**
-		* Set value function of grid takes an array of object as parameter and clears the grid, checks whether the parameter
+		* Setvalue function of grid takes an array of object as parameter and clears the grid, checks whether the parameter
 		* is an array or not else gives an error message; if the parameter is valid then it makes the rows with the values 
 		* given in parameter. And in the end appends the Add New button.		
 		**/
 		_setValue:function(value){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
-			rowId.splice(0);
+			this.arrRowIds.splice(0);
 			grid.newRowIdCounter=0;
 			var columnNames=[];
 			if(lang.isArray(value)){
@@ -89,18 +86,16 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 				}
 				for(var i=0; i<value.length;i++){
 				 	this.addNewRowToGrid(value[i],true);
-				 }
+				}
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
-				console.log(value)
 				console.error("The values to be entered must be an array of objects")
 			}
 		},
 
 		
-		//Get value function gives all the values of rows that are present in dirty. And returns an array of objects.
-		
+		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function(){
 			var arrayOfValues = [];
 			for(eachRow in grid.dirty){
@@ -109,9 +104,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			return arrayOfValues;
 		},
 
-		
 		//_getDefaultVisible function tells the number of rows that are visible by default in the grid at onLoad event.
-		
 		_getDefaultVisible: function() {
 			return this.defaultVisible;
 		},
@@ -120,13 +113,11 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		* _setDefaultVisible function is used to set the value of defaultly visible rows with the value specified in
 		* the parameter
 		**/
-
 		_setDefaultVisible: function(num) {
 			this.defaultVisible = num;
 		},
 
 		//_getLabelAddNew function is used to get the label for the Add New button used to add new rows into the grid.
-
 		_getLabelAddNew: function() {
 			return this.labelAddNew;
 		},
@@ -135,7 +126,6 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		* _setLabelAddNew function is used to set the value of label Add New button to add new rows in the grid with the 
 		* value in the parameter
 		**/
-
 		_setLabelAddNew: function(label) {
 			this.addNewRowWidget.set('label', label);
 		},
@@ -144,7 +134,6 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		* createAddNewRowButton creates a Add New button which calls addNewRowGrid function to add new rows 
 		* into the grid and after all the rows have been rendered this Add New button is placed.
 		*/
-
 		createAddNewRowButton: function() {
 			this.addNewRowWidget = new Button({
 				label:this.labelAddNew,
@@ -157,26 +146,24 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		},
 		
 		/**
-		 * Trying to use same function from grid and click evnt of add new Button
+		 * Trying to use same function from grid and click event of add new Button
 		 * @param {[type]} onRefresh [description]
 		**/
 
 		/**
 		* We have kept newRowIdCounter because whenever we add a new row it should be added at the index pointed by 
-		* newRowIdCounter but we also need an array rowId to implement the case to delete the deleted row id from the
+		* newRowIdCounter but we also need an array arrRowIds to implement the case to delete the deleted row id from the
 		* rows present in grid for reference to refresh the grid and retain all the rows already made.
 		**/
 
 		addNewRowToGrid: function(value, onRefresh) {
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
-			// if evt then use domNode directly else get widget from grid and then its domNode
-			//refDomNode = (this.grid && this.domNode) || (this&&this.addNewRowWidget.domNode) || grid.contentNode
 			var refDomNode = grid.contentNode;
 			var obj = {};
 			obj['id'] = ++grid.newRowIdCounter;
-			rowId.push(obj['id']);
-			// on adding a new row its id is pushed in the rowId array.
+			this.arrRowIds.push(obj['id']);
+			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
 				for(each in grid.columns) {
