@@ -5,11 +5,13 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 	* the grid one at a time. This grid adds new rows using id's of each row instead of a counter	we used earlier
 	* because then we cannot keep account of the deleted rows. We can use widgets with or without editor in 
 	* columns of this grid.
+	* It is mandatory to add dgrid/extensions/DijitRegistry to use this Grid.
 	**/
 	var businessGrid = declare(OnDemandGrid, {
 		constructor: function() {
 			var grid = this;
 			rowId=[];
+			this.value=[];
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
 			this.addNewRowWidget = '';
