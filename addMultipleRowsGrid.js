@@ -14,6 +14,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			this.value=[];
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
+			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
 			this.defaultVisible = 1;
@@ -90,6 +91,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
+				console.log(value)
 				console.error("The values to be entered must be an array of objects")
 			}
 		},
