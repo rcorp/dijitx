@@ -148,7 +148,10 @@ define([
 					} else if (widgets[0].multiple) {
 						// it takes an array (e.g. multi-select)
 						widgets[0].set('value', values);
-					} else {
+					} else if(widgets[0].isMultipleGrid){
+				 		// If it takes a addMultipleRowsGrid
+				 		widgets[0].set('value',values)
+					}else {
 						// otherwise, values is a list of values to be assigned sequentially to each widget
 						array.forEach(widgets, function(w, i) {
 							if (w.widget == 'FilteringSelect' && w.store.idProperty) {
