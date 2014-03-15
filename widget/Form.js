@@ -65,6 +65,12 @@ define([
 					if(value == null){
 						value="";
 					}
+
+					if(widget.widget == "DateTextBox" && value){
+						console.log(value.toISOString().split("T")[0])
+						value = value.toISOString().split("T")[0]; 
+
+					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
 						if (/Radio/.test(widget.declaredClass)) {
