@@ -61,6 +61,10 @@ define([
 					if (isNaN(value) && !value) {
 						value = "";
 					}
+
+					if(value == null){
+						value="";
+					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
 						if (/Radio/.test(widget.declaredClass)) {
