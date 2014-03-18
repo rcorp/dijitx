@@ -152,6 +152,22 @@ define([
 						array.forEach(widgets, function(w) {
 							w.set('value', array.indexOf(values, w._get('value')) != -1);
 						});
+
+						// Hack: for set values for CheckBox
+						// checkbox/toggle button
+						// set reverse values back to the widget
+						var value = lang.getObject(name, false, obj);
+						array.forEach(widgets, function(w) {
+							if(value == 0) {
+								// if value is false return 0
+								w.set('value', false);
+							} else if(value == 1) {
+								// if value is 'on' return 1
+								w.set('value', "on");
+							}
+
+						});
+
 					} else if (widgets[0].multiple) {
 						// it takes an array (e.g. multi-select)
 						widgets[0].set('value', values);
@@ -161,6 +177,7 @@ define([
 					}else {
 						// otherwise, values is a list of values to be assigned sequentially to each widget
 						array.forEach(widgets, function(w, i) {
+						console.log('for loop found', w.name, w.id)
 							if (w.widget == 'FilteringSelect' && w.store.idProperty) {
 								w.set('value', obj[w.store.idProperty]);
 							} else if (w.widget == 'LabelWidget') {
