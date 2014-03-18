@@ -86,15 +86,12 @@ define([
 							}
 						} else {
 							// checkbox/toggle button
-							var ary = lang.getObject(name, false, obj);
-							if (!ary) {
-								ary = 0;
-								lang.setObject(name, ary, obj);
-							}
-							if (value !== false) {
-								ary = 1;
-								lang.setObject(name, ary, obj);
-								//ary.push(value);
+							if(value == false) {
+								// if value is false return 0
+								lang.setObject(name, 0, obj);
+							} else if(value == "on") {
+								// if value is 'on' return 1
+								lang.setObject(name, 1, obj);
 							}
 						}
 					} else {
