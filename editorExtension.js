@@ -94,8 +94,24 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 					if(eventObject.idProperty) {
 						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
 					}
-					// for OnDemandGrid: update dirty data, and save if autoSave is true
-					grid.updateDirty(row.id, column.field, value);
+
+					// Hack By Harpreet
+					// For widgets whose editorWidget is visible by-default
+					// eg: CheckBox
+					if(column.editOn == undefined) {
+						if(column.editorArgs.widget == "CheckBox") {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							if(value == "on") {
+								grid.updateDirty(row.id, column.field, 1);
+							} else if (value == false) {
+								grid.updateDirty(row.id, column.field, 0);
+							}
+						}
+					} else {
+						// for OnDemandGrid: update dirty data, and save if autoSave is true
+						grid.updateDirty(row.id, column.field, value);
+					}
+
 					// perform auto-save (if applicable) in next tick to avoid
 					// unintentional mishaps due to order of handler execution
 					column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
@@ -346,7 +362,16 @@ function showEditor(cmp, column, cellElement, value){
 		// Set value, but ensure it isn't processed as a user-generated change.
 		// (Clear flag on a timeout to wait for delayed onChange to fire first)
 		cmp._dgridIgnoreChange = true;
-		cmp.set("value", value);
+
+		// Hack By Harpreet
+		// For widgets whose editorWidget is visible by-default
+		if(column.editOn == undefined) {
+			if(column.editorArgs.widget == "CheckBox") {
+				cmp.set("value", parseInt(value));
+			}
+		} else {
+			cmp.set("value", value);
+		}
 		setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
 	}
 	// track previous value for short-circuiting or in case we need to revert
