@@ -41,6 +41,9 @@ function dataFromValue(value, oldValue){
 // intermediary frontend to dataFromValue for HTML and widget editors
 function dataFromEditor(column, cmp){
 	if(typeof cmp.get == "function"){ // widget
+		// Hack By Harpreet
+		// get displayed value instead of value
+		// data to be shown on grid's cell when editor is off
 		if(cmp.widget == 'FilteringSelect') {
 			return dataFromValue(cmp.get("displayedValue"));
 		}
@@ -71,73 +74,51 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				bubbles: true,
 				cancelable: true
 			};
-
-			if(cellElement.widget) {
-				lang.mixin(eventObject,{origValue:cellElement.widget.get('value')})
-				if(cellElement.widget && cellElement.widget.store && cellElement.widget.store.idProperty) {
-					lang.setObject('idProperty', cellElement.widget.store.idProperty, eventObject);
+			// Hack By Harpreet
+			// need extra information of FilteringSelect 
+			// Add extra info to eventObject and use as you need
+			if(cell.column.editorInstance) {
+				lang.mixin(eventObject,{origValue:cell.column.editorInstance.get('value')})
+				if(cell.column.editorInstance && cell.column.editorInstance.store && cell.column.editorInstance.store.idProperty) {
+					lang.setObject('idProperty', cell.column.editorInstance.store.idProperty, eventObject);
 				}
 			}
-
-
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
-			// prevent triggering dgrid-dataChange when setting corect value to
-			// filtering select
-			console.log('prevent triggering dgrid-dataChange', typeof value , typeof oldValue, value, oldValue)
-
-			var flagTriggerEvent = false;
-			if(typeof value == typeof oldValue) {
-				flagTriggerEvent = true
-			} else if(oldValue == undefined) {
-				console.log('else oldValue == undefined')
-				flagTriggerEvent = true
-			} else if(typeof value == 'object') {
-				console.log('else oldValue == object', typeof value , typeof oldValue)
-				if(value instanceof Date) {
-					if(new Date(value).toDateString() == new Date(oldValue).toDateString()) {
-						flagTriggerEvent = false
-					} else {
-						flagTriggerEvent = true
+			
+			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
+				if(grid.updateDirty){
+					// Hack By Harpreet
+					// updateDirty for FilteringSelect as needed by backEnd 
+					if(eventObject.idProperty) {
+						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
 					}
-				} else {
-					console.log('else value instanceof Date')
-					flagTriggerEvent = true
-				}
-			}
-			if(flagTriggerEvent) {
-				if(on.emit(cellElement, "dgrid-datachange", eventObject)){
-					if(grid.updateDirty){
-						if(eventObject.idProperty) {
-							grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
-						}
-						// for OnDemandGrid: update dirty data, and save if autoSave is true
-						grid.updateDirty(row.id, column.field, value);
-						// perform auto-save (if applicable) in next tick to avoid
-						// unintentional mishaps due to order of handler execution
-						column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
-					}else{
-						// update store-less grid
-						row.data[column.field] = value;
-					}
+					// for OnDemandGrid: update dirty data, and save if autoSave is true
+					grid.updateDirty(row.id, column.field, value);
+					// perform auto-save (if applicable) in next tick to avoid
+					// unintentional mishaps due to order of handler execution
+					column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
 				}else{
-					// Otherwise keep the value the same
-					// For the sake of always-on editors, need to manually reset the value
-					var cmp;
-					if(cmp = cellElement.widget){
-						// set _dgridIgnoreChange to prevent an infinite loop in the
-						// onChange handler and prevent dgrid-datachange from firing
-						// a second time
-						cmp._dgridIgnoreChange = true;
-						cmp.set("value", oldValue);
-						setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
-					}else if(cmp = cellElement.input){
-						updateInputValue(cmp, oldValue);
-					}
-					
-					return oldValue;
+					// update store-less grid
+					row.data[column.field] = value;
 				}
+			}else{
+				// Otherwise keep the value the same
+				// For the sake of always-on editors, need to manually reset the value
+				var cmp;
+				if(cmp = cellElement.widget){
+					// set _dgridIgnoreChange to prevent an infinite loop in the
+					// onChange handler and prevent dgrid-datachange from firing
+					// a second time
+					cmp._dgridIgnoreChange = true;
+					cmp.set("value", oldValue);
+					setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
+				}else if(cmp = cellElement.input){
+					updateInputValue(cmp, oldValue);
+				}
+				
+				return oldValue;
 			}
 		}
 	}
@@ -356,7 +337,7 @@ function showEditor(cmp, column, cellElement, value){
 	cellElement.innerHTML = "";
 	put(cellElement, ".dgrid-cell-editing");
 	put(cellElement, cmp.domNode || cmp);
-	
+
 	if(isWidget){
 		// For widgets, ensure startup is called before setting value,
 		// to maximize compatibility with flaky widgets like dijit/form/Select.
@@ -407,31 +388,39 @@ function edit(cell) {
 	cellElement = cell.element.contents || cell.element;
 	
 	if((cmp = column.editorInstance)){ // shared editor (editOn used)
-		if(activeCell != cellElement &&
-				(!column.canEdit || column.canEdit(cell.row.data, value))){
-			activeCell = cellElement;
+		if(activeCell != cellElement){
+			// get the cell value
 			row = cell.row;
 			dirty = this.dirty && this.dirty[row.id];
 			value = (dirty && field in dirty) ? dirty[field] :
 				column.get ? column.get(row.data) : row.data[field];
-			if(column.editorInstance.widget == 'FilteringSelect') {
-				value = column.editorInstance.get('value')
+			// check to see if the cell can be edited
+			if(!column.canEdit || column.canEdit(cell.row.data, value)){
+				activeCell = cellElement;
+
+				// Hack By Harpreet
+				// get _pk from the grid's row using store.idProperty
+				// and reset value acc. to ASPIRE
+				if(column.editorInstance.widget == 'FilteringSelect') {
+					value = (dirty && field in dirty) ? dirty[column.editorInstance.store.idProperty]: row.data[column.editorInstance.store.idProperty]
+				}
+				showEditor(column.editorInstance, column, cellElement, value);
+
+				// focus / blur-handler-resume logic is surrounded in a setTimeout
+				// to play nice with Keyboard's dgrid-cellfocusin as an editOn event
+				dfd = new Deferred();
+				setTimeout(function(){
+					// focus the newly-placed control (supported by form widgets and HTML inputs)
+					if(cmp.focus){ cmp.focus(); }
+					// resume blur handler once editor is focused
+					if(column._editorBlurHandle){ column._editorBlurHandle.resume(); }
+					dfd.resolve(cmp);
+				}, 0);
+
+				return dfd.promise;
 			}
-			showEditor(column.editorInstance, column, cellElement, value);
-			
-			// focus / blur-handler-resume logic is surrounded in a setTimeout
-			// to play nice with Keyboard's dgrid-cellfocusin as an editOn event
-			dfd = new Deferred();
-			setTimeout(function(){
-				// focus the newly-placed control (supported by form widgets and HTML inputs)
-				if(cmp.focus){ cmp.focus(); }
-				// resume blur handler once editor is focused
-				if(column._editorBlurHandle){ column._editorBlurHandle.resume(); }
-				dfd.resolve(cmp);
-			}, 0);
-			
-			return dfd.promise;
 		}
+
 	}else if(column.editor){ // editor but not shared; always-on
 		cmp = cellElement.widget || cellElement.input;
 		if(cmp){
@@ -566,9 +555,6 @@ return function(column, editor, editOn){
 		// always-on: create editor immediately upon rendering each cell
 		if(!column.canEdit || column.canEdit(object, value)){
 			var cmp = createEditor(column);
-			if(cmp.store) {
-				value = object[cmp.store.idProperty]
-			}
 			showEditor(cmp, column, cell, value);
 			// Maintain reference for later use.
 			cell[isWidget ? "widget" : "input"] = cmp;
