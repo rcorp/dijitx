@@ -13,7 +13,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.arrRowIds=[];
 			// To make it a part of form and use its value in form.get('value') function.
 			this.value= [];
-			this.store= Observable(new Memory());
+			this.store= new Observable(new Memory());
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
 			// To check if the grid used in the form is addMultipleRowsGrid
