@@ -7,7 +7,7 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 	* columns of this grid.
 	* It is mandatory to add dgrid/extensions/DijitRegistry to use this Grid.
 	**/
-	var businessGrid = declare(OnDemandGrid, {
+	var businessGrid = declare(null, {
 		constructor: function() {
 			var grid = this;
 			this.arrRowIds=[];
