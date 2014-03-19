@@ -15,7 +15,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.value= [];
 			this.store= new Observable(new Memory());
 			this.newRowIdCounter=0;
-			this.labelAddNew = 'Add New';
+			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
@@ -84,6 +84,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.contentNode.innerHTML = "";
 			this.arrRowIds.splice(0);
 			this.newRowIdCounter=0;
+			var grid = this;
 			var columnNames=[];
 			if(lang.isArray(value)){
 				for(eachColumn in grid.columns){
