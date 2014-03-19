@@ -15,7 +15,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.value= [];
 			this.store= new Observable(new Memory());
 			this.newRowIdCounter=0;
-			this.labelAddNew = 'Add New'
+			this.labelAddNew = 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
@@ -24,30 +24,34 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.defaultVisible = 1;
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
-					console.log('after refresh')
-					var len= grid.defaultVisible || this.arrRowIds.length;
-					grid.arrRowIds.splice(0);
-					// The array containing id's of all the rows is cleared.
-					if(!grid.addNewRowWidget) {
-						grid.createAddNewRowButton();
-						grid.newRowIdCounter=0;
-						for(var i=0;i<len;i++) {
-						 	grid.addNewRowToGrid(undefined, true);
-						}
-						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
-					}
-					else{
-						grid.newRowIdCounter = 0;
-						var prevData = grid.objectToArray(grid.dirty)
-						// Clears grid.dirty
-						lang.setObject('dirty', {}, grid);
-						grid.set('value',prevData);
-						grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
-					}
+					grid.renderOnRefresh();	
 				})
 			});
 		},
 
+		renderOnRefresh: function(){
+			console.log('after refresh')
+			var grid= this;
+			var len= grid.defaultVisible || this.arrRowIds.length;
+			grid.arrRowIds.splice(0);
+			// The array containing id's of all the rows is cleared.
+			if(!grid.addNewRowWidget) {
+				grid.createAddNewRowButton();
+				grid.newRowIdCounter=0;
+				for(var i=0;i<len;i++) {
+				 	grid.addNewRowToGrid(undefined, true);
+				}
+				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+			}
+			else{
+				grid.newRowIdCounter = 0;
+				var prevData = grid.objectToArray(grid.dirty)
+				// Clears grid.dirty
+				lang.setObject('dirty', {}, grid);
+				grid.set('value',prevData);
+				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+			}
+		},
 		/**
 		* This function converts an object that is passed as a parameter into an equivalent array of objects 
 		* used to give parameter to setValue function.
@@ -79,7 +83,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.cleanup();
 			this.contentNode.innerHTML = "";
 			this.arrRowIds.splice(0);
-			grid.newRowIdCounter=0;
+			this.newRowIdCounter=0;
 			var columnNames=[];
 			if(lang.isArray(value)){
 				for(eachColumn in grid.columns){
