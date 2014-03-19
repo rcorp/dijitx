@@ -78,16 +78,16 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
 			this.arrRowIds.splice(0);
-			grid.newRowIdCounter=0;
+			this.newRowIdCounter=0;
 			var columnNames=[];
 			if(lang.isArray(value)){
-				for(eachColumn in grid.columns){
-					columnNames.push(grid.columns[eachColumn].field)
+				for(eachColumn in this.columns){
+					columnNames.push(this.columns[eachColumn].field)
 				}
 				for(var i=0; i<value.length;i++){
 				 	this.addNewRowToGrid(value[i],true);
 				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				this.contentNode.appendChild(this.addNewRowWidget.domNode)
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
@@ -98,8 +98,8 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function(){
 			var arrayOfValues = [];
-			for(eachRow in grid.dirty){
-				arrayOfValues.push(grid.dirty[eachRow]);
+			for(eachRow in this.dirty){
+				arrayOfValues.push(this.dirty[eachRow]);
 			}
 			return arrayOfValues;
 		},
