@@ -1,5 +1,5 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor"],
-function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor"],
+function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor){
 	/**
 	* This grid places a Add New button after all the rows have been rendered which is used to add new rows into
 	* the grid one at a time. This grid adds new rows using id's of each row instead of a counter	we used earlier
@@ -12,7 +12,8 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			var grid = this;
 			this.arrRowIds=[];
 			// To make it a part of form and use its value in form.get('value') function.
-			this.value=[];
+			this.value= [];
+			this.store= Observable(new Memory());
 			this.newRowIdCounter=0;
 			this.labelAddNew = 'Add New'
 			// To check if the grid used in the form is addMultipleRowsGrid
@@ -78,16 +79,16 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 			this.cleanup();
 			this.contentNode.innerHTML = "";
 			this.arrRowIds.splice(0);
-			this.newRowIdCounter=0;
+			grid.newRowIdCounter=0;
 			var columnNames=[];
 			if(lang.isArray(value)){
-				for(eachColumn in this.columns){
-					columnNames.push(this.columns[eachColumn].field)
+				for(eachColumn in grid.columns){
+					columnNames.push(grid.columns[eachColumn].field)
 				}
 				for(var i=0; i<value.length;i++){
 				 	this.addNewRowToGrid(value[i],true);
 				}
-				this.contentNode.appendChild(this.addNewRowWidget.domNode)
+				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
@@ -98,8 +99,8 @@ function(lang,declare, OnDemandGrid, Button, aspect,date,editor){
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function(){
 			var arrayOfValues = [];
-			for(eachRow in this.dirty){
-				arrayOfValues.push(this.dirty[eachRow]);
+			for(eachRow in grid.dirty){
+				arrayOfValues.push(grid.dirty[eachRow]);
 			}
 			return arrayOfValues;
 		},
