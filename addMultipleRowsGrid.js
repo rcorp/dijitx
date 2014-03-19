@@ -14,28 +14,31 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// To make it a part of form and use its value in form.get('value') function.
 			this.value= [];
 			this.store= new Observable(new Memory());
-			this.newRowIdCounter=0;
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
 			// By default one row should be visible in the grid.
-			this.defaultVisible = 1;
+			this.defaultVisible = this.defaultVisible || 1;
+			// needed by external users
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
 					grid.renderOnRefresh();	
 				})
 			});
 		},
-
+		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
 			console.log('after refresh')
 			var grid= this;
-			var len= grid.defaultVisible || this.arrRowIds.length;
+			var len= grid.defaultVisible;
+			grid.newRowIdCounter=0;
 			grid.arrRowIds.splice(0);
 			// The array containing id's of all the rows is cleared.
-			if(!grid.addNewRowWidget) {
+			// multiple refresh problem, if dirty is empty
+			// then create default Rows else use dirty
+			if(JSON.stringify(grid.dirty) == '{}') {
 				grid.createAddNewRowButton();
 				grid.newRowIdCounter=0;
 				for(var i=0;i<len;i++) {
