@@ -55,6 +55,7 @@ return dojox.json.ref = {
 		var idAttribute = args.idAttribute || 'id';
 		var refAttribute = this.refAttribute;
 		var refValueAttribute = this.refValueAttribute;
+		var otherValueAttr = this.otherValueAttr;
 		var idAsRef = args.idAsRef;
 		var prefix = args.idPrefix || '';
 		var assignAbsoluteIds = args.assignAbsoluteIds;
@@ -119,50 +120,72 @@ return dojox.json.ref = {
 				if(it.hasOwnProperty(i)){
 					val=it[i];
 					if((typeof val =='object') && val && !(val instanceof Date) && i != '__parent'){
-						ref=val[refAttribute] || (idAsRef && val[idAttribute]);
+						var parentRef =val[refAttribute] || (idAsRef && val[idAttribute]);
 						// Hack: Harpreet
 						// if(!ref || !val.__parent){
 						// 	if(it != reWalk){
 						// 		val.__parent = target;
 						// 	}
 						// }
-						if(ref){ // a reference was found
-							// make sure it is a safe reference
-							delete it[i];// remove the property so it doesn't resolve to itself in the case of id.propertyName lazy values
-							var path = ref.toString().replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
-							if(index[(prefix + ref).replace(pathResolveRegex,'$2$3')]){
-								// Hack: Harpreet
-								// ref = index[(prefix + ref).replace(pathResolveRegex,'$2$3')];
-								var myId = index[(prefix + ref).replace(pathResolveRegex,'$2$3')][refValueAttribute];
-								delete val._loadObject
-								ref = val;
-								ref[refAttribute] = myId
-
-							}else if((ref = (path[1]=='$' || path[1]=='this' || path[1]=='') ? root : index[(prefix + path[1]).replace(pathResolveRegex,'$2$3')])){  // a $ indicates to start with the root, otherwise start with an id
-								// if there is a path, we will iterate through the path references
-								if(path[3]){
-									path[3].replace(/(\[([^\]]+)\])|(\.?([^\.\[]+))/g,function(t,a,b,c,d){
-										ref = ref && ref[b ? b.replace(/[\"\'\\]/,'') : d];
-									});
-								}
-							}
-							if(ref){
-								val = ref;
-							}else{
-								// otherwise, no starting point was found (id not found), if stop is set, it does not exist, we have
-								// unloaded reference, if stop is not set, it may be in a part of the graph not walked yet,
-								// we will wait for the second loop
-								if(!stop){
-									var rewalking;
-									if(!rewalking){
-										reWalk.push(target); // we need to rewalk it to resolve references
+						// eg: $ref:[]
+						if(parentRef){ // a reference was found
+							// ref = ref[0].divisions;
+							// traverse array of $ref
+							// eg: $ref:[]
+							for(var refIndex=0;refIndex<parentRef.length;refIndex++) {
+							// eg: $ref:[{
+							// 	"divisions":"val_id"
+							// }]
+							// get every property of each element of $ref 
+							// eg: 'divisions' here
+								for(subRef in parentRef[refIndex]) {
+									ref = parentRef[refIndex][subRef]
+									// make sure it is a safe reference
+									var path = ref.toString().replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
+									if(index[(prefix + ref).replace(pathResolveRegex,'$2$3')]){
+										// Hack: Harpreet
+										// ref = index[(prefix + ref).replace(pathResolveRegex,'$2$3')];
+										var refObj = index[(prefix + ref).replace(pathResolveRegex,'$2$3')]
+										delete val._loadObject
+										ref = val;
+										// set all the values needed by user
+										ref[refAttribute][refIndex][refValueAttribute] = refObj[refValueAttribute];
+										for(var otherValueIndex=0; otherValueIndex<otherValueAttr.length;otherValueIndex++) {
+											var otherAttrString = otherValueAttr[otherValueIndex];
+											ref[refAttribute][refIndex][otherAttrString] = refObj[otherAttrString];
+										}
+										// delete unwanted values
+										delete ref[refAttribute][refIndex][subRef];
+									}else if((ref = (path[1]=='$' || path[1]=='this' || path[1]=='') ? root : index[(prefix + path[1]).replace(pathResolveRegex,'$2$3')])){  // a $ indicates to start with the root, otherwise start with an id
+										// if there is a path, we will iterate through the path references
+										if(path[3]){
+											path[3].replace(/(\[([^\]]+)\])|(\.?([^\.\[]+))/g,function(t,a,b,c,d){
+												ref = ref && ref[b ? b.replace(/[\"\'\\]/,'') : d];
+											});
+										}
 									}
-									rewalking = true; // we only want to add it once
-									val = walk(val, false, val[refAttribute], true, propertyDefinition);
-									// create a lazy loaded object
-									val._loadObject = args.loader;
+									if(ref){
+										val = ref;
+									}else{
+										// otherwise, no starting point was found (id not found), if stop is set, it does not exist, we have
+										// unloaded reference, if stop is not set, it may be in a part of the graph not walked yet,
+										// we will wait for the second loop
+										if(!stop){
+											var rewalking;
+											if(!rewalking){
+												reWalk.push(target); // we need to rewalk it to resolve references
+											}
+											rewalking = true; // we only want to add it once
+											val = walk(val, false, val[refAttribute], true, propertyDefinition);
+											// create a lazy loaded object
+											val._loadObject = args.loader;
+										}
+									}
 								}
 							}
+							// edit all $ref then delete
+							delete it[i];// remove the property so it doesn't resolve to itself in the case of id.propertyName lazy values
+
 						}else{
 							if(!stop){ // if we are in stop, that means we are in the second loop, and we only need to check this current one,
 								// further walking may lead down circular loops
@@ -371,6 +394,7 @@ return dojox.json.ref = {
 	//		loaded. This defaults to "$ref".
 	refAttribute: "$ref",
 	refValueAttribute: "#id",
+	otherValueAttr: ['widget'],
 	_useRefs: false,
 	serializeFunctions: false
 };

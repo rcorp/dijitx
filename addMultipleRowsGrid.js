@@ -170,8 +170,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
 			var obj = {};
-			obj['id'] = ++grid.newRowIdCounter;
-			this.arrRowIds.push(obj['id']);
+			// idProperty is used for using SocketStore
+			obj[grid.store.idProperty] = ++grid.newRowIdCounter;
+			this.arrRowIds.push(obj[grid.store.idProperty]);
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
