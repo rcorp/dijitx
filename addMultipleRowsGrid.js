@@ -109,6 +109,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function(){
 			var arrayOfValues = [];
+			var grid = this;
 			for(eachRow in grid.dirty){
 				arrayOfValues.push(grid.dirty[eachRow]);
 			}
