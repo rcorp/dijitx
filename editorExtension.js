@@ -67,6 +67,7 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 		cell = grid.cell(cellElement);
 		row = cell.row;
 		column = cell.column;
+		console.log(cell, cellElement.widget)
 		if(column.field && row){
 			// TODO: remove rowId in lieu of cell (or grid.row/grid.cell)
 			// (keeping for the moment for back-compat, but will note in changes)
@@ -111,6 +112,9 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 							} else if (value == false) {
 								grid.updateDirty(row.id, column.field, 0);
 							}
+						} else {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							grid.updateDirty(row.id, column.field, value);
 						}
 					} else {
 						// for OnDemandGrid: update dirty data, and save if autoSave is true
