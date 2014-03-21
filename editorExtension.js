@@ -47,6 +47,11 @@ function dataFromEditor(column, cmp){
 		if(cmp.widget == 'FilteringSelect') {
 			return dataFromValue(cmp.get("displayedValue"));
 		}
+		if(cmp.widget == 'NumberTextBox') {
+			if(isNaN(cmp.get('value'))) {
+				return 0
+			}
+		}
 		return dataFromValue(cmp.get("value"));
 	}else{ // HTML input
 		return dataFromValue(
