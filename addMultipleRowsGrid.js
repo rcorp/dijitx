@@ -12,7 +12,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this;
 			this.arrRowIds=[];
 			// To make it a part of form and use its value in form.get('value') function.
-			this.value= [];
 			this.store= new Observable(new Memory());
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
@@ -34,6 +33,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid= this;
 			var len= grid.defaultVisible;
 			grid.newRowIdCounter=0;
+			this.value= [];
 			grid.arrRowIds.splice(0);
 			// The array containing id's of all the rows is cleared.
 			// multiple refresh problem, if dirty is empty
