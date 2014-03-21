@@ -72,8 +72,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* dirty and the array containing all the row id's as well.
 		**/
 		removeDirtyRow: function(id){
-        	grid.removeRow(grid.row(id))
-        	delete grid.dirty[id];
+        	var grid=this;
+        	this.removeRow(this.row(id))
+        	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
 
@@ -89,11 +90,13 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.newRowIdCounter=0;
 			var grid = this;
 			var columnNames=[];
+			this.dirty={};
 			if(lang.isArray(value)){
 				for(eachColumn in grid.columns){
 					columnNames.push(grid.columns[eachColumn].field)
 				}
 				for(var i=0; i<value.length;i++){
+					console.log("i",i)
 				 	this.addNewRowToGrid(value[i],true);
 				}
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
@@ -171,18 +174,20 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var refDomNode = grid.contentNode;
 			var obj = {};
 			// idProperty is used for using SocketStore
-			obj[grid.store.idProperty] = ++grid.newRowIdCounter;
-			this.arrRowIds.push(obj[grid.store.idProperty]);
+			obj['id'] = ++grid.newRowIdCounter;
+			this.arrRowIds.push(obj['id']);
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
+						console.log("In If")
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
 						//Dirty is updated evertime a new row is added with or without values.
 						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
+						console.log("In Else If")
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
 						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
@@ -190,6 +195,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			} else {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
+						console.log("In Else")
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
 						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
