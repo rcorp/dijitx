@@ -67,6 +67,7 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 		cell = grid.cell(cellElement);
 		row = cell.row;
 		column = cell.column;
+		console.log(cell, cellElement.widget)
 		if(column.field && row){
 			// TODO: remove rowId in lieu of cell (or grid.row/grid.cell)
 			// (keeping for the moment for back-compat, but will note in changes)
@@ -80,14 +81,17 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				cancelable: true
 			};
 			// Hack By Harpreet
+			// editOn is not undefined
+			var _editorWidget = cell.column.editorInstance || cellElement.widget
 			// need extra information of FilteringSelect 
 			// Add extra info to eventObject and use as you need
-			if(cell.column.editorInstance) {
-				lang.mixin(eventObject,{origValue:cell.column.editorInstance.get('value')})
-				if(cell.column.editorInstance && cell.column.editorInstance.store && cell.column.editorInstance.store.idProperty) {
-					lang.setObject('idProperty', cell.column.editorInstance.store.idProperty, eventObject);
+			if(_editorWidget) {
+				lang.mixin(eventObject,{origValue:_editorWidget.get('value')})
+				if(_editorWidget && _editorWidget.store && _editorWidget.store.idProperty) {
+					lang.setObject('idProperty', _editorWidget.store.idProperty, eventObject);
 				}
 			}
+
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
@@ -111,6 +115,9 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 							} else if (value == false) {
 								grid.updateDirty(row.id, column.field, 0);
 							}
+						} else {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							grid.updateDirty(row.id, column.field, value);
 						}
 					} else {
 						// for OnDemandGrid: update dirty data, and save if autoSave is true

@@ -12,7 +12,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this;
 			this.arrRowIds=[];
 			// To make it a part of form and use its value in form.get('value') function.
-			this.value= [];
 			this.store= new Observable(new Memory());
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
@@ -34,6 +33,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid= this;
 			var len= grid.defaultVisible;
 			grid.newRowIdCounter=0;
+			this.value= [];
 			grid.arrRowIds.splice(0);
 			// The array containing id's of all the rows is cleared.
 			// multiple refresh problem, if dirty is empty
@@ -72,8 +72,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* dirty and the array containing all the row id's as well.
 		**/
 		removeDirtyRow: function(id){
-        	grid.removeRow(grid.row(id))
-        	delete grid.dirty[id];
+        	var grid=this;
+        	this.removeRow(this.row(id))
+        	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
 
@@ -89,6 +90,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.newRowIdCounter=0;
 			var grid = this;
 			var columnNames=[];
+			this.dirty={};
 			if(lang.isArray(value)){
 				for(eachColumn in grid.columns){
 					columnNames.push(grid.columns[eachColumn].field)
@@ -107,6 +109,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function(){
 			var arrayOfValues = [];
+			var grid = this;
 			for(eachRow in grid.dirty){
 				arrayOfValues.push(grid.dirty[eachRow]);
 			}
@@ -171,8 +174,8 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var refDomNode = grid.contentNode;
 			var obj = {};
 			// idProperty is used for using SocketStore
-			obj[grid.store.idProperty] = ++grid.newRowIdCounter;
-			this.arrRowIds.push(obj[grid.store.idProperty]);
+			obj['id'] = ++grid.newRowIdCounter;
+			this.arrRowIds.push(obj['id']);
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
