@@ -1,6 +1,6 @@
 define(["dgrid/_StoreMixin", "dojo/_base/declare", "dojo/_base/array", "dojo/_base/lang", "dojo/_base/Deferred",
-	"dojo/on", "dojo/query", "dojo/string", "dojo/has", "put-selector/put", "dojo/i18n!../../dgrid/extensions/nls/pagination",
-	"dojo/_base/sniff", "xstyle/css!../../dgrid/css/extensions/Pagination.css"],
+	"dojo/on", "dojo/query", "dojo/string", "dojo/has", "put-selector/put", "dojo/i18n!../dgrid/extensions/nls/pagination",
+	"dojo/_base/sniff", "xstyle/css!../dgrid/css/extensions/Pagination.css"],
 function(_StoreMixin, declare, arrayUtil, lang, Deferred, on, query, string, has, put, i18n){
 	function cleanupContent(grid){
 		// Remove any currently-rendered rows, or noDataMessage
@@ -455,7 +455,6 @@ function(_StoreMixin, declare, arrayUtil, lang, Deferred, on, query, string, has
 								grid.noDataNode = put(grid.contentNode, "div.dgrid-no-data");
 								grid.noDataNode.innerHTML = grid.noDataMessage;
 							}
-							console.log(grid.paginationStatusNode,"   dddddd   ",grid.i18nPagination, string.substitute)
 							// Update status text based on now-current page and total.
 							grid.paginationStatusNode.innerHTML = string.substitute(grid.i18nPagination.status, {
 								start: Math.min(start + 1, total),
