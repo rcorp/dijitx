@@ -455,6 +455,12 @@ function(_StoreMixin, declare, arrayUtil, lang, Deferred, on, query, string, has
 								grid.noDataNode = put(grid.contentNode, "div.dgrid-no-data");
 								grid.noDataNode.innerHTML = grid.noDataMessage;
 							}
+							// Update status text to zero based on when grid is empty.
+							if(total ==undefined){
+								total = 0;
+								start = -1;
+								end = 0;
+							}
 							// Update status text based on now-current page and total.
 							grid.paginationStatusNode.innerHTML = string.substitute(grid.i18nPagination.status, {
 								start: Math.min(start + 1, total),
