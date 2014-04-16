@@ -27,6 +27,9 @@ function(declare, Button){
 			obj[this.searchAttr] = '';
 			obj[this.store.idProperty] = null;
 			this.set('item', obj);
+			this.item=null;
+			this.textbox.value = "";
+   			this.valueNode.value = "";
 		},
 		_openResultList: function(/*Object*/ results, /*Object*/ query, /*Object*/ options){
 			var obj = {};
