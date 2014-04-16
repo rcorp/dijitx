@@ -62,9 +62,9 @@ define([
 						value = "";
 					}
 
-					if(value == null){
-						value="";
-					}
+					// if(value == null){
+					// 	value="";
+					// }
 					if(widget.widget == "DateTextBox" && value){
 						console.log(value.toISOString().split("T")[0])
 						value = value.toISOString().split("T")[0]; 
