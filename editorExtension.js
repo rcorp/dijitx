@@ -97,6 +97,7 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 			}
 			
 			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
+				grid.set('eventObject',eventObject)
 				if(grid.updateDirty){
 					// Hack By Harpreet
 					// updateDirty for FilteringSelect as needed by backEnd 
