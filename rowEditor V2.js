@@ -48,12 +48,12 @@ function dataFromEditor(column, cmp){
 	}
 }
 
-function setProperty(grid, cellElement, oldValue, value, triggerEvent){
+function setProperty(grid, cell, oldValue, value, triggerEvent){
 	// Updates dirty hash and fires dgrid-datachange event for a changed value.
-	var cell, row, column, eventObject;
+	var cellElement, row, column, eventObject;
 	// test whether old and new values are inequal, with coercion (e.g. for Dates)
 	if((oldValue && oldValue.valueOf()) != (value && value.valueOf())){
-		cell = grid.cell(cellElement);
+		cellElement = cell.element;
 		row = cell.row;
 		column = cell.column;
 		if(column.field && row){
@@ -87,14 +87,14 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				// Otherwise keep the value the same
 				// For the sake of always-on editors, need to manually reset the value
 				var cmp;
-				if(cmp = cellElement.widget){
+				if((cmp = cellElement.widget)){
 					// set _dgridIgnoreChange to prevent an infinite loop in the
 					// onChange handler and prevent dgrid-datachange from firing
 					// a second time
 					cmp._dgridIgnoreChange = true;
 					cmp.set("value", oldValue);
 					setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
-				}else if(cmp = cellElement.input){
+				}else if((cmp = cellElement.input)){
 					updateInputValue(cmp, oldValue);
 				}
 				
@@ -107,10 +107,15 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 }
 
 // intermediary frontend to setProperty for HTML and widget editors
-function setPropertyFromEditor(grid, column, cmp, triggerEvent) {
+function setPropertyFromEditor(grid, cmp, triggerEvent) {
+	var cell = grid.cell(cmp.domNode || cmp),
+		column = cell.column,
+		value,
+		id,
+		editedRow;
 	var value, id, editedRow;
 	if(!cmp.isValid || cmp.isValid()){
-		value = setProperty(grid, (cmp.domNode || cmp).parentNode,
+		value = setProperty(grid, cell,
 			activeCell ? activeValue : cmp._dgridLastValue,
 			dataFromEditor(column, cmp), triggerEvent);
 		
@@ -177,7 +182,7 @@ function createEditor(column){
 		handleChange = function(evt){
 			var target = evt.target;
 			if("_dgridLastValue" in target && target.className.indexOf("dgrid-input") > -1){
-				setPropertyFromEditor(grid, column, target, evt);
+				setPropertyFromEditor(grid, target, evt);
 			}
 		};
 
@@ -225,7 +230,7 @@ function createSharedEditor(column, originalRenderCell){
 			function(){
 				updateInputValue(cmp, cmp._dgridLastValue);
 				// call setProperty again in case we need to revert a previous change
-				setPropertyFromEditor(column.grid, column, cmp);
+				setPropertyFromEditor(column.grid, cmp);
 			},
 		keyHandle;
 	
@@ -378,7 +383,6 @@ function edit(cell) {
 				prevDirty = this.dirty && this.dirty[prevRow.id];
 				prevDirtyValue = (prevDirty && field in prevDirty) ? prevDirty[field] :
 				column.get ? column.get(prevRow.data) : prevRow.data[field];
-				console.log('prev row jugaaaaaad', prevDirtyValue, 'prevDirtyValue')
 				grid.cell(prevRow, column.id).element.innerHTML = prevDirtyValue;
 			} else {
 				console.log("else prevROw")
@@ -487,8 +491,8 @@ return function(column, editor, editOn){
 						// grid.set('prevRow', '');
 					} else {
 						for(each in grid.columns) {
-							if(grid.cell(prevRow,each).column.editorInstance.domNode) {
-								setPropertyFromEditor(grid, column, grid.cell(prevRow,each).column.editorInstance);
+							if(grid.cell(prevRow,each).column.editorInstance && grid.cell(prevRow,each).column.editorInstance.domNode) {
+								setPropertyFromEditor(grid, grid.cell(prevRow,each).column.editorInstance);
 							}
 						}
 						grid.activeRow = dojo.clone(editedRow);
