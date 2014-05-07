@@ -369,6 +369,7 @@ function edit(cell) {
 	field = column.field;
 	cellElement = cell.element.contents || cell.element;
 	
+	var grid = column.grid;	
 	if((cmp = column.editorInstance)){ // shared editor (editOn used)
 		if(activeCell != cellElement){
 			// get the cell value
@@ -474,6 +475,7 @@ return function(column, editor, editOn){
 	});
 	
 	column.renderCell = function(object, value, cell, options){
+		var grid = column.grid
 		// TODO: Consider using event delegation
 		// (Would require using dgrid's focus events for activating on focus,
 		// which we already advocate in README for optimal use)
