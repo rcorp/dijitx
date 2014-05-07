@@ -41,6 +41,17 @@ function dataFromValue(value, oldValue){
 // intermediary frontend to dataFromValue for HTML and widget editors
 function dataFromEditor(column, cmp){
 	if(typeof cmp.get == "function"){ // widget
+		// Hack By Harpreet
+		// get displayed value instead of value
+		// data to be shown on grid's cell when editor is off
+		if(cmp.widget == 'FilteringSelect') {
+			return dataFromValue(cmp.get("displayedValue"));
+		}
+		if(cmp.widget == 'NumberTextBox') {
+			if(isNaN(cmp.get('value'))) {
+				return 0
+			}
+		}
 		return dataFromValue(cmp.get("value"));
 	}else{ // HTML input
 		return dataFromValue(
@@ -68,14 +79,51 @@ function setProperty(grid, cell, oldValue, value, triggerEvent){
 				bubbles: true,
 				cancelable: true
 			};
+
+			// Hack By Harpreet
+			// editOn is not undefined
+			var _editorWidget = cell.column.editorInstance || cellElement.widget
+			// need extra information of FilteringSelect 
+			// Add extra info to eventObject and use as you need
+			if(_editorWidget) {
+				lang.mixin(eventObject,{origValue:_editorWidget.get('value')})
+				if(_editorWidget && _editorWidget.store && _editorWidget.store.idProperty) {
+					lang.setObject('idProperty', _editorWidget.store.idProperty, eventObject);
+				}
+			}
+
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
 
 			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
 				if(grid.updateDirty){
-					// for OnDemandGrid: update dirty data, and save if autoSave is true
-					grid.updateDirty(row.id, column.field, value);
+					// Hack By Harpreet
+					// updateDirty for FilteringSelect as needed by backEnd 
+					if(eventObject.idProperty) {
+						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
+					}
+
+					// Hack By Harpreet
+					// For widgets whose editorWidget is visible by-default
+					// eg: CheckBox
+					if(column.editOn == undefined) {
+						if(column.editorArgs.widget == "CheckBox") {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							if(value == "on") {
+								grid.updateDirty(row.id, column.field, 1);
+							} else if (value == false) {
+								grid.updateDirty(row.id, column.field, 0);
+							}
+						} else {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							grid.updateDirty(row.id, column.field, value);
+						}
+					} else {
+						// for OnDemandGrid: update dirty data, and save if autoSave is true
+						grid.updateDirty(row.id, column.field, value);
+					}
+
 					// perform auto-save (if applicable) in next tick to avoid
 					// unintentional mishaps due to order of handler execution
 					column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
@@ -102,7 +150,6 @@ function setProperty(grid, cell, oldValue, value, triggerEvent){
 			}
 		}
 	}
-	console.log(value)
 	return value;
 }
 
@@ -329,6 +376,17 @@ function showEditor(cmp, column, cellElement, value){
 		// (Clear flag on a timeout to wait for delayed onChange to fire first)
 		cmp._dgridIgnoreChange = true;
 		cmp.set("value", value);
+
+
+		// Hack By Harpreet
+		// For widgets whose editorWidget is visible by-default
+		if(column.editOn == undefined) {
+			if(column.editorArgs.widget == "CheckBox") {
+				cmp.set("value", parseInt(value));
+			}
+		} else {
+			cmp.set("value", value);
+		}
 		setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
 	}
 	// track previous value for short-circuiting or in case we need to revert
@@ -391,6 +449,13 @@ function edit(cell) {
 			// check to see if the cell can be edited
 			if(!column.canEdit || column.canEdit(cell.row.data, value)){
 				activeCell = cellElement;
+
+				// Hack By Harpreet
+				// get _pk from the grid's row using store.idProperty
+				// and reset value acc. to ASPIRE
+				if(column.editorInstance.widget == 'FilteringSelect') {
+					value = (dirty && field in dirty) ? dirty[column.editorInstance.store.idProperty]: row.data[column.editorInstance.store.idProperty]
+				}
 
 				showEditor(column.editorInstance, column, cellElement, value);
 
