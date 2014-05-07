@@ -162,10 +162,12 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 		editedRow;
 	var value, id, editedRow;
 	if(!cmp.isValid || cmp.isValid()){
+		// hack by Harpreet
+		// pass oldValue only
 		value = setProperty(grid, cell,
-			activeCell ? activeValue : cmp._dgridLastValue,
+			//activeCell ? activeValue : cmp._dgridLastValue,
+			cmp._dgridLastValue,
 			dataFromEditor(column, cmp), triggerEvent);
-		
 		if(activeCell){ // for editors with editOn defined
 			activeValue = value;
 		}else{ // for always-on editors, update _dgridLastValue immediately
@@ -184,6 +186,7 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 					radioBtn._dgridLastValue = false;
 					if(grid.updateDirty){
 						grid.updateDirty(row.id, column.field, false);
+								console.log('update dirty')
 					}else{
 						// update store-less grid
 						row.data[column.field] = false;
@@ -195,6 +198,7 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 			for(id in grid.dirty){
 				if(editedRow.id !== id && grid.dirty[id][column.field]){
 					grid.updateDirty(id, column.field, false);
+								console.log('update dirty')
 				}
 			}
 		}
@@ -229,6 +233,7 @@ function createEditor(column){
 		handleChange = function(evt){
 			var target = evt.target;
 			if("_dgridLastValue" in target && target.className.indexOf("dgrid-input") > -1){
+				console.log('setPropertyFromEditor 1')
 				setPropertyFromEditor(grid, target, evt);
 			}
 		};
@@ -277,6 +282,7 @@ function createSharedEditor(column, originalRenderCell){
 			function(){
 				updateInputValue(cmp, cmp._dgridLastValue);
 				// call setProperty again in case we need to revert a previous change
+				console.log('setPropertyFromEditor 2')
 				setPropertyFromEditor(column.grid, cmp);
 			},
 		keyHandle;
@@ -509,10 +515,15 @@ return function(column, editor, editOn){
 
 	if(!column){ column = {}; }
 	
+	// Hack removed by Harpreet
+	// Reset orig code of editor.js
+	// column.editOn = editOn = editOn || column.editOn || click;
+
 	// accept arguments as parameters to editor function, or from column def,
 	// but normalize to column def.
 	column.editor = editor = editor || column.editor || "text";
-	column.editOn = editOn = editOn || column.editOn || 'click';
+	column.editOn = editOn = editOn || column.editOn;
+
 	isWidget = typeof editor != "string";
 	
 	// warn for widgetArgs -> editorArgs; TODO: remove @ 0.4
@@ -538,13 +549,20 @@ return function(column, editor, editOn){
 		// will be re-added if editor columns are re-initialized
 		column.grid.edit = null;
 	});
-	
-	column.renderCell = function(object, value, cell, options){
+
+	// Hack removed by Harpreet
+	// Reset orig code of editor.js
+	// column.renderCell = function(object, value, cell, options){
+	column.renderCell = editOn ? function(object, value, cell, options){
 		var grid = column.grid
+		// Hack removed by Harpreet
+		// Reset orig code of editor.js
+		// if((!options || !options.alreadyHooked)){
+
 		// TODO: Consider using event delegation
 		// (Would require using dgrid's focus events for activating on focus,
 		// which we already advocate in README for optimal use)
-		if(!options || !options.alreadyHooked){
+		if((!options || !options.alreadyHooked) && editOn){
 			// in IE<8, cell is the child of the td due to the extra padding node
 			on(cell.tagName == "TD" ? cell : cell.parentNode, editOn, function(evt){
 				activeOptions = options;
@@ -559,6 +577,7 @@ return function(column, editor, editOn){
 					} else {
 						for(each in grid.columns) {
 							if(grid.cell(prevRow,each).column.editorInstance && grid.cell(prevRow,each).column.editorInstance.domNode) {
+				console.log('setPropertyFromEditor 3', prevRow, grid.cell(prevRow,each).column.editorInstance.get('value'))
 								setPropertyFromEditor(grid, grid.cell(prevRow,each).column.editorInstance);
 							}
 						}
@@ -585,11 +604,21 @@ return function(column, editor, editOn){
 			});
 		}
 		
+		
 		// initially render content in non-edit mode
 		return originalRenderCell.call(column, object, value, cell, options);
 		
-	}
-
+	} : function(object, value, cell, options){
+		// always-on: create editor immediately upon rendering each cell
+		if(!column.canEdit || column.canEdit(object, value)){
+			var cmp = createEditor(column);
+			showEditor(cmp, column, cell, value);
+			// Maintain reference for later use.
+			cell[isWidget ? "widget" : "input"] = cmp;
+		}else{
+			return originalRenderCell.call(column, object, value, cell, options);
+		}
+	};
 	return column;
 };
 });
