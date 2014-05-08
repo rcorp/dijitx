@@ -239,7 +239,13 @@ function createEditor(column){
 		
 		// For editOn editors, connect to onBlur rather than onChange, since
 		// the latter is delayed by setTimeouts in Dijit and will fire too late.
-
+		if(editOn == undefined) {
+			cmp.connect(cmp, editOn ? "onBlur" : "onChange", function(){
+				if(!cmp._dgridIgnoreChange){
+					setPropertyFromEditor(grid, this, {type: "widget"});
+				}
+			});
+		}
 	}else{
 		handleChange = function(evt){
 			var target = evt.target;
@@ -517,7 +523,39 @@ return function(column, editor, editOn){
 			focusoutHandle;
 		if(!grid.edit){
 			// Only perform this logic once on a given grid
-			grid.edit = edit;	
+			grid.edit = edit;
+
+			listeners.push(on(grid.domNode, '.dgrid-input:focusin', function () {
+				focusedCell = grid.cell(this);
+			}));
+			focusoutHandle = grid._editorFocusoutHandle =
+				on.pausable(grid.domNode, '.dgrid-input:focusout', function () {
+					focusedCell = null;
+				});
+			listeners.push(focusoutHandle);
+			
+			listeners.push(aspect.before(grid, 'removeRow', function (row) {
+				row = grid.row(row);
+				if (focusedCell && focusedCell.row.id === row.id) {
+					// Pause the focusout handler until after this row has had
+					// time to re-render, if this removal is part of an update.
+					// A setTimeout is used here instead of resuming in the
+					// insertRow aspect below, since if a row were actually
+					// removed (not updated) while editing, the handler would
+					// not be properly hooked up again for future occurrences.
+					focusoutHandle.pause();
+					setTimeout(function () {
+						focusoutHandle.resume();
+					}, 0);
+				}
+			}));
+			listeners.push(aspect.after(grid, 'insertRow', function (rowElement) {
+				var row = grid.row(rowElement);
+				if (focusedCell && focusedCell.row.id === row.id) {
+					grid.edit(grid.cell(row, focusedCell.column.id));
+				}
+				return rowElement;
+			}));
 		}
 		grid.activeRow = '';
 	}
