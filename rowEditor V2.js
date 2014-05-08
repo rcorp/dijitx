@@ -62,8 +62,22 @@ function dataFromEditor(column, cmp){
 function setProperty(grid, cell, oldValue, value, triggerEvent){
 	// Updates dirty hash and fires dgrid-datachange event for a changed value.
 	var cellElement, row, column, eventObject;
+
+	// Hack By Harpreet
+	// editOn is not undefined
+	var _editorWidget = cell.column.editorInstance || cellElement.widget
+	var origValue = _editorWidget.get('value');
+	if(cell && cell.column && cell.column.editorArgs && cell.column.editorArgs.widget == "CheckBox") {
+		if(origValue == "on") {
+			origValue = 1
+		} else {
+			origValue = 0
+		}
+	}
+
+	// console.log(oldValue, value, origValue, '(oldValue, value, origValue')
 	// test whether old and new values are inequal, with coercion (e.g. for Dates)
-	if((oldValue && oldValue.valueOf()) != (value && value.valueOf())){
+	if((oldValue && oldValue.valueOf()) != (value && value.valueOf()) && (oldValue != origValue.toString()) ){
 		cellElement = cell.element;
 		row = cell.row;
 		column = cell.column;
@@ -80,13 +94,10 @@ function setProperty(grid, cell, oldValue, value, triggerEvent){
 				cancelable: true
 			};
 
-			// Hack By Harpreet
-			// editOn is not undefined
-			var _editorWidget = cell.column.editorInstance || cellElement.widget
 			// need extra information of FilteringSelect 
 			// Add extra info to eventObject and use as you need
 			if(_editorWidget) {
-				lang.mixin(eventObject,{origValue:_editorWidget.get('value')})
+				lang.mixin(eventObject,{origValue:origValue})
 				if(_editorWidget && _editorWidget.store && _editorWidget.store.idProperty) {
 					lang.setObject('idProperty', _editorWidget.store.idProperty, eventObject);
 				}
@@ -233,7 +244,6 @@ function createEditor(column){
 		handleChange = function(evt){
 			var target = evt.target;
 			if("_dgridLastValue" in target && target.className.indexOf("dgrid-input") > -1){
-				console.log('setPropertyFromEditor 1')
 				setPropertyFromEditor(grid, target, evt);
 			}
 		};
@@ -282,7 +292,6 @@ function createSharedEditor(column, originalRenderCell){
 			function(){
 				updateInputValue(cmp, cmp._dgridLastValue);
 				// call setProperty again in case we need to revert a previous change
-				console.log('setPropertyFromEditor 2')
 				setPropertyFromEditor(column.grid, cmp);
 			},
 		keyHandle;
@@ -554,37 +563,35 @@ return function(column, editor, editOn){
 	// Reset orig code of editor.js
 	// column.renderCell = function(object, value, cell, options){
 	column.renderCell = editOn ? function(object, value, cell, options){
-		var grid = column.grid
 		// Hack removed by Harpreet
 		// Reset orig code of editor.js
-		// if((!options || !options.alreadyHooked)){
+		var grid = column.grid
 
 		// TODO: Consider using event delegation
 		// (Would require using dgrid's focus events for activating on focus,
 		// which we already advocate in README for optimal use)
-		if((!options || !options.alreadyHooked) && editOn){
+		if((!options || !options.alreadyHooked)){
 			// in IE<8, cell is the child of the td due to the extra padding node
 			on(cell.tagName == "TD" ? cell : cell.parentNode, editOn, function(evt){
 				activeOptions = options;
 				// column.grid.edit(this);
 				var editedRow = grid.cell(evt).row;
-					console.log('edited row', editedRow.id)
 				var prevRow = grid.get('prevRow');
 				if(prevRow) {
-					console.log('prev row', prevRow.id)
 					if(editedRow.id == grid.activeRow.id) {
 						// grid.set('prevRow', '');
 					} else {
 						for(each in grid.columns) {
 							if(grid.cell(prevRow,each).column.editorInstance && grid.cell(prevRow,each).column.editorInstance.domNode) {
-				console.log('setPropertyFromEditor 3', prevRow, grid.cell(prevRow,each).column.editorInstance.get('value'))
 								setPropertyFromEditor(grid, grid.cell(prevRow,each).column.editorInstance);
 							}
 						}
 						grid.activeRow = dojo.clone(editedRow);
 						setTimeout(function() {
 							for(each in grid.columns) {
-								grid.edit(grid.cell(editedRow,each).element);
+								if(grid.columns[each] && grid.columns[each].editOn) {
+									grid.edit(grid.cell(editedRow,each).element);
+								}
 							}
 							if(prevRow.id != editedRow.id) {
 								grid.set('prevRow', editedRow);
