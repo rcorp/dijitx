@@ -70,7 +70,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 * set placeHolder for each textbox
 			 * @type {String}
 			 */
-			var placeHolder = 'Search By ' + column.id;
+			var placeHolder = 'Search';
 
 			if(this.allWidgetsIdArr.indexOf(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == -1)
 			{
