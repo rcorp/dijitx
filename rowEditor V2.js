@@ -41,6 +41,17 @@ function dataFromValue(value, oldValue){
 // intermediary frontend to dataFromValue for HTML and widget editors
 function dataFromEditor(column, cmp){
 	if(typeof cmp.get == "function"){ // widget
+		// Hack By Harpreet
+		// get displayed value instead of value
+		// data to be shown on grid's cell when editor is off
+		if(cmp.widget == 'FilteringSelect') {
+			return dataFromValue(cmp.get("displayedValue"));
+		}
+		if(cmp.widget == 'NumberTextBox') {
+			if(isNaN(cmp.get('value'))) {
+				return 0
+			}
+		}
 		return dataFromValue(cmp.get("value"));
 	}else{ // HTML input
 		return dataFromValue(
@@ -51,8 +62,22 @@ function dataFromEditor(column, cmp){
 function setProperty(grid, cell, oldValue, value, triggerEvent){
 	// Updates dirty hash and fires dgrid-datachange event for a changed value.
 	var cellElement, row, column, eventObject;
+
+	// Hack By Harpreet
+	// editOn is not undefined
+	var _editorWidget = cell.column.editorInstance || cellElement.widget
+	var origValue = _editorWidget.get('value');
+	if(cell && cell.column && cell.column.editorArgs && cell.column.editorArgs.widget == "CheckBox") {
+		if(origValue == "on") {
+			origValue = 1
+		} else {
+			origValue = 0
+		}
+	}
+
+	// console.log(oldValue, value, origValue, '(oldValue, value, origValue')
 	// test whether old and new values are inequal, with coercion (e.g. for Dates)
-	if((oldValue && oldValue.valueOf()) != (value && value.valueOf())){
+	if((oldValue && oldValue.valueOf()) != (value && value.valueOf()) && (oldValue != origValue.toString()) ){
 		cellElement = cell.element;
 		row = cell.row;
 		column = cell.column;
@@ -68,14 +93,48 @@ function setProperty(grid, cell, oldValue, value, triggerEvent){
 				bubbles: true,
 				cancelable: true
 			};
+
+			// need extra information of FilteringSelect 
+			// Add extra info to eventObject and use as you need
+			if(_editorWidget) {
+				lang.mixin(eventObject,{origValue:origValue})
+				if(_editorWidget && _editorWidget.store && _editorWidget.store.idProperty) {
+					lang.setObject('idProperty', _editorWidget.store.idProperty, eventObject);
+				}
+			}
+
 			if(triggerEvent && triggerEvent.type){
 				eventObject.parentType = triggerEvent.type;
 			}
 
 			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
 				if(grid.updateDirty){
-					// for OnDemandGrid: update dirty data, and save if autoSave is true
-					grid.updateDirty(row.id, column.field, value);
+					// Hack By Harpreet
+					// updateDirty for FilteringSelect as needed by backEnd 
+					if(eventObject.idProperty) {
+						grid.updateDirty(row.id, eventObject.idProperty, eventObject.origValue);
+					}
+
+					// Hack By Harpreet
+					// For widgets whose editorWidget is visible by-default
+					// eg: CheckBox
+					if(column.editOn == undefined) {
+						if(column.editorArgs.widget == "CheckBox") {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							if(value == "on") {
+								grid.updateDirty(row.id, column.field, 1);
+							} else if (value == false) {
+								grid.updateDirty(row.id, column.field, 0);
+							}
+						} else {
+							// for OnDemandGrid: update dirty data, and save if autoSave is true
+							grid.updateDirty(row.id, column.field, value);
+						}
+					} else {
+						// for OnDemandGrid: update dirty data, and save if autoSave is true
+						grid.updateDirty(row.id, column.field, value);
+					}
+
 					// perform auto-save (if applicable) in next tick to avoid
 					// unintentional mishaps due to order of handler execution
 					column.autoSave && setTimeout(function(){ grid._trackError("save"); }, 0);
@@ -102,7 +161,6 @@ function setProperty(grid, cell, oldValue, value, triggerEvent){
 			}
 		}
 	}
-	console.log(value)
 	return value;
 }
 
@@ -115,10 +173,12 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 		editedRow;
 	var value, id, editedRow;
 	if(!cmp.isValid || cmp.isValid()){
+		// hack by Harpreet
+		// pass oldValue only
 		value = setProperty(grid, cell,
-			activeCell ? activeValue : cmp._dgridLastValue,
+			//activeCell ? activeValue : cmp._dgridLastValue,
+			cmp._dgridLastValue,
 			dataFromEditor(column, cmp), triggerEvent);
-		
 		if(activeCell){ // for editors with editOn defined
 			activeValue = value;
 		}else{ // for always-on editors, update _dgridLastValue immediately
@@ -137,6 +197,7 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 					radioBtn._dgridLastValue = false;
 					if(grid.updateDirty){
 						grid.updateDirty(row.id, column.field, false);
+								console.log('update dirty')
 					}else{
 						// update store-less grid
 						row.data[column.field] = false;
@@ -148,6 +209,7 @@ function setPropertyFromEditor(grid, cmp, triggerEvent) {
 			for(id in grid.dirty){
 				if(editedRow.id !== id && grid.dirty[id][column.field]){
 					grid.updateDirty(id, column.field, false);
+								console.log('update dirty')
 				}
 			}
 		}
@@ -177,7 +239,13 @@ function createEditor(column){
 		
 		// For editOn editors, connect to onBlur rather than onChange, since
 		// the latter is delayed by setTimeouts in Dijit and will fire too late.
-
+		if(editOn == undefined) {
+			cmp.connect(cmp, editOn ? "onBlur" : "onChange", function(){
+				if(!cmp._dgridIgnoreChange){
+					setPropertyFromEditor(grid, this, {type: "widget"});
+				}
+			});
+		}
 	}else{
 		handleChange = function(evt){
 			var target = evt.target;
@@ -329,6 +397,17 @@ function showEditor(cmp, column, cellElement, value){
 		// (Clear flag on a timeout to wait for delayed onChange to fire first)
 		cmp._dgridIgnoreChange = true;
 		cmp.set("value", value);
+
+
+		// Hack By Harpreet
+		// For widgets whose editorWidget is visible by-default
+		if(column.editOn == undefined) {
+			if(column.editorArgs.widget == "CheckBox") {
+				cmp.set("value", parseInt(value));
+			}
+		} else {
+			cmp.set("value", value);
+		}
 		setTimeout(function(){ cmp._dgridIgnoreChange = false; }, 0);
 	}
 	// track previous value for short-circuiting or in case we need to revert
@@ -369,6 +448,7 @@ function edit(cell) {
 	field = column.field;
 	cellElement = cell.element.contents || cell.element;
 	
+	var grid = column.grid;	
 	if((cmp = column.editorInstance)){ // shared editor (editOn used)
 		if(activeCell != cellElement){
 			// get the cell value
@@ -390,6 +470,13 @@ function edit(cell) {
 			// check to see if the cell can be edited
 			if(!column.canEdit || column.canEdit(cell.row.data, value)){
 				activeCell = cellElement;
+
+				// Hack By Harpreet
+				// get _pk from the grid's row using store.idProperty
+				// and reset value acc. to ASPIRE
+				if(column.editorInstance.widget == 'FilteringSelect') {
+					value = (dirty && field in dirty) ? dirty[column.editorInstance.store.idProperty]: row.data[column.editorInstance.store.idProperty]
+				}
 
 				showEditor(column.editorInstance, column, cellElement, value);
 
@@ -436,17 +523,54 @@ return function(column, editor, editOn){
 			focusoutHandle;
 		if(!grid.edit){
 			// Only perform this logic once on a given grid
-			grid.edit = edit;	
+			grid.edit = edit;
+
+			listeners.push(on(grid.domNode, '.dgrid-input:focusin', function () {
+				focusedCell = grid.cell(this);
+			}));
+			focusoutHandle = grid._editorFocusoutHandle =
+				on.pausable(grid.domNode, '.dgrid-input:focusout', function () {
+					focusedCell = null;
+				});
+			listeners.push(focusoutHandle);
+			
+			listeners.push(aspect.before(grid, 'removeRow', function (row) {
+				row = grid.row(row);
+				if (focusedCell && focusedCell.row.id === row.id) {
+					// Pause the focusout handler until after this row has had
+					// time to re-render, if this removal is part of an update.
+					// A setTimeout is used here instead of resuming in the
+					// insertRow aspect below, since if a row were actually
+					// removed (not updated) while editing, the handler would
+					// not be properly hooked up again for future occurrences.
+					focusoutHandle.pause();
+					setTimeout(function () {
+						focusoutHandle.resume();
+					}, 0);
+				}
+			}));
+			listeners.push(aspect.after(grid, 'insertRow', function (rowElement) {
+				var row = grid.row(rowElement);
+				if (focusedCell && focusedCell.row.id === row.id) {
+					grid.edit(grid.cell(row, focusedCell.column.id));
+				}
+				return rowElement;
+			}));
 		}
 		grid.activeRow = '';
 	}
 
 	if(!column){ column = {}; }
 	
+	// Hack removed by Harpreet
+	// Reset orig code of editor.js
+	// column.editOn = editOn = editOn || column.editOn || click;
+
 	// accept arguments as parameters to editor function, or from column def,
 	// but normalize to column def.
 	column.editor = editor = editor || column.editor || "text";
-	column.editOn = editOn = editOn || column.editOn || 'click';
+	column.editOn = editOn = editOn || column.editOn;
+
 	isWidget = typeof editor != "string";
 	
 	// warn for widgetArgs -> editorArgs; TODO: remove @ 0.4
@@ -472,21 +596,26 @@ return function(column, editor, editOn){
 		// will be re-added if editor columns are re-initialized
 		column.grid.edit = null;
 	});
-	
-	column.renderCell = function(object, value, cell, options){
+
+	// Hack removed by Harpreet
+	// Reset orig code of editor.js
+	// column.renderCell = function(object, value, cell, options){
+	column.renderCell = editOn ? function(object, value, cell, options){
+		// Hack removed by Harpreet
+		// Reset orig code of editor.js
+		var grid = column.grid
+
 		// TODO: Consider using event delegation
 		// (Would require using dgrid's focus events for activating on focus,
 		// which we already advocate in README for optimal use)
-		if(!options || !options.alreadyHooked){
+		if((!options || !options.alreadyHooked)){
 			// in IE<8, cell is the child of the td due to the extra padding node
 			on(cell.tagName == "TD" ? cell : cell.parentNode, editOn, function(evt){
 				activeOptions = options;
 				// column.grid.edit(this);
 				var editedRow = grid.cell(evt).row;
-					console.log('edited row', editedRow.id)
 				var prevRow = grid.get('prevRow');
 				if(prevRow) {
-					console.log('prev row', prevRow.id)
 					if(editedRow.id == grid.activeRow.id) {
 						// grid.set('prevRow', '');
 					} else {
@@ -498,7 +627,9 @@ return function(column, editor, editOn){
 						grid.activeRow = dojo.clone(editedRow);
 						setTimeout(function() {
 							for(each in grid.columns) {
-								grid.edit(grid.cell(editedRow,each).element);
+								if(grid.columns[each] && grid.columns[each].editOn) {
+									grid.edit(grid.cell(editedRow,each).element);
+								}
 							}
 							if(prevRow.id != editedRow.id) {
 								grid.set('prevRow', editedRow);
@@ -518,11 +649,21 @@ return function(column, editor, editOn){
 			});
 		}
 		
+		
 		// initially render content in non-edit mode
 		return originalRenderCell.call(column, object, value, cell, options);
 		
-	}
-
+	} : function(object, value, cell, options){
+		// always-on: create editor immediately upon rendering each cell
+		if(!column.canEdit || column.canEdit(object, value)){
+			var cmp = createEditor(column);
+			showEditor(cmp, column, cell, value);
+			// Maintain reference for later use.
+			cell[isWidget ? "widget" : "input"] = cmp;
+		}else{
+			return originalRenderCell.call(column, object, value, cell, options);
+		}
+	};
 	return column;
 };
 });
