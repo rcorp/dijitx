@@ -50,6 +50,18 @@ var runSqlQuery = function(runQuery){
 		}
 	});	
 }
+
+// Link for GeoNames
+// https://gist.github.com/harpreetkhalsagtbit/e4ac28e02b4624c144f3
+
+// Link for CountryState_PK
+// https://gist.github.com/harpreetkhalsagtbit/4d47fa713f4261437b5c
+// 
+
+// Link for GeoNamesIndianState_PK
+// https://gist.github.com/harpreetkhalsagtbit/84a7fcfb23d3455316f1
+
+
 // Sample input json which define the table ,column and related infomation to create a table in the database.
 /*
 var inputFields=[
