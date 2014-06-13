@@ -96,7 +96,11 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 				eventObject.parentType = triggerEvent.type;
 			}
 			
-			if(on.emit(cellElement, "dgrid-datachange", eventObject)){
+			// Hack By Harpreet
+			// Update Dirty first then emit - datachange event 
+
+			// if(on.emit(cellElement, "dgrid-datachange", eventObject)){
+			if(eventObject){
 				grid.set('eventObject',eventObject)
 				if(grid.updateDirty){
 					// Hack By Harpreet
@@ -132,6 +136,10 @@ function setProperty(grid, cellElement, oldValue, value, triggerEvent){
 					// update store-less grid
 					row.data[column.field] = value;
 				}
+
+				// Hack By Harpreet
+				// Update Dirty first then emit - datachange event 
+				on.emit(cellElement, "dgrid-datachange", eventObject)
 			}else{
 				// Otherwise keep the value the same
 				// For the sake of always-on editors, need to manually reset the value
