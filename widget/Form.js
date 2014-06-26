@@ -14,9 +14,18 @@ define([
 				domClass.add(this.domNode, 'dijitVisible');
 			},
 			hide: function() {
+				/*var children = this.domNode.childNodes;
+				for(each in children){
+					domClass.replace(children[each], 'dijitHidden', 'dijitVisible');
+				}*/
 				domClass.replace(this.domNode, 'dijitHidden', 'dijitVisible');
 			},
 			show: function(scrollToView) {
+				var children = this.domNode.childNodes;
+				for(each in children){
+					console.log(children)
+					domClass.replace(children[each], 'dijitVisible', 'dijitHidden')	
+				}
 				domClass.replace(this.domNode, 'dijitVisible', 'dijitHidden')
 				this.resize();
 				if (scrollToView) {
