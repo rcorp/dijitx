@@ -11,8 +11,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		constructor: function() {
 			var grid = this;
 			this.arrRowIds=[];
-			// To make it a part of form and use its value in form.get('value') function.
-			this.store= new Observable(new Memory());
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
@@ -174,8 +172,15 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var refDomNode = grid.contentNode;
 			var obj = {};
 			// idProperty is used for using SocketStore
-			obj['id'] = ++grid.newRowIdCounter;
-			this.arrRowIds.push(obj['id']);
+			console.log(this)
+			if(value && value[this.store.idProperty]) {
+				obj[this.store.idProperty] = value[this.store.idProperty];
+				this.arrRowIds.push(obj[this.store.idProperty]);
+			} else{
+				obj[this.store.idProperty || 'id'] = ++grid.newRowIdCounter;
+				this.arrRowIds.push(obj[this.store.idProperty || 'id']);
+			}
+
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
@@ -198,7 +203,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					}
 				}
 			}
-
+			console.log(obj, obj[this.store.idProperty])
 			//InsertRow function si called to add a new row into the grid.
 			if(refDomNode.previousElementSibling==null){
 				grid.insertRow(obj,refDomNode, null, null, {});
