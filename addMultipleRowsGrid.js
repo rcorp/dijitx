@@ -11,8 +11,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		constructor: function() {
 			var grid = this;
 			this.arrRowIds=[];
-			// To make it a part of form and use its value in form.get('value') function.
-			this.store= new Observable(new Memory());
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
@@ -173,17 +171,29 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
 			var obj = {};
+
 			// idProperty is used for using SocketStore
-			obj['id'] = ++grid.newRowIdCounter;
-			this.arrRowIds.push(obj['id']);
+			// if idProperty is defined use value of id
+			// property to make unique od for each row
+			if(value && value[this.store.idProperty]) {
+				obj[this.store.idProperty] = value[this.store.idProperty];
+				this.arrRowIds.push(obj[this.store.idProperty]);
+			} else{
+				obj[this.store.idProperty || 'id'] = ++grid.newRowIdCounter;
+				this.arrRowIds.push(obj[this.store.idProperty || 'id']);
+			}
+
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+						if(value[grid.columns[each].field + "_id"]) {
+							obj[grid.columns[each].field + "_id"] = (value && value[grid.columns[each].field + "_id"]);
+						}
 						//Dirty is updated evertime a new row is added with or without values.
-						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
