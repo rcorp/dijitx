@@ -172,8 +172,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var refDomNode = grid.contentNode;
 			var obj = {};
 
-			console.log(value, this.store.idProperty)
 			// idProperty is used for using SocketStore
+			// if idProperty is defined use value of id
+			// property to make unique od for each row
 			if(value && value[this.store.idProperty]) {
 				obj[this.store.idProperty] = value[this.store.idProperty];
 				this.arrRowIds.push(obj[this.store.idProperty]);

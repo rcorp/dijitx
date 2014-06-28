@@ -649,11 +649,9 @@ define([
 			// always-on: create editor immediately upon rendering each cell
 			if (!column.canEdit || column.canEdit(object, value)) {
 				var cmp = createEditor(column);
-console.log(object, 'column.editorArgs.widget == "FilteringSelect"')
 				// Hack by Harpret
 				// Filtering Select needs _pk not value
 				if (column.editorArgs.widget == "FilteringSelect") {
-					console.log(object[column.editorArgs.store.idProperty], object,column.editorArgs.store.idProperty, 'value = object[column.editorArgs.store.idProperty]')
 					if (column.editorArgs.widget && column.editorArgs.store && column.editorArgs.store.idProperty) {
 						value = object[column.editorArgs.store.idProperty];
 					}
