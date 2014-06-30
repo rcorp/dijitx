@@ -1,5 +1,5 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor"],
-function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put"],
+function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put){
 	/**
 	* This grid places a Add New button after all the rows have been rendered which is used to add new rows into
 	* the grid one at a time. This grid adds new rows using id's of each row instead of a counter	we used earlier
@@ -33,6 +33,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			grid.newRowIdCounter=0;
 			this.value= [];
 			grid.arrRowIds.splice(0);
+			grid.contentNode.innerHTML = ""
 			// The array containing id's of all the rows is cleared.
 			// multiple refresh problem, if dirty is empty
 			// then create default Rows else use dirty
@@ -71,7 +72,20 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		**/
 		removeDirtyRow: function(id){
         	var grid=this;
-        	this.removeRow(this.row(id))
+        	var rowElement = this.row(id);
+        	rowElement = rowElement.element || rowElement;
+    		put(rowElement, "!");
+
+        	var _idForRowIdToObject = grid.id + "-row-" + id
+        	for(each in grid._rowIdToObject[_idForRowIdToObject]) {
+        		if(each.indexOf(grid.store.idProperty) == -1) {
+        			delete grid._rowIdToObject[_idForRowIdToObject][each]
+        			if(grid._rowIdToObject[_idForRowIdToObject][each + "_id"]) {
+        				delete grid._rowIdToObject[_idForRowIdToObject][each + "_id"];
+        			}
+        		}
+        	}
+
         	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
@@ -108,8 +122,19 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		_getValue:function(){
 			var arrayOfValues = [];
 			var grid = this;
-			for(eachRow in grid.dirty){
-				arrayOfValues.push(grid.dirty[eachRow]);
+			var tempRowIdToObject = dojo.clone(grid._rowIdToObject)
+			for(eachRow in tempRowIdToObject) {
+				var rowId = eachRow.split('-row-')[1]
+				var _obj = '';
+				if(grid.dirty[rowId]) {
+					_obj=grid.dirty[rowId]
+				}
+
+				if(eachRow.indexOf('new-') != -1){
+					delete tempRowIdToObject[eachRow][grid.store.idProperty];
+				}
+				var mixedObject = lang.mixin(tempRowIdToObject[eachRow], _obj)
+				arrayOfValues.push(mixedObject);
 			}
 			return arrayOfValues;
 		},
@@ -145,10 +170,12 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* into the grid and after all the rows have been rendered this Add New button is placed.
 		*/
 		createAddNewRowButton: function() {
-			this.addNewRowWidget = new Button({
-				label:this.labelAddNew,
-				grid:this
-			});
+			if(this.addNewRowWidget == '') {
+				this.addNewRowWidget = new Button({
+					label:this.labelAddNew,
+					grid:this
+				});
+			}
 			this.addNewRowWidget.on('click',function(){
 				this.grid.addNewRowToGrid();
 				this.grid.contentNode.appendChild(this.domNode)
@@ -179,7 +206,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				obj[this.store.idProperty] = value[this.store.idProperty];
 				this.arrRowIds.push(obj[this.store.idProperty]);
 			} else{
-				obj[this.store.idProperty || 'id'] = ++grid.newRowIdCounter;
+				obj[this.store.idProperty || 'id'] = "new-" + ++grid.newRowIdCounter;
 				this.arrRowIds.push(obj[this.store.idProperty || 'id']);
 			}
 
@@ -197,14 +224,14 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					}
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
-						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			} else {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
-						grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			}
