@@ -33,6 +33,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			grid.newRowIdCounter=0;
 			this.value= [];
 			grid.arrRowIds.splice(0);
+			grid.contentNode.innerHTML = ""
 			// The array containing id's of all the rows is cleared.
 			// multiple refresh problem, if dirty is empty
 			// then create default Rows else use dirty
@@ -169,10 +170,12 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* into the grid and after all the rows have been rendered this Add New button is placed.
 		*/
 		createAddNewRowButton: function() {
-			this.addNewRowWidget = new Button({
-				label:this.labelAddNew,
-				grid:this
-			});
+			if(this.addNewRowWidget == '') {
+				this.addNewRowWidget = new Button({
+					label:this.labelAddNew,
+					grid:this
+				});
+			}
 			this.addNewRowWidget.on('click',function(){
 				this.grid.addNewRowToGrid();
 				this.grid.contentNode.appendChild(this.domNode)
