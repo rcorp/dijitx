@@ -175,11 +175,11 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					label:this.labelAddNew,
 					grid:this
 				});
+				this.addNewRowWidget.on('click',function(){
+					this.grid.addNewRowToGrid();
+					this.grid.contentNode.appendChild(this.domNode)
+				});
 			}
-			this.addNewRowWidget.on('click',function(){
-				this.grid.addNewRowToGrid();
-				this.grid.contentNode.appendChild(this.domNode)
-			});
 		},
 		
 		/**
@@ -194,6 +194,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		**/
 
 		addNewRowToGrid: function(value, onRefresh) {
+			console.log('addNewRowToGrid', value, onRefresh)
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
