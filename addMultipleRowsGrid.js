@@ -126,15 +126,31 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			for(eachRow in tempRowIdToObject) {
 				var rowId = eachRow.split('-row-')[1]
 				var _obj = '';
+				var canBeAdded = false;
 				if(grid.dirty[rowId]) {
+					// if all the fields in dirty object have _id it means
+					// we have all defualts _pk value but no actual FilteringSelect
+					// value. It means these changes are not done by user
+					// then ignore it
+					for(eachCol in grid.dirty[rowId]) {
+						console.log(eachCol)
+						if(eachCol.indexOf("_id") == -1) {
+							canBeAdded = true;
+							break;
+						}
+					}
 					_obj=grid.dirty[rowId]
 				}
 
 				if(eachRow.indexOf('new-') != -1){
 					delete tempRowIdToObject[eachRow][grid.store.idProperty];
 				}
-				var mixedObject = lang.mixin(tempRowIdToObject[eachRow], _obj)
-				arrayOfValues.push(mixedObject);
+				// Add obj if it can't be ignored means - we know that these
+				// changes are done by user
+				if(canBeAdded)  {
+					var mixedObject = lang.mixin(tempRowIdToObject[eachRow], _obj)
+					arrayOfValues.push(mixedObject);
+				}
 			}
 			return arrayOfValues;
 		},
