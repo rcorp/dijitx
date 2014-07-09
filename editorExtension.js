@@ -67,7 +67,6 @@ define([
 			cell = grid.cell(cellElement);
 			row = cell.row;
 			column = cell.column;
-			console.log(cell, cellElement.widget)
 			if (column.field && row) {
 				// TODO: remove rowId in lieu of cell (or grid.row/grid.cell)
 				// (keeping for the moment for back-compat, but will note in changes)
@@ -114,6 +113,7 @@ define([
 						// Hack By Harpreet
 						// For widgets whose editorWidget is visible by-default
 						// eg: CheckBox
+						var forceStopDataChangeEvent = false;
 						if (column.editOn == undefined) {
 							if (column.editorArgs.widget == "CheckBox") {
 								// for OnDemandGrid: update dirty data, and save if autoSave is true
@@ -121,6 +121,24 @@ define([
 									grid.updateDirty(row.id, column.field, 1);
 								} else if (value == false) {
 									grid.updateDirty(row.id, column.field, 0);
+								}
+							} else if(column.editorArgs.widget == "FilteringSelect") {
+								// Hack By Harpreet
+								// If value is not undefined, it means FilteringSelect
+								// is changing for the first time then update dirty without
+								// checking whether old value is _pk or not
+								if(oldValue) {
+									// if oldvalue is and new valu has diff type then
+									// ignore dirty and change event
+									if((oldValue != value) && (typeof oldValue != typeof value)) {
+										forceStopDataChangeEvent = true;
+									} else {
+										// for OnDemandGrid: update dirty data, and save if autoSave is true
+										grid.updateDirty(row.id, column.field, value);
+									}
+								} else {
+									// for OnDemandGrid: update dirty data, and save if autoSave is true
+									grid.updateDirty(row.id, column.field, value);
 								}
 							} else {
 								// for OnDemandGrid: update dirty data, and save if autoSave is true
@@ -143,7 +161,9 @@ define([
 
 					// Hack By Harpreet
 					// Update Dirty first then emit - datachange event 
-					on.emit(cellElement, "dgrid-datachange", eventObject)
+					if(!forceStopDataChangeEvent) {
+						on.emit(cellElement, "dgrid-datachange", eventObject)
+					}
 				} else {
 					// Otherwise keep the value the same
 					// For the sake of always-on editors, need to manually reset the value
