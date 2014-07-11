@@ -41,6 +41,13 @@ define([
 				});
 				return def;
 			},
+			update: function(data) {
+				var def = new Deferred()
+				this.store.put(data).then(function(result) {
+					def.resolve(result);
+				});
+				return def;
+			},
 			_getValueAttr: function() {
 				// summary:
 				//      Returns Object representing form values.   See description of `value` for details.
