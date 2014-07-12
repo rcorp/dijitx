@@ -133,7 +133,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					// value. It means these changes are not done by user
 					// then ignore it
 					for(eachCol in grid.dirty[rowId]) {
-						console.log(eachCol)
 						if(eachCol.indexOf("_id") == -1) {
 							canBeAdded = true;
 							break;
@@ -144,6 +143,22 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 
 				if(eachRow.indexOf('new-') != -1){
 					delete tempRowIdToObject[eachRow][grid.store.idProperty];
+				} else {
+					// Check if row is not a newly added row
+					// and row has one column it means it is deleted by user
+					// as suggetsed by backend developer and
+					// we need to send it to backend set its flag "canBeAdded"
+					// to true
+					var _count =0;
+					for(eachCol in tempRowIdToObject[eachRow]) {
+						_count++
+						if(_count>1) {
+							break;
+						}
+					}
+					if(_count == 1) {
+						canBeAdded = true;
+					}
 				}
 				// Add obj if it can't be ignored means - we know that these
 				// changes are done by user
