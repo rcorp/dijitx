@@ -1,19 +1,19 @@
 define([
 	"dojo/_base/declare",
- 	"dijit/form/Button",
- 	"dojo/_base/lang", // lang.clone lang.hitch
+	"dijit/form/Button",
+	"dojo/_base/lang", // lang.clone lang.hitch
 	"dojo/string", // string.substitute
 	"dojo/when"
-], function(declare, Button, lang, string, when){
-	
+], function(declare, Button, lang, string, when) {
+
 	return declare(null, {
-		addMoreButton:'',
-		postCreate: function(){
+		addMoreButton: '',
+		postCreate: function() {
 			// Overrides `dijit/_TemplatedMixin/buildRendering`
 
 			this.inherited(arguments);
 			this.addMoreButton = new Button({
-				label:'+'
+				label: '+'
 			});
 			var _this = this;
 			// this.on('change', function() {
@@ -23,7 +23,7 @@ define([
 			// 	_this.showAddMore();
 			// })
 		},
-		showAddMore:function() {
+		showAddMore: function() {
 			this.addMoreButton.placeAt(this.domNode, 'after')
 		},
 		reset: function() {
@@ -31,23 +31,39 @@ define([
 			obj[this.searchAttr] = '';
 			obj[this.store.idProperty] = null;
 			this.set('item', obj);
-			this.item=null;
+			this.item = null;
 			this.textbox.value = "";
-   			this.valueNode.value = "";
+			this.valueNode.value = "";
 		},
-		_openResultList: function(/*Object*/ results, /*Object*/ query, /*Object*/ options){
-			var obj = {};
-			for(each in query) {
-				if(each.indexOf('_pk') != -1) {
-					obj[each] = 0;
-				} else {
-					obj[each] = 'select';
-				}
-			}
-			results.splice(0,0,obj);
+		_openResultList: function( /*Object*/ results, /*Object*/ query, /*Object*/ options) {
+			// var obj = {};
+			// for (each in query) {
+			// 	if (each.indexOf('_pk') != -1) {
+			// 		obj[each] = 0;
+			// 	} else {
+			// 		obj[each] = 'select';
+			// 	}
+			// }
+			// results.splice(0, 0, obj);
 			this.inherited(arguments);
 		},
-		_startSearch: function(/*String*/ text){
+		_startSearch: function(/*String*/ key){
+			// summary:
+			//		Starts a search for elements matching key (key=="" means to return all items),
+			//		and calls _openResultList() when the search completes, to display the results.
+			if(!this.dropDown){
+				var popupId = this.id + "_popup",
+					dropDownConstructor = lang.isString(this.dropDownClass) ?
+						lang.getObject(this.dropDownClass, false) : this.dropDownClass;
+				this.dropDown = new dropDownConstructor({
+					onChange: lang.hitch(this, this._selectOption),
+					id: popupId,
+					dir: this.dir,
+					textDir: this.textDir
+				});
+			}
+			this._lastInput = key; // Store exactly what was entered by the user.
+
 			// summary:
 			//		Starts a search for elements matching text (text=="" means to return all items),
 			//		and calls onSearch(...) when the search completes, to display the results.
@@ -67,14 +83,14 @@ define([
 						deep: true
 					}
 				},
+				text = key,
 				qs = string.substitute(this.queryExpr, [text.replace(/([\\\*\?])/g, "\\$1")]),
 				q,
 				startQuery = function(){
-					window.qs = query;
 					var newQuery = {};
-					query[this.searchAttr] = query[this.searchAttr].toString();
+					newQuery[this.searchAttr] = query[this.searchAttr].toString();
 
-					var resPromise = _this._fetchHandle = _this.store.query(query, options);
+					var resPromise = _this._fetchHandle = _this.store.query(newQuery, options);
 					if(_this.disabled || _this.readOnly || (q !== _this._lastQuery)){
 						return;
 					} // avoid getting unwanted notify
@@ -140,6 +156,6 @@ define([
 			// _lastQuery won't be set and their input gets rewritten
 			this._lastQuery = query[this.searchAttr] = q;
 			this._queryDeferHandle = this.defer(startQuery, this.searchDelay);
-		},
+		}
 	});
 });
