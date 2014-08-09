@@ -21,9 +21,21 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// needed by external users
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
-					grid.renderOnRefresh();	
+					if(!grid.flag) {
+						grid.flag = true;
+					} else {
+						grid.renderOnRefresh();	
+						grid.flag = false;
+					}
 				})
 			});
+			this.flag= false;
+		},
+		_setDirty: function(obj) {
+			this.dirty = obj;
+		},
+		_getDirty: function() {
+			return dojo.clone(this.dirty)
 		},
 		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
@@ -37,7 +49,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// The array containing id's of all the rows is cleared.
 			// multiple refresh problem, if dirty is empty
 			// then create default Rows else use dirty
-			if(JSON.stringify(grid.dirty) == '{}') {
+			if(JSON.stringify(grid.get("dirty")) == '{}') {
 				grid.createAddNewRowButton();
 				grid.newRowIdCounter=0;
 				for(var i=0;i<len;i++) {
@@ -47,9 +59,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			}
 			else{
 				grid.newRowIdCounter = 0;
-				var prevData = grid.objectToArray(grid.dirty)
+				var prevData = grid.objectToArray(grid.get("dirty"), true)
 				// Clears grid.dirty
-				lang.setObject('dirty', {}, grid);
+				// lang.setObject('dirty', {}, grid);
 				grid.set('value',prevData);
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
@@ -58,10 +70,13 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* This function converts an object that is passed as a parameter into an equivalent array of objects 
 		* used to give parameter to setValue function.
 		**/
-		objectToArray: function(object){
+		objectToArray: function(object,appendId){
 			var array=[];
 			for(each in object){
-				array.push(object[each]);	
+				if(appendId) {
+					object[this.store.idProperty] = each;
+				}
+				array.push(object[each]);
 			}
 			return array;
 		},
@@ -76,17 +91,25 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	rowElement = rowElement.element || rowElement;
     		put(rowElement, "!");
 
-        	var _idForRowIdToObject = grid.id + "-row-" + id
-        	for(each in grid._rowIdToObject[_idForRowIdToObject]) {
-        		if(each.indexOf(grid.store.idProperty) == -1) {
-        			delete grid._rowIdToObject[_idForRowIdToObject][each]
-        			if(grid._rowIdToObject[_idForRowIdToObject][each + "_id"]) {
-        				delete grid._rowIdToObject[_idForRowIdToObject][each + "_id"];
-        			}
+        	// var _idForRowIdToObject = grid.id + "-row-" + id
+        	// for(each in grid._rowIdToObject[_idForRowIdToObject]) {
+        	// 	if(each.indexOf(grid.store.idProperty) == -1) {
+        	// 		delete grid._rowIdToObject[_idForRowIdToObject][each]
+        	// 		if(grid._rowIdToObject[_idForRowIdToObject][each + "_id"]) {
+        	// 			delete grid._rowIdToObject[_idForRowIdToObject][each + "_id"];
+        	// 		}
+        	// 	}
+        	// }
+
+        	var _dirty = grid.get('dirty')
+        	for(each in _dirty[id]) {
+        		if(each != grid.store.idProperty) {
+        			delete _dirty[id][each]
         		}
         	}
 
-        	delete this.dirty[id];
+        	// delete this.dirty[id];
+        	grid.set('dirty', _dirty)
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
 
@@ -117,8 +140,24 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			}
 		},
 
-		
+		updateDirty: function(id, field, value){
+			// summary:
+			//		Updates dirty data of a field for the item with the specified ID.
+			var dirty = this.get("dirty"),
+				dirtyObj = dirty[id];
+			
+			if(!dirtyObj){
+				dirtyObj = dirty[id] = {};
+			}
+			dirtyObj[field] = value;
+			this.set("dirty", dirty)
+		},
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
+		_getValue:function() {
+			var grid = this;
+			return this.objectToArray(grid.get('dirty'));
+		},
+/*
 		_getValue:function(){
 			var arrayOfValues = [];
 			var grid = this;
@@ -169,7 +208,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			}
 			return arrayOfValues;
 		},
-
+*/
 		//_getDefaultVisible function tells the number of rows that are visible by default in the grid at onLoad event.
 		_getDefaultVisible: function() {
 			return this.defaultVisible;
@@ -241,7 +280,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				obj[this.store.idProperty || 'id'] = "new-" + ++grid.newRowIdCounter;
 				this.arrRowIds.push(obj[this.store.idProperty || 'id']);
 			}
-
 			// on adding a new row its id is pushed in the arrRowIds array.
 			if(value) {
 				// if value is defined
@@ -250,23 +288,28 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
 						if(value[grid.columns[each].field + "_id"]) {
 							obj[grid.columns[each].field + "_id"] = (value && value[grid.columns[each].field + "_id"]);
+							grid.updateDirty(value[grid.store.idProperty],grid.columns[each].field + "_id",obj[grid.columns[each].field + "_id"])
 						}
+
 						//Dirty is updated evertime a new row is added with or without values.
-						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						grid.updateDirty(value[grid.store.idProperty],grid.columns[each].field,obj[grid.columns[each].field])
+						grid.updateDirty(value[grid.store.idProperty],grid.store.idProperty,obj[grid.store.idProperty])
+
 					}
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
-						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						grid.updateDirty(value[grid.store.idProperty],grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			} else {
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
-						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+						// grid.updateDirty(value[grid.store.idProperty],grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
 			}
+
 
 			//InsertRow function si called to add a new row into the grid.
 			if(refDomNode.previousElementSibling==null){
