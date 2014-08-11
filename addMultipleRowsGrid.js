@@ -112,7 +112,11 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	grid.set('dirty', _dirty)
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
-
+		reset:function() {
+			console.log('reset of grid called');
+			this.set('dirty',{});
+			this.refresh();
+		},
 		/**
 		* Setvalue function of grid takes an array of object as parameter and clears the grid, checks whether the parameter
 		* is an array or not else gives an error message; if the parameter is valid then it makes the rows with the values 
