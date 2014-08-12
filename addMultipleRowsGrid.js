@@ -39,7 +39,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		},
 		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
-			console.log('after refresh')
 			var grid= this;
 			var len= grid.defaultVisible;
 			grid.newRowIdCounter=0;
@@ -113,7 +112,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
 		reset:function() {
-			console.log('reset of grid called');
 			this.set('dirty',{});
 			this.refresh();
 		},
@@ -268,7 +266,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		**/
 
 		addNewRowToGrid: function(value, onRefresh) {
-			console.log('addNewRowToGrid', value, onRefresh)
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
@@ -309,6 +306,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				for(each in grid.columns) {
 					if(grid.columns[each].editor){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || (grid.columns[each].editorArgs && grid.columns[each].editorArgs.value) || '';
+						if(grid.columns[each].editorArgs && grid.columns[each].editorArgs.store && grid.columns[each].editorArgs.store.idProperty) {
+							obj[grid.columns[each].editorArgs.store.idProperty] = ""
+						}
 						// grid.updateDirty(value[grid.store.idProperty],grid.columns[each].field,obj[grid.columns[each].field])
 					}
 				}
