@@ -157,7 +157,11 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		//Getvalue function gives all the values of rows that are present in dirty. It returns an array of objects.
 		_getValue:function() {
 			var grid = this;
-			return this.objectToArray(grid.get('dirty'));
+			var _dirty = grid.get('dirty');
+			if(_dirty.undefined) {
+				delete _dirty.undefined
+			}
+			return this.objectToArray(_dirty);
 		},
 /*
 		_getValue:function(){
