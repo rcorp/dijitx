@@ -75,7 +75,7 @@ define([
 					cell: cell,
 					rowId: row.id,
 					oldValue: oldValue,
-					value: value,
+					value: value||"",
 					bubbles: true,
 					cancelable: true
 				};

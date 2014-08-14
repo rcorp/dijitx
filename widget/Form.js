@@ -82,9 +82,8 @@ define([
 					// 	value="";
 					// }
 					if(widget.widget == "DateTextBox" && value){
-						console.log(value.toISOString().split("T")[0])
-						value = value.toISOString().split("T")[0]; 
-
+						var _arrDate = value.toLocaleDateString().split("/");
+						value = _arrDate[2]+"-"+_arrDate[0]+"-"+_arrDate[1]
 					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
