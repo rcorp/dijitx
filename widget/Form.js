@@ -14,9 +14,18 @@ define([
 				domClass.add(this.domNode, 'dijitVisible');
 			},
 			hide: function() {
+				/*var children = this.domNode.childNodes;
+				for(each in children){
+					domClass.replace(children[each], 'dijitHidden', 'dijitVisible');
+				}*/
 				domClass.replace(this.domNode, 'dijitHidden', 'dijitVisible');
 			},
 			show: function(scrollToView) {
+				var children = this.domNode.childNodes;
+				for(each in children){
+					console.log(children)
+					domClass.replace(children[each], 'dijitVisible', 'dijitHidden')	
+				}
 				domClass.replace(this.domNode, 'dijitVisible', 'dijitHidden')
 				this.resize();
 				if (scrollToView) {
@@ -29,6 +38,13 @@ define([
 				this.store.add(data).then(function(result) {
 					def.resolve(result);
 					_this.reset();
+				});
+				return def;
+			},
+			update: function(data) {
+				var def = new Deferred()
+				this.store.put(data).then(function(result) {
+					def.resolve(result);
 				});
 				return def;
 			},
@@ -57,7 +73,19 @@ define([
 
 					// Single value widget (checkbox, radio, or plain <input> type widget)
 					var value = widget.get('value');
+					// To remove NaN in the obj.
+					if (isNaN(value) && !value) {
+						value = "";
+					}
 
+					// if(value == null){
+					// 	value="";
+					// }
+					if(widget.widget == "DateTextBox" && value){
+						console.log(value.toISOString().split("T")[0])
+						value = value.toISOString().split("T")[0]; 
+
+					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
 						if (/Radio/.test(widget.declaredClass)) {
@@ -73,13 +101,12 @@ define([
 							}
 						} else {
 							// checkbox/toggle button
-							var ary = lang.getObject(name, false, obj);
-							if (!ary) {
-								ary = [];
-								lang.setObject(name, ary, obj);
-							}
-							if (value !== false) {
-								ary.push(value);
+							if(value == false) {
+								// if value is false return 0
+								lang.setObject(name, 0, obj);
+							} else if(value == "on") {
+								// if value is 'on' return 1
+								lang.setObject(name, 1, obj);
 							}
 						}
 					} else {
@@ -107,7 +134,7 @@ define([
 							}
 						}
 					}
-				});
+				});			
 				return obj;
 			},
 			_setValueAttr: function( /*Object*/ obj) {
@@ -140,12 +167,32 @@ define([
 						array.forEach(widgets, function(w) {
 							w.set('value', array.indexOf(values, w._get('value')) != -1);
 						});
+
+						// Hack: for set values for CheckBox
+						// checkbox/toggle button
+						// set reverse values back to the widget
+						var value = lang.getObject(name, false, obj);
+						array.forEach(widgets, function(w) {
+							if(value == 0) {
+								// if value is false return 0
+								w.set('value', false);
+							} else if(value == 1) {
+								// if value is 'on' return 1
+								w.set('value', "on");
+							}
+
+						});
+
 					} else if (widgets[0].multiple) {
 						// it takes an array (e.g. multi-select)
 						widgets[0].set('value', values);
-					} else {
+					} else if(widgets[0].isMultipleGrid){
+				 		// If it takes a addMultipleRowsGrid
+				 		widgets[0].set('value',values)
+					}else {
 						// otherwise, values is a list of values to be assigned sequentially to each widget
 						array.forEach(widgets, function(w, i) {
+						console.log('for loop found', w.name, w.id)
 							if (w.widget == 'FilteringSelect' && w.store.idProperty) {
 								w.set('value', obj[w.store.idProperty]);
 							} else if (w.widget == 'LabelWidget') {

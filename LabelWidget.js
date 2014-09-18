@@ -2,12 +2,13 @@ define(['dojo/_base/declare',
     'dojo/_base/lang', 
     'dojo/dom-construct', 
     'dojo/dom', 
+    'dojo/dom-style', 
     "dijit/_WidgetBase", 
     "dijit/_TemplatedMixin", 
     'dojo/html',
     "dojo/Deferred", 
     'dojo/text!./templates/AppTagWidgetTemplate.html',
-    "dojo/domReady!"], function(declare, lang, domConstruct, dom, WidgetBase, TemplatedMixin, html,Deferred, template) {
+    "dojo/domReady!"], function(declare, lang, domConstruct, dom, domStyle, WidgetBase, TemplatedMixin, html,Deferred, template) {
     return declare('LabelWidget', [WidgetBase, TemplatedMixin], {
         //id for AspireWidget.
         id: '',
@@ -15,6 +16,7 @@ define(['dojo/_base/declare',
         tag:'',
         //tag value set by user
         value:'',
+        propertyDom:{},
         idProperty:'',
         displayedValue:'',
         //Some string value of class.
@@ -57,6 +59,7 @@ define(['dojo/_base/declare',
                     }
                 }, this);
             }
+            this.valueNode.setAttribute('style',"display:block")
         },
         /**
          * funtion to get the value of the widget ie tag value
@@ -79,8 +82,18 @@ define(['dojo/_base/declare',
             console.log(this.displayedValue)
         },
         reset: function() {
-            this.set('displayedValue',"")
-            this.set('value',"")
+            // this.set('displayedValue',"")
+            // this.set('value',"")
+        },
+         _setPropertyDomAttr:function(value){
+            var _this=this;
+            _this.propertyDom=value;
+            for(each in value){
+                _this.valueNode.setAttribute(each,value[each])
+            }
+        },
+        _getPropertyDomAttr:function(){
+            return this.propertyDom;
         },
         /**
          * funtion to refresh the widget to effect the value same as startup

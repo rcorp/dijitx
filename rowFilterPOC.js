@@ -70,7 +70,7 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			 * set placeHolder for each textbox
 			 * @type {String}
 			 */
-			var placeHolder = 'Search By ' + column.id;
+			var placeHolder = 'Search';
 
 			if(this.allWidgetsIdArr.indexOf(this.id + '_' + column.id + "*****_textDiv_" + fieldLabel) == -1)
 			{
@@ -401,17 +401,34 @@ declare, Deferred, arrayUtil, html, has, dom, domAttr, TextBox, domConstruct, im
 			}
 
             grid.on('dgrid-select', function(event) {
-                if(event.grid.store.query({id:event.rows[0].data.id})[0]) {
-	                event.grid.store.query({id:event.rows[0].data.id})[0]['selected'] = true;
+            	console.log(event.grid.selection)
+            	var _count = 0;
+            	for(each in event.grid.selection) {
+            		_count++;
+            	}
+            	if(_count == 1) {
+            		var _selectedRows = event.grid.getSelectedRows();
+            		for(var i=0;i<_selectedRows.length;i++) {
+            			_selectedRows[i].selected=false;
+            		}
+            	}
+            	var idProperty = event.grid.store.idProperty;
+            	var obj = {};
+            	obj[idProperty] = event.rows[0].id;
+                if(event.grid.store.query(obj)[0]) {
+	                event.grid.store.query(obj)[0]['selected'] = true;
                 }
             });
             
             grid.on('dgrid-deselect', function(event) {
                 if(event.parentType) {
-	                if(event.grid.store.query({id:event.rows[0].id})[0]) {
-		                event.grid.store.query({id:event.rows[0].id})[0]['selected'] = false;
+		        	var idProperty = event.grid.store.idProperty;
+		        	var obj = {};
+		        	obj[idProperty] = event.rows[0].id;
+		            if(event.grid.store.query(obj)[0]) {
+		                event.grid.store.query(obj)[0]['selected'] = false;
 		                delete event.grid.selection[event.rows[0].id];
-	                }
+		            }
                 }
             });
 

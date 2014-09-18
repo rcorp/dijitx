@@ -74,6 +74,17 @@ define(['dojo/_base/declare',
 
             html.set(this.valueNode,this.value)
         },
+        _getTagAttr:function(value){
+            return this.tag;
+        },
+        _setTagAttr:function(value){
+            this.tag=value;
+        },_getIdAttr:function(value){
+            return this.id;
+        },
+        _setIdAttr:function(value){
+            this.id=value;
+        },
          _setPropertyDomAttr:function(value){
             var _this=this;
             _this.propertyDom=value;

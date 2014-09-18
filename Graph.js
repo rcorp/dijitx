@@ -80,7 +80,7 @@ define(['dojo/_base/declare',
 "dojox/charting/action2d/Shake",
 
 /*Store*/
-"aspire/core/SocketStore",
+"aspireClient/core/SocketStore",
 "dijitx/StoreSeriesExtended",
 
 "dojo/request/xhr",
