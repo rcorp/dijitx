@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"dojox/mobile/EdgeToEdgeStoreList",
-	"../_CommonPropsMixin"
+	"dijitx/_CommonPropsMixin"
 ], function(declare, EdgeToEdgeStoreList, _CommonPropsMixin){
 
 	// module:

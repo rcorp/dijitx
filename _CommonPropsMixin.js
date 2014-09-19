@@ -18,7 +18,7 @@ define([
 			var props = {};
 			if(!item["label"]){
 				props["label"] = item[this.labelProperty];
-			}
+			}	
 
 			for(var name in item){
 				if (typeof item[name] == 'function'){
