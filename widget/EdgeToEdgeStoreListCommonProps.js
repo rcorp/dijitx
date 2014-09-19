@@ -7,7 +7,7 @@ define([
 	// module:
 	//		dijitx/widget/EdgeToEdgeStoreListCommonProps
 
-	return declare("dojox.mobile.EdgeToEdgeStoreList", [EdgeToEdgeStoreList, _CommonPropsMixin],{
+	return declare("dijitx.widget.EdgeToEdgeStoreListCommonProps", [EdgeToEdgeStoreList, _CommonPropsMixin],{
 		// summary:
 		//		A dojo/store-enabled version of EdgeToEdgeList.
 		// description:
