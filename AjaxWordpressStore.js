@@ -87,9 +87,13 @@ return declare("dijitx.AjaxWordpressStore", base, {
 		// options: __PutDirectives?
 		//		Additional metadata for storing the data.  Includes an "id"
 		//		property if a specific id is to be used.
-		options = options || {};
-		options.overwrite = false;
-		return this.put(object, options);
+		return xhr(this.target, {
+			query: lang.mixin({
+				action: 'add_' + this.entity,
+			}, object),
+			method: 'GET',
+			handleAs: "json"
+		});
 	}
 				
 });
