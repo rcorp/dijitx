@@ -94,6 +94,23 @@ return declare("dijitx.AjaxWordpressStore", base, {
 			method: 'GET',
 			handleAs: "json"
 		});
+	},
+	put: function(object, options){
+		// summary:
+		//		Adds an object. This will trigger a PUT request to the server
+		//		if the object has an id, otherwise it will trigger a POST request.
+		// object: Object
+		//		The object to store.
+		// options: __PutDirectives?
+		//		Additional metadata for storing the data.  Includes an "id"
+		//		property if a specific id is to be used.
+		return xhr(this.target, {
+			query: lang.mixin({
+				action: 'put_' + this.entity,
+			}, object),
+			method: 'GET',
+			handleAs: "json"
+		});
 	}
 				
 });
