@@ -142,6 +142,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				}
 
 				if(eachRow.indexOf('new-') != -1){
+					_obj[this.store.idProperty] = tempRowIdToObject[eachRow][this.store.idProperty]
 					delete tempRowIdToObject[eachRow][grid.store.idProperty];
 				} else {
 					// Check if row is not a newly added row
