@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/_base/lang", "dojo/request/xhr", "dojo/io-query" /*=====, "./api/Store" =====*/
-], function(declare, JsonRest, lang, xhr, ioQuery /*=====, Store =====*/){
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/_base/lang", "dojo/request/xhr", "dojo/io-query", "dojo/_base/config" /*=====, "./api/Store" =====*/
+], function(declare, JsonRest, lang, xhr, ioQuery, config /*=====, Store =====*/){
 
 var base = JsonRest;
 /*===== base = Store; =====*/
@@ -26,6 +26,7 @@ return declare("dijitx.AjaxWordpressStore", base, {
 		//		This provides any configuration information that will be mixed into the store
 		this.headers = {};
 		declare.safeMixin(this, options);
+		this.target = config.wordpressUrl || this.target;
 	},
 
 	entity: '',
