@@ -196,6 +196,14 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		_setLabelAddNew: function(label) {
 			this.addNewRowWidget.set('label', label);
 		},
+
+		/**
+		 * Reset Grid data
+		 */
+		reset: function() {
+			this.set('dirty', {})
+			this.renderOnRefresh();
+		},
 		
 		/**
 		* createAddNewRowButton creates a Add New button which calls addNewRowGrid function to add new rows 
