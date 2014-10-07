@@ -12,6 +12,8 @@ define([
 	return declare(null, {
 		_commonProps: {},
 
+		emptyMessage: '',
+
 		createListItem: function(/*Object*/item){
 			// summary:
 			//		Creates a list item widget.
@@ -55,6 +57,8 @@ define([
 		},
 
 		onComplete: function () {
+			var _this = this;
+			
 			//Remove the Progress Indicator
 			this.progressIndicator.stop();
 
@@ -62,6 +66,15 @@ define([
 			this.domNode.style.visibility = "visible";
 
 			this.inherited(arguments)
+
+			//If there are no children and an empty message is defined
+			if ((this.getChildren().length == 0) && this.emptyMessage) {
+				this.addChild(new ListItem({
+					label: _this.emptyMessage
+				}))
+			}
+
+
 		}
 	});
 });
