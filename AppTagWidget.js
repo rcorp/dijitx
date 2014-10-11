@@ -40,11 +40,7 @@ define(['dojo/_base/declare',
         },
         startup: function() {
 
-           console.log('startup')
-           // this.hreff = "href="+this.url;
-           
-          
-             // summary:
+            // summary:
             //      Call startup() on all children including non _Widget ones like dojo/dnd/Source objects
 
             // This starts all the widgets
