@@ -85,7 +85,7 @@ var inputFields=[
 	}
 ]
 */
-
+/*
 var inputFields=[
 	{
 		dbtable:"country_state",
@@ -100,113 +100,84 @@ var inputFields=[
 		maxlength:30
 	}
 ]
- 
-// Input/sample data to insert in the table.ie automation data to be inserted in the database.
- 
-var store = [
+ */
+
+/*
+var inputFields=[
 	{
-		"country_pk":"1",
-		"state_pk":"1"
+		dbtable:"widgets",
+		dbcolumn:"name",
+		type:"text",
+		maxlength:30
 	},
 	{
-		"country_pk":"1",
-		"state_pk":"2"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"3"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"4"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"5"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"6"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"7"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"8"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"9"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"10"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"11"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"12"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"13"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"14"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"15"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"16"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"17"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"18"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"19"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"20"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"21"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"22"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"23"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"24"
-	},
-	{
-		"country_pk":"1",
-		"state_pk":"25"
+		dbtable:"widgets",
+		dbcolumn:"organisation_pk",
+		type:"text",
+		maxlength:10
 	}
 ]
+*/
+
+
+var inputFields=[
+	{
+		dbtable:"input",
+		dbcolumn:"type",
+		type:"text",
+		maxlength:30
+	},
+	{
+		dbtable:"input",
+		dbcolumn:"organisation_pk",
+		type:"text",
+		maxlength:10
+	}
+]
+
+
+// Input/sample data to insert in the table.ie automation data to be inserted in the database.
+ 
+// var store = [
+// 	{
+// 		"name":"Button"
+// 	},
+// 	{
+// 		"name":"DateTextBox"
+// 	},
+// 	{
+// 		"name":"FilteringSelect"
+// 	},
+// 	{
+// 		"name":"RadioButton"
+// 	},
+// 	{
+// 		"name":"TimeTextBox"
+// 	}
+// ]
+
+var store = [
+	{
+		"type":"Text"
+	},
+	{
+		"type":"Number"
+	},
+	{
+		"type":"Email"
+	},
+	{
+		"type":"Alphanumeric"
+	},
+	{
+		"type":"Date"
+	}
+]
+
 // var table = "country"
-var table = "country_state"
+// var table = "country_state"
+// var table = "widgets"
+var table = "input"
 
 // Function to get the sql data type for the attributes.
 var getType = function(sqltype, len) {
@@ -422,8 +393,9 @@ var getInsertSqlQuery = function(data, isRelationShipTable){
  * @param  {Array} store Define the data to be inserted.
  */
 var insertData = function (store){
+	console.log(store)
 	for (var data in store){
-		var insertQuery = getInsertSqlQuery(store[data], true);
+		var insertQuery = getInsertSqlQuery(store[data]);
 		console.log(insertQuery)
 		runSqlQuery(insertQuery);   
 	}	

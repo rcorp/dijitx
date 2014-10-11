@@ -142,7 +142,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				}
 
 				if(eachRow.indexOf('new-') != -1){
-					_obj[this.store.idProperty] = tempRowIdToObject[eachRow][this.store.idProperty]
 					delete tempRowIdToObject[eachRow][grid.store.idProperty];
 				} else {
 					// Check if row is not a newly added row
@@ -161,6 +160,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 						canBeAdded = true;
 					}
 				}
+				console.log(canBeAdded, tempRowIdToObject[eachRow])
 				// Add obj if it can't be ignored means - we know that these
 				// changes are done by user
 				if(canBeAdded)  {
@@ -195,14 +195,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		**/
 		_setLabelAddNew: function(label) {
 			this.addNewRowWidget.set('label', label);
-		},
-
-		/**
-		 * Reset Grid data
-		 */
-		reset: function() {
-			this.set('dirty', {})
-			this.renderOnRefresh();
 		},
 		
 		/**
