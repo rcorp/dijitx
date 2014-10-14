@@ -9,9 +9,20 @@ define([
 	],
 	function(declare, array, Form, domClass, win, lang, Deferred) {
 		return declare('dijitx.widget.Form', [Form], {
+			query:{},
 			buildRendering: function() {
 				this.inherited(arguments);
 				domClass.add(this.domNode, 'dijitVisible');
+			},
+			refresh:function() {
+				var _this = this;
+				var def = new Deferred
+				console.log(this.query, 'this.query')
+				this.store.query(this.query).then(function(res) {
+					_this.set('value',res[0]);
+					def.resolve(res);
+				})
+				return def
 			},
 			hide: function() {
 				/*var children = this.domNode.childNodes;
