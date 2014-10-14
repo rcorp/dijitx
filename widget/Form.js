@@ -14,10 +14,12 @@ define([
 				this.inherited(arguments);
 				domClass.add(this.domNode, 'dijitVisible');
 			},
+			/**
+			 * Refresh Formusing form.query as in grid
+			 */
 			refresh:function() {
 				var _this = this;
 				var def = new Deferred
-				console.log(this.query, 'this.query')
 				this.store.query(this.query).then(function(res) {
 					_this.set('value',res[0]);
 					def.resolve(res);
