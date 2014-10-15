@@ -27,7 +27,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		},
 		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
-			console.log('after refresh')
 			var grid= this;
 			var len= grid.defaultVisible;
 			grid.newRowIdCounter=0;
@@ -157,7 +156,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 							break;
 						}
 					}
-					if(_count == 1) {
+					if(_count >= 1) {
 						canBeAdded = true;
 					}
 				}
@@ -234,7 +233,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		**/
 
 		addNewRowToGrid: function(value, onRefresh) {
-			console.log('addNewRowToGrid', value, onRefresh)
 			// if evt.grid or grid itself
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
