@@ -11,13 +11,14 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		constructor: function() {
 			var grid = this;
 			this.arrRowIds=[];
+//			this.isAddNewButtonRequired = '';
 			this.labelAddNew = this.labelAddNew || 'Add New';
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
 			this._newlyAddedRowList = [];
 			// By default one row should be visible in the grid.
-			this.defaultVisible = this.defaultVisible || 1;
+			this.defaultVisible = this.defaultVisible || 0;
 			// needed by external users
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
@@ -38,12 +39,16 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// multiple refresh problem, if dirty is empty
 			// then create default Rows else use dirty
 			if(JSON.stringify(grid.dirty) == '{}') {
-				grid.createAddNewRowButton();
 				grid.newRowIdCounter=0;
 				for(var i=0;i<len;i++) {
-				 	grid.addNewRowToGrid(undefined, true);
+			 		grid.addNewRowToGrid(undefined, true);
 				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				//added functionality to on/off manual addition of new rows dynamically
+				//if isAddNewButtonRequired is true then addNew button will be displayed
+				if(this.isAddNewButtonRequired){	
+					grid.createAddNewRowButton();
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				}
 			}
 			else{
 				grid.newRowIdCounter = 0;
@@ -51,7 +56,10 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				// Clears grid.dirty
 				lang.setObject('dirty', {}, grid);
 				grid.set('value',prevData);
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				//if addNew button exists,then only append it's domNode to the content node of grid.
+				if(grid.addNewRowWidget && grid.addNewRowWidget.domNode) {
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				}
 			}
 		},
 		/**
@@ -110,7 +118,10 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				for(var i=0; i<value.length;i++){
 				 	this.addNewRowToGrid(value[i],true);
 				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				//if addNew button exists,then only append it's domNode to the content node of grid.
+				if(grid.addNewRowWidget && grid.addNewRowWidget.domNode) {
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				}
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
