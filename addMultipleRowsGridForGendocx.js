@@ -77,15 +77,10 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
     		put(rowElement, "!");
 
         	var _idForRowIdToObject = grid.id + "-row-" + id
-        	for(each in grid._rowIdToObject[_idForRowIdToObject]) {
-        		if(each.indexOf(grid.store.idProperty) == -1) {
-        			delete grid._rowIdToObject[_idForRowIdToObject][each]
-        			if(grid._rowIdToObject[_idForRowIdToObject][each + "_id"]) {
-        				delete grid._rowIdToObject[_idForRowIdToObject][each + "_id"];
-        			}
-        		}
-        	}
 
+        	if(grid._rowIdToObject[_idForRowIdToObject]) {
+				delete grid._rowIdToObject[_idForRowIdToObject]
+        	}
         	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
@@ -104,13 +99,17 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var columnNames=[];
 			this.dirty={};
 			if(lang.isArray(value)){
-				for(eachColumn in grid.columns){
-					columnNames.push(grid.columns[eachColumn].field)
+				if(value.length == 0) {
+					this.renderOnRefresh();
+				} else {
+					for(eachColumn in grid.columns){
+						columnNames.push(grid.columns[eachColumn].field)
+					}
+					for(var i=0; i<value.length;i++){
+					 	this.addNewRowToGrid(value[i],true);
+					}
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 				}
-				for(var i=0; i<value.length;i++){
-				 	this.addNewRowToGrid(value[i],true);
-				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
@@ -163,10 +162,10 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				console.log(canBeAdded, tempRowIdToObject[eachRow])
 				// Add obj if it can't be ignored means - we know that these
 				// changes are done by user
-				if(canBeAdded)  {
+				// if(canBeAdded)  {
 					var mixedObject = lang.mixin(tempRowIdToObject[eachRow], _obj)
 					arrayOfValues.push(mixedObject);
-				}
+				// }
 			}
 			return arrayOfValues;
 		},
