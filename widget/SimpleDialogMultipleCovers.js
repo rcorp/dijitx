@@ -1,6 +1,6 @@
-define(["dojo/_base/declare", "dojox/mobile/SimpleDialog", "dojo/dom-construct"], 
-	function(declare, SimpleDialog, domConstruct){
-	return declare(null, SimpleDialog, {
+define(["dojo/_base/declare", "dojox/mobile/SimpleDialog", "dojo/dom-construct", "dojo/_base/window"], 
+	function(declare, SimpleDialog, domConstruct, win){
+	return declare('dijitx.widget.SimpleDialogMultipleCovers', SimpleDialog, {
 		_cover: '',
 		_covers: [],
 		addCover: function(){
@@ -25,11 +25,6 @@ define(["dojo/_base/declare", "dojox/mobile/SimpleDialog", "dojo/dom-construct"]
 				this._covers.push(this._cover)
 			}else{
 				this._cover.style.display = "";
-			}
-
-			if(has("windows-theme")) {
-				// Hack to prevent interaction with elements placed under cover div.
-				this.own(on(this._cover[0], touch.press, function() {}));
 			}
 		},
 		removeCover: function(){
