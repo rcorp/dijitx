@@ -28,9 +28,12 @@ define(["dojo/_base/declare", "dojox/mobile/SimpleDialog", "dojo/dom-construct",
 			}
 		},
 		removeCover: function(){
+			//Remove the cover from the array
+			this._covers.splice(this._covers.indexOf(this._cover), 1);
 			// summary:
 			//		Removes the transparent DIV cover.
-			this._cover.style.display = "none";
+			domConstruct.destroy(this._cover);
+			this._cover = '';
 		}
 	})
 })
