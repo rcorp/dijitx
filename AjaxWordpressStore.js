@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/_base/lang", "dojo/request/xhr", "dojo/io-query", "dojo/_base/config" /*=====, "./api/Store" =====*/
-], function(declare, JsonRest, lang, xhr, ioQuery, config /*=====, Store =====*/){
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/_base/lang", "dojo/request/xhr", "dojo/io-query", "dojo/_base/config", "dojo/store/util/QueryResults", "dojo/store/util/SimpleQueryEngine" /*=====, "./api/Store" =====*/
+], function(declare, JsonRest, lang, xhr, ioQuery, config, QueryResults, SimpleQueryEngine /*=====, Store =====*/){
 
 var base = JsonRest;
 /*===== base = Store; =====*/
@@ -30,6 +30,9 @@ return declare("dijitx.AjaxWordpressStore", base, {
 	},
 
 	entity: '',
+	data : [],
+	queryEngine: SimpleQueryEngine,
+
 
 	get: function(id, options){
 		// summary:
@@ -55,13 +58,32 @@ return declare("dijitx.AjaxWordpressStore", base, {
 		});
 	},
 	query: function(query, options){
-		return xhr(this.target, {
+		var _this = this;
+		//In whatever we are querying we have to find something* to do a local filter.
+		for (var key in query){
+			if (/[\w\s]+(?=\*)/.test(query[key]) && this.data.length != 0){
+				//Make an object with just the key for the * element
+				var localQuery = {};
+				localQuery[key] = query[key];
+				return QueryResults(this.queryEngine(localQuery, options)(this.data));
+			}
+		}
+
+		//Capture the xhr request as a deferred.
+		var d = xhr(this.target, {
 			query: lang.mixin({
 				action: 'query_' + this.entity,
 			}, query),
 			method: 'GET',
 			handleAs: "json"
 		});
+
+		//Cache results from backend into this.data[]
+		d.then(function (results){
+			_this.data = results;
+		})
+
+		return d;
 	},
 	remove: function(id, options){
 		// summary:
