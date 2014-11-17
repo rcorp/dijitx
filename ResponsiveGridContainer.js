@@ -150,7 +150,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			}
 			//In each row add responsive columns
 			var columnRow = domConstruct.create("div",{
-				"class":"col-md-"+colIndex,
+				"class":child.cols||("col-md-"+colIndex),
 				"id":this.id+"-col-md"+index
 			},newRow);
 
@@ -274,7 +274,9 @@ ResponsiveGridContainer.ChildWidgetProperties = {
 	
 	// colspan: Number
 	// The number of columns this widget should span.
-	colspan: 1
+	colspan: 1,
+
+	cols: ''
 };
 
 // Add to widget base for benefit of parser.
