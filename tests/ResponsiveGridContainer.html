@@ -8,11 +8,11 @@
 	<script>
 		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dijit/form/Button","dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer, Button){
 			responsiveGridDemo=new ResponsiveGridContainer({cols:12, orientation:"vert"},"test1");
-			var textbox1=new TextBox({label:"Name", cols:'col-xs-1 col-sm-2 col-md-3 col-lg-4'});
-			var textbox2=new TextBox({label:"Age"});
-			var textbox3=new TextBox({label:"Gender"});
-			var textbox4=new TextBox({label:"Room No"});
-			var button5=new Button({label:"OK"});
+			var textbox1=new TextBox({label:"Name", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox2=new TextBox({label:"Age", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox3=new TextBox({label:"Gender", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox4=new TextBox({label:"Room No", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var button5=new Button({label:"OK", rows: 4});
 			responsiveGridDemo.addChild(textbox1);
 			responsiveGridDemo.addChild(textbox2);
 			responsiveGridDemo.addChild(textbox3);
