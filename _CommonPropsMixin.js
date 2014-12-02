@@ -46,11 +46,11 @@ define([
 				setTimeout(function() {
 					var _dom = domConstruct.create('span')
 					domAttr.set(_dom, 'class', _this.get('iconNew'))
-					console.log(_listItem.domNode.children[1])
+					// console.log(_listItem.domNode.children[1])
 					domConstruct.place(_dom, _listItem.domNode.children[1], "first")
 				}, 100)
 			}
-			console.log('image', _listItem)
+			// console.log('image', _listItem)
 			return _listItem;
 		},
 
