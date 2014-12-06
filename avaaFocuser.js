@@ -30,12 +30,6 @@ define(["dojo/_base/array"],function(array){
 		        activeElementWidgetDomNode = activeElementWidget.domNode;   
 		    }
 
-		  /*  if(activeElementWidget.widget == "Grid" || activeElementWidget.widget == "TreeGrid"){
-		        activeElementWidgetDomNode = activeElement
-		    } else {
-		        activeElementWidgetDomNode = activeElementWidget.domNode;   
-		    }*/
-
 		    overlayerElement.setAttribute("id", id);
 
 		    var activeDomStyleProperties = activeElementWidgetDomNode.getClientRects();
