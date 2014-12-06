@@ -8,9 +8,10 @@ define(["dojo/_base/array"],function(array){
 		removeExceptionWidget:function(widgetName){
 			var index = avaaUi.exceptionWidgetList.indexOf(widgetName); 
 			if (index !== -1) {
-			    avaaUi.exceptionWidgetList.splice(index, 1);
+			    var deleteElement = avaaUi.exceptionWidgetList.splice(index, 1);
+			    console.log(deleteElement);
 			} else {
-				console.log(widgetName+" is not found in the list.")
+				console.log(widgetName+" is not found in list")
 			}
 		},
 		mapCssProperties:function (overlayerElement,id){
