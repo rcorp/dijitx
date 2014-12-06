@@ -1,15 +1,39 @@
-define([],function(){
+define(["dojo/_base/array"],function(array){
 	var avaaUi = {
+		exceptionWidgetList:[],
+		addExceptionWidget:function(widgetName){
+			avaaUi.exceptionWidgetList.push(widgetName);
+			console.log(avaaUi.exceptionWidgetList);
+		},
+		removeExceptionWidget:function(widgetName){
+			var index = avaaUi.exceptionWidgetList.indexOf(widgetName); 
+			if (index !== -1) {
+			    avaaUi.exceptionWidgetList.splice(index, 1);
+			} else {
+				console.log(widgetName+" is not found in the list.")
+			}
+		},
 		mapCssProperties:function (overlayerElement,id){
 		    var body = document.getElementsByTagName("body")[0]
 		    var activeElement = document.activeElement;
 		    var activeElementWidget = dijit.getEnclosingWidget(activeElement);
-
-		    if(activeElementWidget.widget == "Grid" || activeElementWidget.widget == "TreeGrid"){
-		        activeElementWidgetDomNode = activeElement
+		    var activeElementWidgetDomNode=activeElementWidget.domNode;
+		    
+		    if(JSON.stringify(avaaUi.exceptionWidgetList)!='[]'){
+		    	array.forEach(avaaUi.exceptionWidgetList,function(exceptionWidget){
+					if(activeElementWidget.widget == exceptionWidget){
+					    activeElementWidgetDomNode = activeElement;
+					}
+		    	})	
 		    } else {
 		        activeElementWidgetDomNode = activeElementWidget.domNode;   
 		    }
+
+		  /*  if(activeElementWidget.widget == "Grid" || activeElementWidget.widget == "TreeGrid"){
+		        activeElementWidgetDomNode = activeElement
+		    } else {
+		        activeElementWidgetDomNode = activeElementWidget.domNode;   
+		    }*/
 
 		    overlayerElement.setAttribute("id", id);
 
