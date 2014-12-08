@@ -2,9 +2,11 @@ define([
 	"dojo/_base/array",
 	"dojo/_base/declare",
 	"dojox/mobile/ListItem",
+	"dojo/dom-construct",
+	"dojo/dom-attr",
 	"dojo/_base/lang",
 	"dojox/mobile/ProgressIndicator"
-], function(array, declare, ListItem, lang, ProgressIndicator){
+], function(array, declare, ListItem, domConstruct, domAttr, lang, ProgressIndicator){
 
 	// module:
 	//		dijitx/_CommonPropsMixin
@@ -38,7 +40,18 @@ define([
 					props[(this.itemMap && this.itemMap[name]) || name] = item[name];	
 				}
 			}
-			return new ListItem(props);
+			var _listItem = new ListItem(props)
+			if(this.get('iconNew')) {
+				var _this = this;
+				setTimeout(function() {
+					var _dom = domConstruct.create('span')
+					domAttr.set(_dom, 'class', _this.get('iconNew'))
+					// console.log(_listItem.domNode.children[1])
+					domConstruct.place(_dom, _listItem.domNode.children[1], "first")
+				}, 100)
+			}
+			// console.log('image', _listItem)
+			return _listItem;
 		},
 
 		progressIndicator : new ProgressIndicator(),

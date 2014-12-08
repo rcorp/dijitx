@@ -150,6 +150,14 @@ define([
 			domAttr.set(dropDown.domNode, "role", "listbox");
 			domAttr.set(this.domNode, "aria-expanded", "true");
 			if(dropDown.id){
+				var n= ddNode.childNodes.length;
+				for(var i=0; i<n ;i++){
+					var m= ddNode.childNodes[i].childNodes.length 
+					for(var j=1; j<m ;j++){
+						var k= ddNode.childNodes[i].childNodes[j].style.height="30px";
+					}
+					
+				}
 				domAttr.set(this.domNode, "aria-owns", dropDown.id);
 			}
 

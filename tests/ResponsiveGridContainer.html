@@ -6,18 +6,18 @@
 	</script>
 	<script src="../../dojo/dojo.js"></script>
 	<script>
-		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer){
-			responsiveGridDemo=new ResponsiveGridContainer({cols:2, orientation:"vert"},"test1");
-			var textbox1=new TextBox({label:"Name"});
-			var textbox2=new TextBox({label:"Age"});
-			var textbox3=new TextBox({label:"Gender"});
-			var textbox4=new TextBox({label:"Room No"});
-			var textbox5=new TextBox({label:"DOB"});
+		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dijit/form/Button","dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer, Button){
+			responsiveGridDemo=new ResponsiveGridContainer({cols:12, orientation:"vert"},"test1");
+			var textbox1=new TextBox({label:"Name", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox2=new TextBox({label:"Age", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox3=new TextBox({label:"Gender", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var textbox4=new TextBox({label:"Room No", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			var button5=new Button({label:"OK", rows: 4});
 			responsiveGridDemo.addChild(textbox1);
 			responsiveGridDemo.addChild(textbox2);
 			responsiveGridDemo.addChild(textbox3);
 			responsiveGridDemo.addChild(textbox4);
-			responsiveGridDemo.addChild(textbox5);
+			responsiveGridDemo.addChild(button5);
 			responsiveGridDemo.startup();
 		});
 	</script>

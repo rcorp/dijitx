@@ -17,21 +17,7 @@ function(lang,declare, domClass, domConstruct, arrayUtil, domProp, domStyle, _Wi
 var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, {
 
 	// Specifies the number of columns in the grid layout.
-	cols: 1,
-
-	// labelWidth: Number|String
-	// Defines the width of a label.  If the value is a number, it is
-	// treated as a pixel value.  The other valid value is a percentage,
-	// e.g. "50%"
-	labelWidth: "100",
-	
-	//showLabels: Boolean
-	//True if labels should be displayed, false otherwise.
-	showLabels: true,
-	
-	// orientation: String
-	// Either "horiz" or "vert" for label orientation.
-	orientation: "horiz",
+	cols: 12,
 
 	// customClass: String
 	// A CSS class that will be applied to child elements.  For example, if
@@ -39,6 +25,11 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	// each label TD will have "myClass-labelCell" applied, and each
 	// widget TD will have "myClass-valueCell" applied.
 	customClass: "",
+
+	constructor: function(){
+		this.inherited(arguments);
+		this.rows = [];
+	},
 	
 	postCreate: function(){
 		this.inherited(arguments);
@@ -126,113 +117,41 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 
 		//Create a parent container div within which new rows along with the responsive columns will be added and
 		//add this parent container div to the existing domNode
-		var parentDiv = domConstruct.create("div",{"class":"container"});
-		this.domNode.appendChild(parentDiv);
+		var containerDiv = domConstruct.create("div",{ 
+			"class":"container"
+		});
+		this.domNode.appendChild(containerDiv);
+		this.rows.push(domConstruct.create("div", {
+			"class":"row"
+		}, containerDiv));
+		console.log ('containerDiv', containerDiv)
 		
-		//Calculates the width of each column in percentage
-		var width = Math.floor(100 / this.cols) + "%";
-
-		//Calculates the index of each column in a responsive grid
-		var colIndex = Math.floor(12 / this.cols);
-		
-		// Iterate over the children, adding them to the grid.
-		var newRow={};
 		arrayUtil.forEach(this._children, lang.hitch(this, function(child, index){
+			console.log ('child.rows', child.rows, 'this.rows', this.rows)
 			
-			//Checks if a new row should be added or not; it is added if the index is a multiple of column
-			var isNewRow=!(index % this.cols);
-			
-			//Creates a new row depending upon the value of isNewRow
-			if(isNewRow){
-				newRow = domConstruct.create("div", {
-					"class":"row"},
-					parentDiv);
+			//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
+			var remainingRows = child.rows - this.rows.length;
+			if(remainingRows > 0){
+				for (var i = 0; i < remainingRows; i++){
+					console.log('i', i, remainingRows)
+					this.rows.push(domConstruct.create("div", {
+						"class":"row"
+					}, containerDiv))					
+				}			
 			}
+
 			//In each row add responsive columns
-			var columnRow = domConstruct.create("div",{
-				"class":"col-md-"+colIndex,
-				"id":this.id+"-col-md"+index
-			},newRow);
+			var columnRow = domConstruct.create("div", {
+				"class": child.cols || ("col-md-" + this.cols),
+				"id": this.id + "-col-md-" + index
+			}, this.rows[child.rows - 1]);
 
-			//Within each column craete a label div and a child div			
-			var maxCols = this.cols * (this.showLabels ? 2 : 1);
-			var numCols = 0;
-			var colspan = child.colspan || 1;
-			if(colspan > 1) {
-				colspan = this.showLabels ?
-					Math.min(maxCols - 1, colspan * 2 -1): Math.min(maxCols, colspan);
-			}
+			columnRow.appendChild(child.domNode);
 
-			// Create a new row if we need one
-			if(numCols + colspan - 1 + (this.showLabels ? 1 : 0)>= maxCols) {
-				numCols = 0;
-				labelRow = domConstruct.create("div", {},columnRow);
-				childRow = this.orientation == "horiz" ? labelRow : domConstruct.create("div", {}, columnRow);
-			}
-			var labelCell;
-			
-			// If labels should be visible, add them
-			if(this.showLabels) {
-				labelCell = domConstruct.create("div", {
-					"class": "ResponsiveGridContainer-labelCell",
-					style:{
-						display: "Inline-block"
-					}}, columnRow);
-
-				// If the widget should take up both the label and value,
-				// then just set the class on it.
-				if(child.spanLabel) {
-					domProp.set(labelCell, this.orientation == "vert" ? "rowspan" : "colspan", 2);
-				}
-				else {
-				
-					// Add the custom label class to the label cell
-					addCustomClass(labelCell, "labelCell");
-					var labelProps = {"for": child.get("id")};
-					var label = domConstruct.create("label", labelProps,labelCell);
-					if(Number(this.labelWidth) > -1 ||
-						String(this.labelWidth).indexOf("%") > -1) {
-						
-						// Set the width of the label cell with either a pixel or percentage value
-						domStyle.set(labelCell, "width",
-							String(this.labelWidth).indexOf("%") < 0
-								? this.labelWidth + "px" : this.labelWidth);
-					}
-					label.innerHTML = child.get("label") || child.get("title");
-				}
-			}
-			var childCell;
-
-			if(child.spanLabel && labelCell) {
-				childCell = labelCell;
-			} else {
-
-				//To add orienation property of responsive grid container
-				if(this.orientation == "horiz"){
-					console.log("Horiz reached!!")
-					childCell = domConstruct.create("div", {
-						style:{
-							display: "Inline-block"
-						}
-					}, columnRow);
-				}
-				else{
-					console.log("Vert reached!!")
-					childCell = domConstruct.create("div",{},columnRow);
-				}
-			}
-			if(colspan > 1) {
-				domProp.set(childCell, "colspan", colspan);
-			}
-
-			// Add the widget cell's custom class, if one exists.
-			addCustomClass(childCell, "valueCell", index);
-			childCell.appendChild(child.domNode);
-			numCols += colspan + (this.showLabels ? 1 : 0);
 		}));
 		
-		if(this.parentDiv)	 {
-			this.parentDiv.parentNode.removeChild(this.table);
+		if(this.containerDiv)	 {
+			this.containerDiv.parentNode.removeChild(this.table);
 		}
 
 		// Refresh the layout of any child widgets, allowing them to resize
@@ -256,25 +175,8 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	// summary:
 	// Properties to be set on children of TableContainer
 ResponsiveGridContainer.ChildWidgetProperties = {
-	
-	// label: String
-	// The label to display for a given widget
-	label: "",
-	
-	// title: String
-	// The label to display for a given widget.  This is interchangeable
-	// with the 'label' parameter, as some widgets already have a use
-	// for the 'label', and this can be used instead to avoid conflicts.
-	title: "",
-	
-	// spanLabel: Boolean
-	// Setting spanLabel to true makes the widget take up both the
-	// label and value cells. Defaults to false.
-	spanLabel: false,
-	
-	// colspan: Number
-	// The number of columns this widget should span.
-	colspan: 1
+	cols: '',
+	rows: 0
 };
 
 // Add to widget base for benefit of parser.
