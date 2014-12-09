@@ -85,20 +85,18 @@ return declare("dijitx.AjaxWordpressStore", base, {
 
 		return d;
 	},
-	remove: function(id, options){
+	remove: function(object, options){
 		// summary:
 		//		Deletes an object by its identity. This will trigger a DELETE request to the server.
-		// id: Number
-		//		The identity to use to delete the object
+		// object: Object
+		//		The object to store.
 		// options: __HeaderOptions?
 		//		HTTP headers.
 		options = options || {};
 		return xhr(this.target, {
-			query: {
+			query: lang.mixin({
 				action: 'remove_' + this.entity,
-				id: this.id
-			},
-			headers: lang.mixin({}, this.headers, options.headers)
+			}, object),
 		});
 	},
 	add: function(object, options){

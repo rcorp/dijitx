@@ -15,6 +15,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// To check if the grid used in the form is addMultipleRowsGrid
 			this.isMultipleGrid = true;
 			this.addNewRowWidget = '';
+			this.isAddNewButtonRequired = this.isAddNewButtonRequired && true;
 			this._newlyAddedRowList = [];
 			// By default one row should be visible in the grid.
 			this.defaultVisible = this.defaultVisible || 1;
@@ -37,12 +38,13 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			// multiple refresh problem, if dirty is empty
 			// then create default Rows else use dirty
 			if(JSON.stringify(grid.dirty) == '{}') {
-				grid.createAddNewRowButton();
+				if(this.isAddNewButtonRequired) {
+					grid.createAddNewRowButton();
+				}
 				grid.newRowIdCounter=0;
 				for(var i=0;i<len;i++) {
 				 	grid.addNewRowToGrid(undefined, true);
 				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 			else{
 				grid.newRowIdCounter = 0;
@@ -50,6 +52,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				// Clears grid.dirty
 				lang.setObject('dirty', {}, grid);
 				grid.set('value',prevData);
+			}
+
+			if(this.isAddNewButtonRequired) {
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
 			}
 		},
@@ -109,7 +114,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				for(var i=0; i<value.length;i++){
 				 	this.addNewRowToGrid(value[i],true);
 				}
-				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				if(this.isAddNewButtonRequired) {
+					grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+				}
 			}
 			else{
 				console.error("The values to be entered must be an array of objects")
@@ -140,7 +147,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					_obj=grid.dirty[rowId]
 				}
 
-				if(eachRow.indexOf('new-') != -1){
+				if(eachRow.indexOf('new-') == -1){
 					_obj[this.store.idProperty] = tempRowIdToObject[eachRow][this.store.idProperty]
 					delete tempRowIdToObject[eachRow][grid.store.idProperty];
 				} else {
@@ -193,7 +200,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 		* value in the parameter
 		**/
 		_setLabelAddNew: function(label) {
-			this.addNewRowWidget.set('label', label);
+			if(this.isAddNewButtonRequired) {
+				this.addNewRowWidget.set('label', label);
+			}
 		},
 
 		/**
@@ -264,6 +273,8 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					else if(grid.columns[each].editor && grid.columns[each].editor.superclass){
 						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]) || grid.columns[each].editor.superclass.value;
 						// grid.updateDirty(grid.newRowIdCounter,grid.columns[each].field,obj[grid.columns[each].field])
+					} else {
+						obj[grid.columns[each].field] = (value && value[grid.columns[each].field]);
 					}
 				}
 			} else {
@@ -274,7 +285,6 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					}
 				}
 			}
-
 			//InsertRow function si called to add a new row into the grid.
 			if(refDomNode.previousElementSibling==null){
 				grid.insertRow(obj,refDomNode, null, null, {});
