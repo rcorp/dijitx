@@ -89,7 +89,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         			}
         		}
         	}
-
+        	grid._rowIdToObject[_idForRowIdToObject]['__deleted'] = true;
         	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
 		},
@@ -107,6 +107,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this;
 			var columnNames=[];
 			this.dirty={};
+			this._rowIdToObject = {};
 			if(lang.isArray(value)){
 				for(eachColumn in grid.columns){
 					columnNames.push(grid.columns[eachColumn].field)
@@ -149,7 +150,11 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 
 				if(eachRow.indexOf('new-') == -1){
 					_obj[this.store.idProperty] = tempRowIdToObject[eachRow][this.store.idProperty]
-					delete tempRowIdToObject[eachRow][grid.store.idProperty];
+					if(tempRowIdToObject[eachRow]["__deleted"]) {
+						canBeAdded = true
+					} else {
+						delete tempRowIdToObject[eachRow][grid.store.idProperty];
+					}
 				} else {
 					// Check if row is not a newly added row
 					// and row has one column it means it is deleted by user
@@ -171,7 +176,11 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				// changes are done by user
 				if(canBeAdded)  {
 					var mixedObject = lang.mixin(tempRowIdToObject[eachRow], _obj)
-					arrayOfValues.push(mixedObject);
+					var returnValue = dojo.clone(mixedObject);
+					if(returnValue["__deleted"]) {
+						delete returnValue["__deleted"]
+					}
+					arrayOfValues.push(returnValue);
 				}
 			}
 			return arrayOfValues;
