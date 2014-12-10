@@ -152,7 +152,6 @@ define([
 			this._addContainerNodeWrapper();
 		},
 		_addContainerNodeWrapper:function(){
-			console.error("jasvin jasvin jasvin jasvin")
 			this.containerNode.style.width = (this.containerNode.children.length + .5)*100 + "%"; 
 			this.containerNode.style.transition = "all 600ms cubic-bezier(0.23,1,0.32,1)";
 		},
