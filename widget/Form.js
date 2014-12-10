@@ -56,8 +56,10 @@ define([
 			},
 			update: function(data) {
 				var def = new Deferred()
+				var _this = this;
 				this.store.put(data).then(function(result) {
 					def.resolve(result);
+					_this.refresh();
 				});
 				return def;
 			},
