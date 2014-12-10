@@ -4,28 +4,92 @@
 	<link rel="stylesheet" type="text/css" href="../layout/css/bootstrap.min.css">
 	<script>dojoConfig = {parseOnLoad: true}
 	</script>
+	<style type="text/css">
+		.row {
+			/*height: 300px;*/
+		}
+	</style>
 	<script src="../../dojo/dojo.js"></script>
 	<script>
-		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dijit/form/Button","dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer, Button){
+		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dijit/form/Button","dijit/layout/TabContainer","dijit/layout/ContentPane", "dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer, Button, TabContainer, ContentPane){
 			
-			responsiveGridDemo=new ResponsiveGridContainer({cols:12, orientation:"vert"},"test1");
-			var textbox1=new TextBox({label:"Name", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
-			var textbox2=new TextBox({label:"Age", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
-			var textbox3=new TextBox({label:"Gender", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
+			rgc=new ResponsiveGridContainer({cols:12, orientation:"vert"},"rgc-container");
+			var textbox1=new TextBox({label:"Name", cols:'col-md-6 col-lg-3', rows: 1});
+			var textbox2=new TextBox({label:"Age", cols:'col-md-6 col-lg-3', rows: 1});
+			var textbox3=new TextBox({label:"Gender", cols:'col-md-6 col-lg-3', rows: 1});
 			var textbox4=new TextBox({label:"Room No", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
-			var button5=new Button({label:"OK", rows: 4});
-			responsiveGridDemo.addChild(textbox1);
-			responsiveGridDemo.addChild(textbox2);
-			responsiveGridDemo.addChild(textbox3);
-			responsiveGridDemo.addChild(textbox4);
-			responsiveGridDemo.addChild(button5);
-			responsiveGridDemo.startup();
+			var button5=new Button({label:"OK", rows: 2});
+			rgc.addChild(textbox1);
+			rgc.addChild(textbox2);
+			rgc.addChild(textbox3);
+			rgc.addChild(textbox4);
+			rgc.addChild(button5);
+			rgc.startup();
+
+			window.tc = new TabContainer({
+				cols: 'col-lg-12',
+				rows: 3,
+				doLayout: false
+			});
+			var cp = new ContentPane({
+				content: 'Hello',
+				style: {
+					height: '500px'
+				}
+			});
+			tc.startup();
+			tc.addChild(cp);
+			//debugger;
+			window.rgcInTc = new ResponsiveGridContainer({
+				style: {
+					'background-color': 'rgba(255, 0, 0, 0.3)'
+				},
+				cols: 'col-lg-8 col-md-8',
+				rows: 1
+			});
+
+			tc.addChild(rgcInTc);
+			window.rgcInRgcInTc = new ResponsiveGridContainer({
+				style: {
+					'background-color': 'rgba(255, 255, 0, 0.3)'
+				},
+				cols: 'col-lg-8 col-md-8',
+				rows: 1
+			});
+			rgcInTc.addChild(rgcInRgcInTc);
+
+			rgcInRgcInTc.addChild(new Button({
+				cols: 'col-lg-8 col-md-8',
+				rows: 1,
+				label: 'I am in a Nested RGC',
+				doLayout: false
+			}))
+			console.log ('children in rgcInTc', rgcInTc.getChildren())
+			rgcInTc.startup();
+			tc.startup();
+
+			rgc.addChild(tc)
+			rgc.startup();
+
+			window.tc2 = new TabContainer({
+				cols: 'col-lg-12',
+				rows: 4
+			}, 'tabcontainer-container');
+			
+			var cp2 = new ContentPane({
+				content: 'Hello',
+				cols: 'col-lg-12',
+				rows: 1
+			});
+			tc2.addChild(cp2);
+			tc2.startup();
+
 		});
 	</script>
 	<body class="claro">
 		<h1> ResponsiveGridContainer Tests </h1>
 		<h2> Declarative RGC </h2>
-		<div data-dojo-type="dijitx/ResponsiveGridContainer" id="rgc" style="height:100px; background-color: rgba(200,0,0,0.4">
+		<div data-dojo-type="dijitx/ResponsiveGridContainer" id="rgc" style="background-color: rgba(200,0,0,0.4">
 			<div data-dojo-type="dijit/form/TextBox" id="txt" value="I should occupy half width in all screens" 
 				cols="col-lg-6 col-md-6 col-sm-6 col-xs-6" rows="1"> 
 			</div>
@@ -43,6 +107,16 @@
 			<div data-dojo-type="dijitx/AppTagWidget" tag="h2" value="col-lg-3 col-md-3 col-sm-3 col-xs-3 row-4" cols="col-lg-3 col-md-8 col-sm-12 col-xs-3" rows="3">
 			</div>
 		</div>
+
+		<h2> Programmatic RGC </h2>
+		<div id="rgc-container">
+
+		</div>
+
+		<div id="tabcontainer-container">
+			
+		</div>
+
 	</body>
 </head>
 </html>

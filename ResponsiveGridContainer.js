@@ -1,6 +1,6 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dojo/dom-class", "dojo/dom-construct", 
+define(["dojo/_base/lang","dojo/_base/declare", "dojo/dom-class", "dojo/dom-construct", "dijit/layout/ContentPane",
 		"dojo/_base/array", "dojo/dom-prop", "dojo/dom-style", "dijit/_WidgetBase", "dijit/layout/_LayoutWidget","dojo/domReady!"],
-function(lang,declare, domClass, domConstruct, arrayUtil, domProp, domStyle, _WidgetBase, _LayoutWidget){
+function(lang,declare, domClass, domConstruct, ContentPane, arrayUtil, domProp, domStyle, _WidgetBase, _LayoutWidget){
 
 // summary:
 	// A container that lays out its child widgets in a responsive grid layout.
@@ -14,10 +14,10 @@ function(lang,declare, domClass, domConstruct, arrayUtil, domProp, domStyle, _Wi
 	// <div dojoType="dijit.form.CheckBox" label="Is Student?:"></div>
 	// <div dojoType="dojox.form.DateTextBox" label="Date Of Birth:"></div>
 	// </div>
-var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, {
+var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [ContentPane], {
 
 	// Specifies the number of columns in the grid layout.
-	cols: 12,
+	gridCols: 12,
 
 	// customClass: String
 	// A CSS class that will be applied to child elements.  For example, if
@@ -26,9 +26,11 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	// widget TD will have "myClass-valueCell" applied.
 	customClass: "",
 
+	baseClass: 'dijitResponsiveGridContainer',
+
 	constructor: function(){
 		this.inherited(arguments);
-		this.rows = [];
+		this.gridRows = [];
 	},
 	
 	postCreate: function(){
@@ -45,21 +47,12 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 	},
 
 	startup: function() {
-		if(this._started) {
-			return;
-		}
-		this.inherited(arguments);
-		if(this._initialized) {
-			return;
-		}
 		var children = this.getChildren();
 		if(children.length < 1) {
 			return;
 		}
 		this._initialized = true;
 
-		domClass.add(this.domNode, "dijitTableLayout");
-		
 		// Call startup on all child widgets
 		arrayUtil.forEach(children, function(child){
 			if(!child.started && !child._started) {
@@ -68,6 +61,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 		});
 		this.layout();
 		this.resize();
+		this.inherited(arguments)
 	},
 
 	resize: function(){
@@ -81,6 +75,8 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 				child.resize();
 			}
 		});
+
+		//this.inherited(arguments);
 	},
 
 	// summary:
@@ -117,21 +113,21 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 
 		//Create a parent container div within which new rows along with the responsive columns will be added and
 		//add this parent container div to the existing domNode
-		var containerDiv = domConstruct.create("div",{ 
+		var containerDiv = this.containerDiv || domConstruct.create("div",{ 
 			"class":"container-fluid"
-		});
-		this.domNode.appendChild(containerDiv);
-		this.rows.push(domConstruct.create("div", {
-			"class":"row"
-		}, containerDiv));
+		}, this.domNode);
+		this.containerDiv = containerDiv;
 		
 		arrayUtil.forEach(this._children, lang.hitch(this, function(child, index){
+			var gridRows = this.gridRows;
 			
 			//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
-			var remainingRows = child.rows - this.rows.length;
+			var remainingRows = child.rows - gridRows.length;
+			console.log ('I have ', gridRows.length, ' rows')
+			console.log ('remainingRows', remainingRows, ' for ', child.domNode)
 			if(remainingRows > 0){
 				for (var i = 0; i < remainingRows; i++){
-					this.rows.push(domConstruct.create("div", {
+					this.gridRows.push(domConstruct.create("div", {
 						"class":"row"
 					}, containerDiv))					
 				}			
@@ -139,17 +135,14 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 
 			//In each row add responsive columns
 			var columnRow = domConstruct.create("div", {
-				"class": child.cols || ("col-md-" + this.cols),
+				"class": child.cols || ("col-md-" + this.gridCols),
 				"id": this.id + "-col-md-" + index
-			}, this.rows[child.rows - 1]);
+			}, gridRows[child.rows - 1]);
 
 			columnRow.appendChild(child.domNode);
 
 		}));
 		
-		if(this.containerDiv)	 {
-			this.containerDiv.parentNode.removeChild(this.table);
-		}
 
 		// Refresh the layout of any child widgets, allowing them to resize
 		// to their new parent.
@@ -159,6 +152,7 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 			}
 		});
 		this.resize();
+		this.inherited(arguments);
 	},
 	
 	// summary:
