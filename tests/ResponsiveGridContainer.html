@@ -7,6 +7,7 @@
 	<script src="../../dojo/dojo.js"></script>
 	<script>
 		require(["../ResponsiveGridContainer.js","dijit/form/TextBox", "dojox/layout/TableContainer","dijit/form/Button","dojo/domReady!"],function(ResponsiveGridContainer,TextBox,TableContainer, Button){
+			
 			responsiveGridDemo=new ResponsiveGridContainer({cols:12, orientation:"vert"},"test1");
 			var textbox1=new TextBox({label:"Name", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
 			var textbox2=new TextBox({label:"Age", cols:'col-xs-1 col-sm-12 col-md-6 col-lg-3', rows: 1});
@@ -22,7 +23,26 @@
 		});
 	</script>
 	<body class="claro">
-		<div id="test1"></div>
+		<h1> ResponsiveGridContainer Tests </h1>
+		<h2> Declarative RGC </h2>
+		<div data-dojo-type="dijitx/ResponsiveGridContainer" id="rgc" style="height:100px; background-color: rgba(200,0,0,0.4">
+			<div data-dojo-type="dijit/form/TextBox" id="txt" value="I should occupy half width in all screens" 
+				cols="col-lg-6 col-md-6 col-sm-6 col-xs-6" rows="1"> 
+			</div>
+			<div data-dojo-type="dijit/form/TextBox" id="txt2" value="col-lg-6 col-md-6 col-sm-6 col-xs-6 rows-1" 
+				cols="col-lg-6 col-md-6 col-sm-6 col-xs-6" rows="1"> 
+			</div>
+
+			<div data-dojo-type="dijit/form/Button" id="btn" label="col-lg-3 col-md-8 col-sm-12 col-xs-3 rows-2" 
+				cols="col-lg-3 col-md-8 col-sm-12 col-xs-3" rows="2">
+			</div>
+
+			<div data-dojo-type="dijitx/AppTagWidget" tag="h2" value="col-lg-3 col-md-3 col-sm-3 col-xs-3 row-4" cols="col-lg-3 col-md-8 col-sm-12 col-xs-3" rows="4">
+			</div>
+
+			<div data-dojo-type="dijitx/AppTagWidget" tag="h2" value="col-lg-3 col-md-3 col-sm-3 col-xs-3 row-4" cols="col-lg-3 col-md-8 col-sm-12 col-xs-3" rows="3">
+			</div>
+		</div>
 	</body>
 </head>
 </html>

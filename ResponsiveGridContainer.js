@@ -118,22 +118,19 @@ var ResponsiveGridContainer = declare("ResponsiveGridContainer", _LayoutWidget, 
 		//Create a parent container div within which new rows along with the responsive columns will be added and
 		//add this parent container div to the existing domNode
 		var containerDiv = domConstruct.create("div",{ 
-			"class":"container"
+			"class":"container-fluid"
 		});
 		this.domNode.appendChild(containerDiv);
 		this.rows.push(domConstruct.create("div", {
 			"class":"row"
 		}, containerDiv));
-		console.log ('containerDiv', containerDiv)
 		
 		arrayUtil.forEach(this._children, lang.hitch(this, function(child, index){
-			console.log ('child.rows', child.rows, 'this.rows', this.rows)
 			
 			//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
 			var remainingRows = child.rows - this.rows.length;
 			if(remainingRows > 0){
 				for (var i = 0; i < remainingRows; i++){
-					console.log('i', i, remainingRows)
 					this.rows.push(domConstruct.create("div", {
 						"class":"row"
 					}, containerDiv))					
