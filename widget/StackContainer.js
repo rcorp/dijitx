@@ -154,7 +154,7 @@ define([
 		_addContainerNodeWrapper:function(){
 			console.error("jasvin jasvin jasvin jasvin")
 			this.containerNode.style.width = (this.containerNode.children.length + .5)*100 + "%"; 
-			this.containerNode.style.transition = "all 200ms ease";
+			this.containerNode.style.transition = "all 200ms cubic-bezier(0.23,1,0.32,1)";
 		},
 
 		addChild: function(/*dijit/_WidgetBase*/ child, /*Integer?*/ insertIndex){
