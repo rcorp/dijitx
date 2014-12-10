@@ -1,4 +1,4 @@
-define (['dojo/_base/declare', 'dijit/layout/TabContainer', 'dojo/dom-class', "dojo/topic",
+define (['dojo/_base/declare', './TabContainer', 'dojo/dom-class', "dojo/topic",
  "dojo/when", "dijit/registry"], function (declare, TabContainer, domClass, topic, when, registry) {
     return declare('dijitx.widget.TabContainerExtended', [TabContainer], {
         buildRendering: function () {
