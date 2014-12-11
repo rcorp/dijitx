@@ -62,6 +62,7 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 		this.layout();
 		this.resize();
 		this.inherited(arguments)
+		console.log("call startup for rgc",this.id)
 	},
 
 	resize: function(){
@@ -105,43 +106,42 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 
 		arrayUtil.forEach(children, lang.hitch(this, function(child, index){
 			if(!childIds[child.id]) {
+				console.log('child is ', child.domNode)
+				//Create a parent container div within which new rows along with the responsive columns will be added and
+				//add this parent container div to the existing domNode
+				var containerDiv = this.containerDiv || domConstruct.create("div",{ 
+					"class":"container-fluid"
+				}, this.domNode);
+				this.containerDiv = containerDiv;
+				
+										
+				//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
+				var remainingRows = child.rows - this.gridRows.length;
+				console.log ('I have ', this.gridRows.length, ' rows')
+				console.log ('remainingRows', remainingRows, ' for ', child.domNode)
+				if(remainingRows > 0){
+					for (var i = 0; i < remainingRows; i++){
+						this.gridRows.push(domConstruct.create("div", {
+							"class":"row"
+						}, containerDiv))					
+					}			
+				}
+
+				//In each row add responsive columns
+				var columnRow = domConstruct.create("div", {
+					"class": child.cols || ("col-md-" + this.gridCols),
+					"id": this.id + "-col-md-" + index
+				}, this.gridRows[child.rows - 1]);
+
+				columnRow.appendChild(child.domNode);
+
 				
 				// Add pre-existing children to the start of the array
 				this._children.push(child);
 			}
 		}));
 
-		//Create a parent container div within which new rows along with the responsive columns will be added and
-		//add this parent container div to the existing domNode
-		var containerDiv = this.containerDiv || domConstruct.create("div",{ 
-			"class":"container-fluid"
-		}, this.domNode);
-		this.containerDiv = containerDiv;
 		
-		arrayUtil.forEach(this._children, lang.hitch(this, function(child, index){
-			var gridRows = this.gridRows;
-			
-			//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
-			var remainingRows = child.rows - gridRows.length;
-			console.log ('I have ', gridRows.length, ' rows')
-			console.log ('remainingRows', remainingRows, ' for ', child.domNode)
-			if(remainingRows > 0){
-				for (var i = 0; i < remainingRows; i++){
-					this.gridRows.push(domConstruct.create("div", {
-						"class":"row"
-					}, containerDiv))					
-				}			
-			}
-
-			//In each row add responsive columns
-			var columnRow = domConstruct.create("div", {
-				"class": child.cols || ("col-md-" + this.gridCols),
-				"id": this.id + "-col-md-" + index
-			}, gridRows[child.rows - 1]);
-
-			columnRow.appendChild(child.domNode);
-
-		}));
 		
 
 		// Refresh the layout of any child widgets, allowing them to resize
