@@ -19,7 +19,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this._newlyAddedRowList = [];
 			this.noDataMessage = this.noDataMessage || "No Data Found"
 			// By default one row should be visible in the grid.
-			this.defaultVisible = this.defaultVisible || 1;
+			this.defaultVisible = this.defaultVisible || 0;
 			// needed by external users
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
@@ -65,6 +65,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 
 			if(this.isAddNewButtonRequired) {
 				grid.contentNode.appendChild(grid.addNewRowWidget.domNode)
+			}
+			if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+				grid.showNoDataMessage(grid.noDataMessage)
 			}
 		},
 		/**
@@ -267,6 +270,10 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this.grid||this;
 			var refDomNode = grid.contentNode;
 			var obj = {};
+
+			if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+				grid.contentNode.innerHTML = ""
+			}
 
 			// idProperty is used for using SocketStore
 			// if idProperty is defined use value of id
