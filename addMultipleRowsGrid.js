@@ -1,5 +1,5 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put"],
-function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put", "dojo/topic"],
+function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put, topic){
 	/**
 	* This grid places a Add New button after all the rows have been rendered which is used to add new rows into
 	* the grid one at a time. This grid adds new rows using id's of each row instead of a counter	we used earlier
@@ -17,6 +17,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			this.addNewRowWidget = '';
 			this.isAddNewButtonRequired = this.isAddNewButtonRequired && true;
 			this._newlyAddedRowList = [];
+			this.noDataMessage = this.noDataMessage || "No Data Found"
 			// By default one row should be visible in the grid.
 			this.defaultVisible = this.defaultVisible || 1;
 			// needed by external users
@@ -25,6 +26,14 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					grid.renderOnRefresh();	
 				})
 			});
+			topic.subscribe(grid.get('id') + "/columnsHasSet", function() {
+				if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+					grid.showNoDataMessage(grid.noDataMessage)
+				}
+			});
+		},
+		showNoDataMessage:function(message) {
+			this.contentNode.innerHTML = message
 		},
 		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
@@ -92,6 +101,9 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	grid._rowIdToObject[_idForRowIdToObject]['__deleted'] = true;
         	delete this.dirty[id];
         	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
+        	if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+        		grid.showNoDataMessage(grid.noDataMessage)
+        	}
 		},
 
 		/**
