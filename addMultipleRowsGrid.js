@@ -1,5 +1,5 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put", "dojo/topic"],
-function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put, topic){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put", "dojo/topic", "dojo/on"],
+function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put, topic, on){
 	/**
 	* This grid places a Add New button after all the rows have been rendered which is used to add new rows into
 	* the grid one at a time. This grid adds new rows using id's of each row instead of a counter	we used earlier
@@ -31,6 +31,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 					grid.showNoDataMessage(grid.noDataMessage)
 				}
 			});
+
 		},
 		showNoDataMessage:function(message) {
 			this.contentNode.innerHTML = message
@@ -107,6 +108,21 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	if(grid.arrRowIds && grid.arrRowIds.length == 0) {
         		grid.showNoDataMessage(grid.noDataMessage)
         	}
+		},
+		hardRemoveRow: function(id) {
+        	var grid=this;
+        	var rowElement = this.row(id);
+        	rowElement = rowElement.element || rowElement;
+    		put(rowElement, "!");
+
+        	var _idForRowIdToObject = grid.id + "-row-" + id
+        	delete grid._rowIdToObject[_idForRowIdToObject];
+        	delete this.dirty[id];
+        	this.arrRowIds.splice(this.arrRowIds.indexOf(parseInt(id)),1)
+        	if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+        		grid.showNoDataMessage(grid.noDataMessage)
+        	}
+	        on.emit(grid.domNode,'dgrid-datachange', {"id":id})
 		},
 
 		/**
@@ -326,6 +342,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 				grid._newlyAddedRowList.push(obj);
 			}
 			grid.scrollTo({x:0,y:grid.contentNode.scrollHeight});
+			on.emit(grid.domNode,'dgrid-datachange', obj)
 		}
 	});
 	return businessGrid;
