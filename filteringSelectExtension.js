@@ -89,6 +89,10 @@ define([
 				startQuery = function(){
 					var newQuery = {};
 					newQuery[this.searchAttr] = query[this.searchAttr].toString();
+					// prevent overriding of query from clients side for making newQuery
+					if(query[this.store.idProperty]) {
+						newQuery[this.store.idProperty] = query[this.store.idProperty]
+					}
 
 					var resPromise = _this._fetchHandle = _this.store.query(newQuery, options);
 					if(_this.disabled || _this.readOnly || (q !== _this._lastQuery)){
