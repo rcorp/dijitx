@@ -62,7 +62,6 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 		this.layout();
 		this.resize();
 		this.inherited(arguments)
-		console.log("call startup for rgc",this.id)
 	},
 
 	resize: function(){
@@ -106,7 +105,6 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 
 		arrayUtil.forEach(children, lang.hitch(this, function(child, index){
 			if(!childIds[child.id]) {
-				console.log('child is ', child.domNode)
 				//Create a parent container div within which new rows along with the responsive columns will be added and
 				//add this parent container div to the existing domNode
 				var containerDiv = this.containerDiv || domConstruct.create("div",{ 
@@ -117,8 +115,6 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 										
 				//Checks if a new row should be added or not; it is added if the number of rows made so far does not equal the row index
 				var remainingRows = child.rows - this.gridRows.length;
-				console.log ('I have ', this.gridRows.length, ' rows')
-				console.log ('remainingRows', remainingRows, ' for ', child.domNode)
 				if(remainingRows > 0){
 					for (var i = 0; i < remainingRows; i++){
 						this.gridRows.push(domConstruct.create("div", {
@@ -126,6 +122,10 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 						}, containerDiv))					
 					}			
 				}
+				/**
+				This code is used to creaste a seperate container div
+				That is given the column class col-md-6 col-lg-2 etc.
+				Not used for now. Can be added as an option later.
 
 				//In each row add responsive columns
 				var columnRow = domConstruct.create("div", {
@@ -133,11 +133,27 @@ var ResponsiveGridContainer = declare("dijitx.ResponsiveGridContainer", [Content
 					"id": this.id + "-col-md-" + index
 				}, this.gridRows[child.rows - 1]);
 
+				domClass.add(columnRow, 'col')
 				columnRow.appendChild(child.domNode);
 
 				
 				// Add pre-existing children to the start of the array
 				this._children.push(child);
+				**/
+
+				var childDomNode = child.domNode;
+				
+				//col-md-6 etc classes are added to the childWidgets
+				//DOMNode directly instead of creating a seperate div.
+				domClass.add(childDomNode, child.cols || ("col-md-" + this.gridCols));
+				domClass.add(childDomNode, 'col')
+				if (this.gridRows[child.rows - 1]){
+					this.gridRows[child.rows - 1].appendChild(child.domNode);
+				}
+				
+				// Add pre-existing children to the start of the array
+				this._children.push(child);
+				
 			}
 		}));
 
