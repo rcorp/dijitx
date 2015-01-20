@@ -1,8 +1,19 @@
-define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put"],
-function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put){
+define(["dojo/_base/lang","dojo/_base/declare", "dgrid/OnDemandGrid", "dojo/store/Memory","dojo/store/Observable","dijit/form/Button", "dojo/aspect","dojo/date","dgrid/editor", "put-selector/put", "dojo/on"],
+function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,editor, put, on){
 	var businessGrid = declare(null, {
 		constructor:function() {
 			var grid = this;
+			aspect.after(this, "renderHeader", function() {
+				grid.on('dgrid-refresh-complete',function(response) {
+					response.results.then(function(trs) {
+						if(trs.length > 0) {
+							on.emit(grid.domNode,'dgrid-datachange','')
+						} else {
+							on.emit(grid.domNode,'dgrid-noDataMessage', grid.noDataMessage)
+						}
+					})
+				})
+			});
 		},
 		_getSelectedRowsData: function() {
 			var _selection = this.get('selection')
