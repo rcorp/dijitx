@@ -24,17 +24,19 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			aspect.after(this, "renderHeader", function() {
 				this.on('dgrid-refresh-complete',function() {
 					grid.renderOnRefresh();	
+					topic.subscribe(grid.get('id') + "/columnsHasSet", function() {
+						if(grid.arrRowIds && grid.arrRowIds.length == 0) {
+							grid.showNoDataMessage(grid.noDataMessage)
+						}
+					});
 				})
-			});
-			topic.subscribe(grid.get('id') + "/columnsHasSet", function() {
-				if(grid.arrRowIds && grid.arrRowIds.length == 0) {
-					grid.showNoDataMessage(grid.noDataMessage)
-				}
 			});
 
 		},
 		showNoDataMessage:function(message) {
+			var grid = this;
 			this.contentNode.innerHTML = message
+			on.emit(grid.domNode,'dgrid-noDataMessage', "message")
 		},
 		// if constructor doesn't work then call this function
 		renderOnRefresh: function(){
@@ -122,7 +124,7 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
         	if(grid.arrRowIds && grid.arrRowIds.length == 0) {
         		grid.showNoDataMessage(grid.noDataMessage)
         	}
-	        on.emit(grid.domNode,'dgrid-datachange', {"id":id})
+	        // on.emit(grid.domNode,'dgrid-datachange', {"id":id})
 		},
 
 		/**
