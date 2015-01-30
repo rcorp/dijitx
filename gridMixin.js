@@ -5,15 +5,20 @@ function(lang,declare, OnDemandGrid, Memory,Observable,Button, aspect,date,edito
 			var grid = this;
 			aspect.after(this, "renderHeader", function() {
 				grid.on('dgrid-refresh-complete',function(response) {
-					response.results.then(function(trs) {
-						if(trs.length > 0) {
-							on.emit(grid.domNode,'dgrid-datachange','')
-						} else {
-							on.emit(grid.domNode,'dgrid-noDataMessage', grid.noDataMessage)
-						}
-					})
+					if(response && response.results && response.results.then) {
+						response.results.then(function(trs) {
+							if(trs.length > 0) {
+								on.emit(grid.domNode,'dgrid-datachange','')
+							} else {
+								on.emit(grid.domNode,'dgrid-noDataMessage', grid.noDataMessage)
+							}
+						})
+					}
 				})
 			});
+		},
+		_getRowIdToObject:function() {
+			return this._rowIdToObject
 		},
 		_getSelectedRowsData: function() {
 			var _selection = this.get('selection')
