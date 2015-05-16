@@ -97,9 +97,13 @@ define([
 					// 	value="";
 					// }
 					if(widget.widget == "DateTextBox" && value){
-						console.log(value.toISOString().split("T")[0])
-						value = value.toISOString().split("T")[0]; 
-
+						var dateIncrement = new Date(value.toISOString().split("T")[0]);
+						dateIncrement.setDate(dateIncrement.getDate()+1);
+						var newDate= dateIncrement.toDateString()
+						var processedDate = newDate.split(" ")
+						var finalDate = processedDate[2]+"-"+processedDate[1]+"-"+processedDate[3];
+						console.log(finalDate)
+						value = finalDate; 
 					}
 					// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 					if (typeof widget.checked == 'boolean') {
